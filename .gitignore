@@ -1,0 +1,5 @@
+.env
+solana-program/target
+solana-program/tests
+solana-program/debug
+

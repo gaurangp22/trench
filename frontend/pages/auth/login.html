@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In - TrenchJobs</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/auth.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="/" class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">TrenchJobs</span>
+                </a>
+                <h1>Welcome Back</h1>
+                <p>Log in to your TrenchJobs account</p>
+            </div>
+
+            <!-- Email/Password Login -->
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" name="remember" style="width: auto;">
+                        <span class="text-secondary" style="font-size: 0.875rem;">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-block" id="login-submit-btn">
+                    Log In
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>or</span>
+            </div>
+
+            <!-- Wallet Login -->
+            <div class="wallet-login">
+                <p class="text-secondary text-center" style="margin-bottom: 1rem;">Sign in with your wallet</p>
+                <div class="social-login">
+                    <button type="button" class="social-btn" onclick="LoginPage.loginWithWallet('phantom')">
+                        <img src="../../assets/icons/phantom.svg" alt="Phantom" onerror="this.textContent='👻'; this.style.fontSize='1.25rem';">
+                        <span>Continue with Phantom</span>
+                    </button>
+                    <button type="button" class="social-btn" onclick="LoginPage.loginWithWallet('solflare')">
+                        <img src="../../assets/icons/solflare.svg" alt="Solflare" onerror="this.textContent='🔆'; this.style.fontSize='1.25rem';">
+                        <span>Continue with Solflare</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            </div>
+        </div>
+
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <div class="feature">
+                    <span class="feature-icon">🔐</span>
+                    <h4>Secure Login</h4>
+                    <p>Your data is encrypted and secure</p>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">👛</span>
+                    <h4>Wallet Sign-In</h4>
+                    <p>Use your Solana wallet to authenticate</p>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">⚡</span>
+                    <h4>Fast Access</h4>
+                    <p>Jump back into your work instantly</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="../../js/config.js"></script>
+    <script src="../../js/utils/dom.js"></script>
+    <script src="../../js/utils/storage.js"></script>
+    <script src="../../js/api/client.js"></script>
+    <script src="../../js/solana/wallet.js"></script>
+    <script src="../../js/components/toast.js"></script>
+    <script src="../../js/pages/auth/login.js"></script>
+</body>
+</html>

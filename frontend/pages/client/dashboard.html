@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard - TrenchJobs</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/dashboard.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="/" class="navbar-brand">
+                <span class="brand-trench">Trench</span><span class="brand-jobs">Jobs</span>
+            </a>
+            <div class="navbar-menu">
+                <a href="/pages/client/jobs.html" class="nav-link">My Jobs</a>
+                <a href="/pages/client/contracts.html" class="nav-link">Contracts</a>
+                <a href="/pages/freelancers.html" class="nav-link">Find Talent</a>
+                <a href="/pages/shared/messages.html" class="nav-link">Messages</a>
+            </div>
+            <div class="navbar-actions">
+                <div class="wallet-status" id="wallet-status">
+                    <span class="wallet-icon">&#9679;</span>
+                    <span class="wallet-address" id="wallet-address">Not Connected</span>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-ghost dropdown-toggle" id="user-menu-btn">
+                        <span class="user-avatar" id="user-avatar">U</span>
+                    </button>
+                    <div class="dropdown-menu" id="user-dropdown">
+                        <a href="/pages/shared/wallet.html" class="dropdown-item">Wallet</a>
+                        <a href="/pages/shared/settings.html" class="dropdown-item">Settings</a>
+                        <hr class="dropdown-divider">
+                        <button class="dropdown-item text-danger" id="logout-btn">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="welcome-section">
+                    <h1>Welcome back, <span id="user-name">Client</span>!</h1>
+                    <p class="text-muted">Manage your jobs and contracts</p>
+                </div>
+                <div class="header-actions">
+                    <a href="/pages/client/jobs/new.html" class="btn btn-primary">
+                        Post a Job
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon jobs-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2"/>
+                            <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="active-jobs">0</span>
+                        <span class="stat-label">Active Jobs</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon contracts-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="active-contracts">0</span>
+                        <span class="stat-label">Active Contracts</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon escrow-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M2 10h20M6 14h.01M10 14h.01"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="escrow-balance">0 SOL</span>
+                        <span class="stat-label">In Escrow</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon spent-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v12M8 10l4-4 4 4M8 14l4 4 4-4"/>
+                        </svg>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-value" id="total-spent">0 SOL</span>
+                        <span class="stat-label">Total Spent</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="dashboard-grid">
+                <!-- Active Contracts -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2>Active Contracts</h2>
+                        <a href="/pages/client/contracts.html" class="btn btn-sm btn-ghost">View All</a>
+                    </div>
+                    <div class="card-body" id="active-contracts-list">
+                        <div class="empty-state">
+                            <p>No active contracts</p>
+                            <a href="/pages/client/jobs/new.html" class="btn btn-outline">Post a Job</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Proposals -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2>New Proposals</h2>
+                        <span class="badge badge-primary" id="proposal-count">0</span>
+                    </div>
+                    <div class="card-body" id="pending-proposals-list">
+                        <div class="empty-state">
+                            <p>No new proposals</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Jobs -->
+                <div class="dashboard-card full-width">
+                    <div class="card-header">
+                        <h2>My Jobs</h2>
+                        <a href="/pages/client/jobs.html" class="btn btn-sm btn-ghost">View All</a>
+                    </div>
+                    <div class="card-body" id="my-jobs-list">
+                        <div class="empty-state">
+                            <p>No jobs posted yet</p>
+                            <a href="/pages/client/jobs/new.html" class="btn btn-outline">Post Your First Job</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 TrenchJobs. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/utils/storage.js"></script>
+    <script src="../../js/utils/dom.js"></script>
+    <script src="../../js/api/client.js"></script>
+    <script src="../../js/solana/wallet.js"></script>
+    <script src="../../js/components/toast.js"></script>
+    <script src="../../js/pages/client/dashboard.js"></script>
+</body>
+</html>

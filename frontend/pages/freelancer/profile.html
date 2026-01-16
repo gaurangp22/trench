@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - TrenchJobs</title>
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/pages/profile.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="/" class="navbar-brand">
+                <span class="brand-trench">Trench</span><span class="brand-jobs">Jobs</span>
+            </a>
+            <div class="navbar-menu">
+                <a href="/pages/freelancer/dashboard.html" class="nav-link">Dashboard</a>
+                <a href="/pages/freelancer/jobs.html" class="nav-link">Find Work</a>
+                <a href="/pages/freelancer/contracts.html" class="nav-link">Contracts</a>
+                <a href="/pages/shared/messages.html" class="nav-link">Messages</a>
+            </div>
+            <div class="navbar-actions">
+                <div class="wallet-status" id="wallet-status">
+                    <span class="wallet-icon">&#9679;</span>
+                    <span class="wallet-address" id="wallet-address">Not Connected</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-header">
+                <h1>Edit Your Profile</h1>
+                <p class="text-muted">Keep your profile up to date to attract more clients</p>
+            </div>
+
+            <div class="profile-layout">
+                <!-- Sidebar Navigation -->
+                <aside class="profile-sidebar">
+                    <nav class="profile-nav">
+                        <a href="#basic-info" class="profile-nav-item active" data-section="basic-info">
+                            Basic Info
+                        </a>
+                        <a href="#professional" class="profile-nav-item" data-section="professional">
+                            Professional Details
+                        </a>
+                        <a href="#skills" class="profile-nav-item" data-section="skills">
+                            Skills
+                        </a>
+                        <a href="#portfolio" class="profile-nav-item" data-section="portfolio">
+                            Portfolio
+                        </a>
+                        <a href="#availability" class="profile-nav-item" data-section="availability">
+                            Availability & Rates
+                        </a>
+                    </nav>
+                </aside>
+
+                <!-- Profile Form -->
+                <div class="profile-content">
+                    <!-- Basic Info Section -->
+                    <section id="basic-info" class="profile-section active">
+                        <h2>Basic Information</h2>
+                        <form id="basic-info-form" class="profile-form">
+                            <div class="avatar-upload">
+                                <div class="avatar-preview" id="avatar-preview">
+                                    <span id="avatar-initial">U</span>
+                                </div>
+                                <div class="avatar-actions">
+                                    <input type="file" id="avatar-input" accept="image/*" hidden>
+                                    <button type="button" class="btn btn-outline" onclick="document.getElementById('avatar-input').click()">
+                                        Change Photo
+                                    </button>
+                                    <p class="text-sm text-muted">JPG, PNG or GIF. Max 5MB.</p>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="display-name">Display Name</label>
+                                    <input type="text" id="display-name" name="display_name" placeholder="Your display name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="professional-title">Professional Title</label>
+                                    <input type="text" id="professional-title" name="professional_title" placeholder="e.g., Full Stack Developer">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="overview">Professional Overview</label>
+                                <textarea id="overview" name="overview" rows="5" placeholder="Tell clients about your experience, skills, and what makes you unique..."></textarea>
+                                <p class="form-hint">Write at least 100 characters to help clients understand your expertise.</p>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="country">Country</label>
+                                    <select id="country" name="country">
+                                        <option value="">Select country</option>
+                                        <option value="US">United States</option>
+                                        <option value="GB">United Kingdom</option>
+                                        <option value="CA">Canada</option>
+                                        <option value="AU">Australia</option>
+                                        <option value="DE">Germany</option>
+                                        <option value="FR">France</option>
+                                        <option value="IN">India</option>
+                                        <option value="BR">Brazil</option>
+                                        <option value="NG">Nigeria</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" name="city" placeholder="Your city">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="">Select timezone</option>
+                                    <option value="America/New_York">Eastern Time (ET)</option>
+                                    <option value="America/Chicago">Central Time (CT)</option>
+                                    <option value="America/Denver">Mountain Time (MT)</option>
+                                    <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                    <option value="Europe/London">London (GMT)</option>
+                                    <option value="Europe/Paris">Paris (CET)</option>
+                                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                                    <option value="Asia/Shanghai">Shanghai (CST)</option>
+                                    <option value="Australia/Sydney">Sydney (AEST)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Professional Details Section -->
+                    <section id="professional" class="profile-section">
+                        <h2>Professional Details</h2>
+                        <form id="professional-form" class="profile-form">
+                            <div class="form-group">
+                                <label for="cover-image">Cover Image URL</label>
+                                <input type="url" id="cover-image" name="cover_image_url" placeholder="https://example.com/your-cover.jpg">
+                                <p class="form-hint">Add a cover image to make your profile stand out</p>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Skills Section -->
+                    <section id="skills" class="profile-section">
+                        <h2>Skills</h2>
+                        <p class="section-description">Add skills to show clients what you're capable of</p>
+
+                        <div class="skills-manager">
+                            <div class="skill-search">
+                                <input type="text" id="skill-search" placeholder="Search for a skill...">
+                                <div id="skill-suggestions" class="skill-suggestions hidden"></div>
+                            </div>
+
+                            <div class="current-skills" id="current-skills">
+                                <!-- Skills will be rendered here -->
+                            </div>
+
+                            <div class="skill-categories" id="skill-categories">
+                                <h3>Browse by Category</h3>
+                                <div class="category-tabs" id="category-tabs">
+                                    <!-- Category tabs will be rendered here -->
+                                </div>
+                                <div class="category-skills" id="category-skills">
+                                    <!-- Category skills will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Portfolio Section -->
+                    <section id="portfolio" class="profile-section">
+                        <h2>Portfolio</h2>
+                        <p class="section-description">Showcase your best work to attract clients</p>
+
+                        <button type="button" class="btn btn-outline" id="add-portfolio-btn">
+                            + Add Portfolio Item
+                        </button>
+
+                        <div class="portfolio-grid" id="portfolio-grid">
+                            <!-- Portfolio items will be rendered here -->
+                        </div>
+                    </section>
+
+                    <!-- Availability & Rates Section -->
+                    <section id="availability" class="profile-section">
+                        <h2>Availability & Rates</h2>
+                        <form id="availability-form" class="profile-form">
+                            <div class="form-group">
+                                <label>Availability Status</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="availability_status" value="available">
+                                        <span class="radio-custom"></span>
+                                        <span>Available for work</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="availability_status" value="busy">
+                                        <span class="radio-custom"></span>
+                                        <span>Busy - Limited availability</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="availability_status" value="not_available">
+                                        <span class="radio-custom"></span>
+                                        <span>Not available</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="available_for_hire" id="available-for-hire">
+                                    <span class="checkbox-custom"></span>
+                                    <span>Show my profile in search results</span>
+                                </label>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="hourly-rate">Hourly Rate (SOL)</label>
+                                    <div class="input-with-icon">
+                                        <span class="input-icon">SOL</span>
+                                        <input type="number" id="hourly-rate" name="hourly_rate_sol" step="0.01" min="0" placeholder="0.00">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="minimum-project">Minimum Project (SOL)</label>
+                                    <div class="input-with-icon">
+                                        <span class="input-icon">SOL</span>
+                                        <input type="number" id="minimum-project" name="minimum_project_sol" step="0.01" min="0" placeholder="0.00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Portfolio Modal -->
+    <div id="portfolio-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="portfolio-modal-title">Add Portfolio Item</h3>
+                <button type="button" class="modal-close" id="close-portfolio-modal">&times;</button>
+            </div>
+            <form id="portfolio-form" class="modal-body">
+                <div class="form-group">
+                    <label for="portfolio-title">Project Title *</label>
+                    <input type="text" id="portfolio-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-description">Description</label>
+                    <textarea id="portfolio-description" name="description" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-url">Project URL</label>
+                    <input type="url" id="portfolio-url" name="project_url" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-image">Image URL</label>
+                    <input type="url" id="portfolio-image" name="image_url" placeholder="https://...">
+                </div>
+                <input type="hidden" id="portfolio-id" name="id">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" id="cancel-portfolio">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/utils/storage.js"></script>
+    <script src="../../js/utils/dom.js"></script>
+    <script src="../../js/api/client.js"></script>
+    <script src="../../js/solana/wallet.js"></script>
+    <script src="../../js/components/toast.js"></script>
+    <script src="../../js/pages/freelancer/profile.js"></script>
+</body>
+</html>

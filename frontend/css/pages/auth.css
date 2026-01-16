@@ -1,0 +1,315 @@
+/* TrenchJobs - Auth Pages Styles */
+
+.auth-container {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.auth-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-12);
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-10);
+}
+
+.auth-header .logo {
+    display: inline-flex;
+    margin-bottom: var(--space-8);
+}
+
+.auth-header h1 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2);
+}
+
+.auth-header p {
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+/* Form Steps */
+.form-step {
+    display: none;
+}
+
+.form-step.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-step h3 {
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+/* Role Selection */
+.role-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.role-option {
+    cursor: pointer;
+}
+
+.role-option input {
+    display: none;
+}
+
+.role-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-fast);
+}
+
+.role-option input:checked + .role-card {
+    border-color: var(--color-primary);
+    background: rgba(153, 69, 255, 0.1);
+}
+
+.role-card:hover {
+    border-color: var(--color-border-light);
+}
+
+.role-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-3);
+}
+
+.role-title {
+    font-weight: 600;
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-1);
+}
+
+.role-desc {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Wallet Connected */
+.wallet-connected {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: rgba(20, 241, 149, 0.1);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-lg);
+}
+
+.wallet-connected .wallet-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-success);
+    color: var(--color-bg);
+    border-radius: var(--radius-full);
+    font-weight: bold;
+}
+
+.wallet-connected .wallet-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.wallet-connected .wallet-label {
+    font-size: var(--text-sm);
+    color: var(--color-success);
+    font-weight: 500;
+}
+
+.wallet-connected .wallet-address {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+}
+
+.auth-footer p {
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+/* Auth Visual */
+.auth-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-dark);
+    padding: var(--space-12);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-visual::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(153, 69, 255, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.auth-visual-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    max-width: 300px;
+}
+
+.feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--space-6);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(10px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-3);
+}
+
+.feature h4 {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+}
+
+.feature p {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    margin-bottom: 0;
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.divider span {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* Social Login */
+.social-login {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    color: var(--color-text);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.social-btn:hover {
+    background: var(--color-surface-hover);
+    border-color: var(--color-border-light);
+}
+
+.social-btn img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-visual {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: var(--space-6);
+    }
+
+    .role-options {
+        gap: var(--space-3);
+    }
+
+    .role-card {
+        padding: var(--space-4);
+    }
+}
