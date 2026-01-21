@@ -1,13 +1,13 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link } from "react-router-dom"
 import {
-    DollarSign, Briefcase, FileText, TrendingUp, Clock, CheckCircle2,
+    DollarSign, Briefcase, FileText, TrendingUp, CheckCircle2,
     Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Meteors } from "@/components/ui/meteors"
-import { BorderBeam } from "@/components/ui/border-beam"
+
 
 // Mock data - in production, fetch from API
 const FREELANCER_DATA = {
@@ -136,7 +136,7 @@ export function FreelancerDashboard() {
                             </Link>
                         </div>
                         <div className="space-y-4">
-                            {data.activeContracts.map((contract, i) => (
+                            {data.activeContracts.map((contract) => (
                                 <div
                                     key={contract.id}
                                     className="group relative p-5 bg-[#0a0a0c] border border-white/5 rounded-2xl hover:border-white/10 transition-all duration-300 overflow-hidden hover:bg-white/[0.02]"
@@ -284,8 +284,6 @@ function StatCard({
     iconColor,
     label,
     value,
-    trend,
-    trendUp,
     subtext,
     delay = 0
 }: {
@@ -294,8 +292,6 @@ function StatCard({
     iconColor: string
     label: string
     value: string
-    trend?: string
-    trendUp?: boolean
     subtext?: string
     delay?: number
 }) {

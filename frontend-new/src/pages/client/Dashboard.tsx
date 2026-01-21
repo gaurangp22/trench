@@ -173,7 +173,7 @@ export function ClientDashboard() {
                             </Link>
                         </div>
                         <div className="space-y-4">
-                            {data.activeJobs.map((job, i) => (
+                            {data.activeJobs.map((job) => (
                                 <div
                                     key={job.id}
                                     className="group relative p-5 bg-[#0a0a0c] border border-white/5 rounded-2xl hover:border-white/10 transition-all duration-300 hover:bg-white/[0.02]"
