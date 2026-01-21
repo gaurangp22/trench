@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Eye, ExternalLink, Loader2 } from "lucide-react"
+import { MoreHorizontal, Eye, Loader2, ArrowUpRight, Search } from "lucide-react"
 import { ProposalAPI, type Proposal } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
@@ -42,12 +42,12 @@ const MOCK_PROPOSALS = [
     }
 ]
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-    pending: { label: "Submitted", color: "bg-green-500/10 text-green-400" },
-    shortlisted: { label: "Shortlisted", color: "bg-purple-500/10 text-purple-400" },
-    hired: { label: "Hired", color: "bg-blue-500/10 text-blue-400" },
-    rejected: { label: "Rejected", color: "bg-zinc-500/10 text-zinc-400" },
-    withdrawn: { label: "Withdrawn", color: "bg-zinc-500/10 text-zinc-400" },
+const STATUS_LABELS: Record<string, { label: string; color: string; border: string }> = {
+    pending: { label: "Submitted", color: "bg-amber-500/10 text-amber-500", border: "border-amber-500/20" },
+    shortlisted: { label: "Shortlisted", color: "bg-purple-500/10 text-purple-400", border: "border-purple-500/20" },
+    hired: { label: "Hired", color: "bg-emerald-500/10 text-emerald-400", border: "border-emerald-500/20" },
+    rejected: { label: "Rejected", color: "bg-red-500/10 text-red-400", border: "border-red-500/20" },
+    withdrawn: { label: "Withdrawn", color: "bg-zinc-500/10 text-zinc-400", border: "border-zinc-500/20" },
 }
 
 export function MyProposals() {
@@ -104,100 +104,122 @@ export function MyProposals() {
 
     return (
         <DashboardLayout role="freelancer">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-white">My Proposals</h1>
-                <p className="text-zinc-400 mt-1">Track the status of your job applications.</p>
+            <div className="mb-10 animate-fade-in-up">
+                <h1 className="text-4xl font-heading font-semibold text-white mb-2 tracking-tight">My Proposals</h1>
+                <p className="text-zinc-400 text-lg">Track and manage your applications.</p>
             </div>
 
-            {/* Filters */}
-            <div className="flex items-center gap-4 mb-6 bg-zinc-900/50 p-2 rounded-xl border border-zinc-800 w-full md:w-fit">
-                <Button
-                    variant="ghost"
-                    onClick={() => setFilter('all')}
-                    className={cn("h-8 text-xs", filter === 'all' ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-white")}
-                >
-                    All Proposals
-                </Button>
-                <Button
-                    variant="ghost"
-                    onClick={() => setFilter('active')}
-                    className={cn("h-8 text-xs", filter === 'active' ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-white")}
-                >
-                    Active ({activeCount})
-                </Button>
-                <Button
-                    variant="ghost"
-                    onClick={() => setFilter('archived')}
-                    className={cn("h-8 text-xs", filter === 'archived' ? "text-white bg-zinc-800" : "text-zinc-400 hover:text-white")}
-                >
-                    Archived ({archivedCount})
-                </Button>
+            {/* Controls Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+                {/* Filters */}
+                <div className="flex items-center gap-1 bg-[#0a0a0c] p-1.5 rounded-xl border border-white/5 w-full md:w-fit">
+                    <button
+                        onClick={() => setFilter('all')}
+                        className={cn(
+                            "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                            filter === 'all' ? "bg-white/10 text-white shadow-sm" : "text-zinc-500 hover:text-white hover:bg-white/5"
+                        )}
+                    >
+                        All Proposals
+                    </button>
+                    <button
+                        onClick={() => setFilter('active')}
+                        className={cn(
+                            "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                            filter === 'active' ? "bg-white/10 text-white shadow-sm" : "text-zinc-500 hover:text-white hover:bg-white/5"
+                        )}
+                    >
+                        Active <span className="ml-1.5 opacity-60 text-xs">({activeCount})</span>
+                    </button>
+                    <button
+                        onClick={() => setFilter('archived')}
+                        className={cn(
+                            "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                            filter === 'archived' ? "bg-white/10 text-white shadow-sm" : "text-zinc-500 hover:text-white hover:bg-white/5"
+                        )}
+                    >
+                        Archived <span className="ml-1.5 opacity-60 text-xs">({archivedCount})</span>
+                    </button>
+                </div>
+
+                {/* Search (Visual Only for now) */}
+                <div className="relative w-full md:w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <input
+                        type="text"
+                        placeholder="Search proposals..."
+                        className="w-full h-10 bg-[#0a0a0c] border border-white/10 rounded-xl pl-9 pr-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 transition-colors"
+                    />
+                </div>
             </div>
 
             {/* Proposals List */}
             {loading ? (
-                <div className="flex items-center justify-center py-20">
-                    <Loader2 className="w-6 h-6 text-zinc-500 animate-spin" />
+                <div className="flex items-center justify-center py-32">
+                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
                 </div>
             ) : filteredProposals.length === 0 ? (
-                <div className="text-center py-20">
-                    <p className="text-zinc-500 mb-4">No proposals found</p>
+                <div className="text-center py-24 bg-[#0a0a0c] border border-white/5 rounded-3xl">
+                    <div className="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Search className="w-8 h-8 text-zinc-600" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">No proposals found</h3>
+                    <p className="text-zinc-500 mb-6 max-w-sm mx-auto">You haven't submitted any proposals matching this filter yet.</p>
                     <Link to="/jobs">
-                        <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                            Browse Jobs
+                        <Button className="h-11 px-8 rounded-xl bg-white text-black hover:bg-zinc-200 font-bold transition-all hover:scale-105">
+                            Browse New Jobs
                         </Button>
                     </Link>
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {filteredProposals.map((proposal) => {
+                    {filteredProposals.map((proposal, i) => {
                         const statusInfo = STATUS_LABELS[proposal.status] || STATUS_LABELS.pending
                         return (
                             <div
                                 key={proposal.id}
-                                className="group bg-zinc-900/30 border border-zinc-800 rounded-xl p-6 transition-all hover:bg-zinc-900/50 hover:border-zinc-700"
+                                className="group bg-[#0a0a0c] border border-white/5 rounded-2xl p-6 transition-all duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_30px_rgba(99,102,241,0.05)] hover:-translate-y-0.5"
+                                style={{ animationDelay: `${i * 0.05}s` }}
                             >
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="text-lg font-semibold text-white group-hover:text-purple-400 transition-colors">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors tracking-tight">
                                                 {proposal.jobTitle}
                                             </h3>
                                             <span className={cn(
-                                                "px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider",
-                                                statusInfo.color
+                                                "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+                                                statusInfo.color,
+                                                statusInfo.border
                                             )}>
                                                 {statusInfo.label}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-4 text-sm text-zinc-500">
-                                            <span>Client: {proposal.client}</span>
-                                            <span>•</span>
-                                            <span>Bid: ◎ {proposal.bid} SOL</span>
-                                            <span>•</span>
-                                            <span>Sent {proposal.sent}</span>
+                                        <div className="flex items-center gap-4 text-sm">
+                                            <span className="text-zinc-400">Client: <span className="text-zinc-200 font-medium">{proposal.client}</span></span>
+                                            <span className="text-zinc-700 mx-1">•</span>
+                                            <span className="text-zinc-400">Bid: <span className="text-white font-bold">◎ {proposal.bid}</span></span>
+                                            <span className="text-zinc-700 mx-1">•</span>
+                                            <span className="text-zinc-500">Sent {proposal.sent}</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-3 pt-4 md:pt-0 border-t md:border-0 border-white/5">
                                         {proposal.status === 'pending' && (
                                             <Button
-                                                variant="outline"
+                                                variant="ghost"
                                                 onClick={() => handleWithdraw(proposal.id)}
-                                                className="border-red-500/20 text-red-400 hover:bg-red-500/10 h-9"
+                                                className="border border-red-500/10 text-red-500/70 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 h-10 px-4 rounded-xl"
                                             >
                                                 Withdraw
                                             </Button>
                                         )}
                                         <Link to={`/jobs/${proposal.jobId || proposal.id}`}>
-                                            <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 h-9">
-                                                <Eye className="w-4 h-4 mr-2" />
+                                            <Button variant="outline" className="border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 px-4 rounded-xl group/btn">
                                                 View Job
+                                                <ArrowUpRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                                             </Button>
                                         </Link>
-                                        <Button size="icon" variant="ghost" className="text-zinc-500 hover:text-white h-9 w-9">
-                                            <MoreHorizontal className="w-4 h-4" />
-                                        </Button>
                                     </div>
                                 </div>
                             </div>

@@ -129,9 +129,9 @@ export function Talent() {
                     if (activeFilter !== "All") {
                         // Simple categorical filtering logic for mock data
                         if (activeFilter === "Developers") {
-                            mappedProfiles = mappedProfiles.filter(p => p.title.includes("Engineer") || p.title.includes("Developer") || p.title.includes("Architect") || p.title.includes("Auditor"))
+                            mappedProfiles = mappedProfiles.filter(p => p.title?.includes("Engineer") || p.title?.includes("Developer") || p.title?.includes("Architect") || p.title?.includes("Auditor"))
                         } else if (activeFilter === "Designers") {
-                            mappedProfiles = mappedProfiles.filter(p => p.title.includes("Designer"))
+                            mappedProfiles = mappedProfiles.filter(p => p.title?.includes("Designer"))
                         }
                     }
                 }

@@ -1,225 +1,204 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Menu, X, Zap, LayoutDashboard, Briefcase, MessageSquare, Shield } from "lucide-react"
+import { Menu, X, Zap } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { useWallet } from "@solana/wallet-adapter-react"
-import { WalletIndicator } from "@/components/wallet/WalletIndicator"
+import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 
 export function Navbar() {
-    const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const { connected } = useWallet()
+    const { connected, publicKey, disconnect } = useWallet()
+    const { setVisible } = useWalletModal()
     const location = useLocation()
 
-    // Mock auth state - in real app, this would come from auth context
-    const [isLoggedIn] = useState(false)
-    const [userRole] = useState<'client' | 'freelancer'>('freelancer')
 
-    useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 10)
-        window.addEventListener("scroll", handleScroll)
-        return () => window.removeEventListener("scroll", handleScroll)
-    }, [])
 
-    // Determine if we're on a dashboard page
+    // Don't show on dashboard pages
     const isDashboardPage = location.pathname.startsWith('/client') || location.pathname.startsWith('/freelancer')
+    if (isDashboardPage) return null
 
-    // Navigation links based on auth state
-    const loggedOutLinks = [
+    const navLinks = [
         { to: "/jobs", label: "Find Work" },
         { to: "/talent", label: "Find Talent" },
         { to: "/how-it-works", label: "How It Works" },
     ]
 
-    const loggedInLinks = userRole === 'client' ? [
-        { to: "/client/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { to: "/client/jobs", label: "My Jobs", icon: Briefcase },
-        { to: "/messages", label: "Messages", icon: MessageSquare },
-        { to: "/escrow", label: "Escrow", icon: Shield },
-    ] : [
-        { to: "/freelancer/dashboard", label: "Dashboard", icon: LayoutDashboard },
-        { to: "/jobs", label: "Browse Jobs", icon: Briefcase },
-        { to: "/messages", label: "Messages", icon: MessageSquare },
-        { to: "/escrow", label: "Escrow", icon: Shield },
-    ]
-
-    const navLinks = isLoggedIn ? loggedInLinks : loggedOutLinks
-
-    // Don't show main navbar on dashboard pages (they have their own layout)
-    if (isDashboardPage) {
-        return null
-    }
+    const shortenAddress = (address: string) =>
+        `${address.slice(0, 4)}...${address.slice(-4)}`
 
     return (
-        <nav
-            className={cn(
-                "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-                isScrolled
-                    ? "bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-zinc-800/50"
-                    : "bg-transparent"
-            )}
-        >
-            <div className="container max-w-6xl mx-auto px-6">
-                <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 bg-white rounded-md flex items-center justify-center">
-                            <Zap className="h-4 w-4 text-black fill-black" />
-                        </div>
-                        <span className="text-base font-semibold text-white">
-                            TrenchJobs
-                        </span>
-                    </Link>
+        <>
+            <header className="fixed top-0 left-0 right-0 z-50 px-4 pt-4">
+                {/* Single Unified Glass Container */}
+                <div
+                    className={cn(
+                        "max-w-5xl mx-auto rounded-2xl transition-all duration-500",
+                        "bg-white/[0.03] backdrop-blur-2xl",
+                        "border border-white/[0.08]",
+                        "shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+                    )}
+                >
+                    <div className="flex items-center justify-between h-14 px-5">
 
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-1">
-                        {navLinks.map((link) => (
-                            <NavLink key={link.to} to={link.to}>
-                                {link.label}
-                            </NavLink>
-                        ))}
-                    </div>
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center gap-2.5 shrink-0">
+                            <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center">
+                                <Zap className="h-3.5 w-3.5 text-[#0a0a0c] fill-[#0a0a0c]" />
+                            </div>
+                            <span className="text-[15px] font-semibold text-white tracking-tight">
+                                TrenchJobs
+                            </span>
+                        </Link>
 
-                    {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-3">
-                        {connected ? (
-                            // Connected state - show wallet indicator
-                            <WalletIndicator />
-                        ) : (
-                            // Not connected - show connect button
-                            <WalletMultiButton className="!bg-zinc-800 hover:!bg-zinc-700 !rounded-lg !h-9 !px-4 !text-sm !font-medium !transition-all" />
-                        )}
-
-                        {!isLoggedIn ? (
-                            // Logged out actions
-                            <>
-                                <Link
-                                    to="/auth"
-                                    className="text-sm font-medium text-zinc-400 hover:text-white transition-colors px-3 py-2"
-                                >
-                                    Log in
-                                </Link>
-                                <Link to="/auth">
-                                    <Button
-                                        size="sm"
-                                        className="h-9 px-4 text-sm font-medium bg-white text-black hover:bg-zinc-200 rounded-md"
+                        {/* Center Nav Links */}
+                        <nav className="hidden md:flex items-center justify-center flex-1 gap-1">
+                            {navLinks.map((link) => {
+                                const isActive = location.pathname === link.to
+                                return (
+                                    <Link
+                                        key={link.to}
+                                        to={link.to}
+                                        className={cn(
+                                            "relative text-[13px] font-medium px-4 py-1.5 rounded-full transition-all duration-200",
+                                            isActive
+                                                ? "text-white"
+                                                : "text-zinc-400 hover:text-white"
+                                        )}
                                     >
-                                        Get Started
-                                    </Button>
-                                </Link>
-                            </>
-                        ) : (
-                            // Logged in actions
-                            <Link to="/profile">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-white/20 transition-all">
-                                    <span className="text-xs font-bold text-white">
-                                        {userRole === 'client' ? 'C' : 'F'}
-                                    </span>
-                                </div>
-                            </Link>
-                        )}
-                    </div>
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="navIndicator"
+                                                className="absolute inset-0 bg-white/[0.1] rounded-full"
+                                                transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                                            />
+                                        )}
+                                        <span className="relative z-10">{link.label}</span>
+                                    </Link>
+                                )
+                            })}
+                        </nav>
 
-                    {/* Mobile Menu Button */}
-                    <button
-                        className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                    </button>
+                        {/* Right Actions */}
+                        <div className="hidden md:flex items-center gap-3 shrink-0">
+                            {/* Wallet */}
+                            {connected && publicKey ? (
+                                <button
+                                    onClick={() => disconnect()}
+                                    className="flex items-center gap-2 text-[13px] font-medium text-zinc-400 hover:text-white transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    {shortenAddress(publicKey.toString())}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setVisible(true)}
+                                    className="text-[13px] font-medium text-zinc-400 hover:text-white transition-colors"
+                                >
+                                    Connect Wallet
+                                </button>
+                            )}
+
+                            <div className="w-px h-4 bg-white/[0.1]" />
+
+                            <Link to="/auth" className="text-[13px] font-medium text-zinc-400 hover:text-white transition-colors">
+                                Log in
+                            </Link>
+
+                            <Link to="/auth">
+                                <button className="h-8 px-4 text-[13px] font-medium text-black bg-white hover:bg-zinc-100 rounded-full transition-all">
+                                    Get Started
+                                </button>
+                            </Link>
+                        </div>
+
+                        {/* Mobile Toggle */}
+                        <button
+                            className="md:hidden p-2 text-zinc-400 hover:text-white"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </header>
 
             {/* Mobile Menu */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-[#0a0a0a] border-b border-zinc-800"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-40 md:hidden"
                     >
-                        <div className="px-6 py-6 space-y-4">
-                            {navLinks.map((link) => (
-                                <MobileNavLink
-                                    key={link.to}
-                                    to={link.to}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    {link.label}
-                                </MobileNavLink>
-                            ))}
+                        <div className="absolute inset-0 bg-[#0a0a0c]/98 backdrop-blur-2xl" />
 
-                            {/* Wallet Status in Mobile */}
-                            {connected && (
-                                <div className="pt-2 pb-2">
-                                    <WalletIndicator className="w-full justify-center" />
-                                </div>
-                            )}
+                        <div className="relative h-full pt-24 px-6 pb-8 flex flex-col">
+                            <nav className="flex-1 space-y-1">
+                                {navLinks.map((link, i) => (
+                                    <motion.div
+                                        key={link.to}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.1 }}
+                                    >
+                                        <Link
+                                            to={link.to}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={cn(
+                                                "block py-4 text-2xl font-medium transition-colors",
+                                                location.pathname === link.to
+                                                    ? "text-white"
+                                                    : "text-zinc-500 hover:text-white"
+                                            )}
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                            </nav>
 
-                            <div className="pt-4 flex flex-col gap-3">
-                                {!connected && (
-                                    <WalletMultiButton className="!w-full !justify-center !bg-zinc-800 !h-11" />
-                                )}
-                                {!isLoggedIn ? (
-                                    <>
-                                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button variant="outline" className="w-full h-11 border-zinc-800 text-white hover:bg-zinc-900">
-                                                Log in
-                                            </Button>
-                                        </Link>
-                                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <Button className="w-full h-11 bg-white text-black hover:bg-zinc-200">
-                                                Get Started
-                                            </Button>
-                                        </Link>
-                                    </>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="space-y-3"
+                            >
+                                {connected && publicKey ? (
+                                    <button
+                                        onClick={() => { disconnect(); setIsMobileMenuOpen(false); }}
+                                        className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.06] rounded-xl"
+                                    >
+                                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                                        {shortenAddress(publicKey.toString())}
+                                    </button>
                                 ) : (
-                                    <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>
-                                        <Button variant="outline" className="w-full h-11 border-zinc-800 text-white hover:bg-zinc-900">
-                                            My Profile
-                                        </Button>
-                                    </Link>
+                                    <button
+                                        onClick={() => { setVisible(true); setIsMobileMenuOpen(false); }}
+                                        className="w-full h-12 text-[15px] font-medium text-zinc-300 bg-white/[0.03] border border-white/[0.06] rounded-xl"
+                                    >
+                                        Connect Wallet
+                                    </button>
                                 )}
-                            </div>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <button className="w-full h-12 text-[15px] font-medium text-white bg-white/[0.05] border border-white/[0.08] rounded-xl">
+                                            Log in
+                                        </button>
+                                    </Link>
+                                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <button className="w-full h-12 text-[15px] font-medium text-black bg-white rounded-xl">
+                                            Get Started
+                                        </button>
+                                    </Link>
+                                </div>
+                            </motion.div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </nav>
-    )
-}
-
-function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
-    const location = useLocation()
-    const isActive = location.pathname === to
-
-    return (
-        <Link
-            to={to}
-            className={cn(
-                "text-sm font-medium px-3 py-2 rounded-md transition-colors",
-                isActive
-                    ? "text-white bg-zinc-800/50"
-                    : "text-zinc-400 hover:text-white"
-            )}
-        >
-            {children}
-        </Link>
-    )
-}
-
-function MobileNavLink({ to, children, onClick }: { to: string; children: React.ReactNode; onClick: () => void }) {
-    return (
-        <Link
-            to={to}
-            onClick={onClick}
-            className="block text-lg font-medium text-zinc-300 hover:text-white"
-        >
-            {children}
-        </Link>
+        </>
     )
 }

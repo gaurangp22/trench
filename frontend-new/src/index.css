@@ -1,40 +1,174 @@
 @import "tailwindcss";
-
-/* Satoshi - Premium modern startup font */
-html {
-  font-family: "Satoshi", "Inter", system-ui, -apple-system, sans-serif;
-}
-
-:root {
-  --background: 0 0% 4%;
-  --foreground: 0 0% 100%;
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 65%;
-  --border: 240 4% 16%;
-  --input: 240 4% 16%;
-  --ring: 240 5% 65%;
-  --primary: 0 0% 100%;
-  --primary-foreground: 0 0% 4%;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Outfit:wght@100..900&family=Space+Grotesk:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @layer base {
-  * {
-    border-color: hsl(var(--border));
+  :root {
+    /* Premium Dark Theme Palette */
+    --background: 240 10% 3.9%;
+    /* Deepest dark, almost black */
+    --foreground: 0 0% 98%;
+    /* Off-white for text */
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Neon/Vibrant Accents - Hot Pink/Magenta primary */
+    --primary: 322 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Cool Blue/Purple */
+    --secondary: 260 100% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 322 100% 50%;
+
+    --radius: 1rem;
+    /* More rounded premium look */
   }
 
   html {
+    font-family: "Inter", system-ui, sans-serif;
     scroll-behavior: smooth;
   }
 
   body {
-    background-color: #0a0a0a;
-    color: #fafafa;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  ::selection {
-    background-color: rgba(255, 255, 255, 0.15);
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Outfit", sans-serif;
+    /* Headings in Outfit */
+    letter-spacing: -0.02em;
   }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px hsla(var(--primary), 0.5);
+  }
+
+  .glow-box {
+    box-shadow: 0 0 20px -5px hsla(var(--primary), 0.3);
+  }
+
+  /* Expressive Italics Utility */
+  .italic-expressive {
+    font-style: italic;
+    font-family: "Space Grotesk", sans-serif;
+    /* Or serif if preferred, but Space Grotesk has nice quirks */
+  }
+}
+
+/* Keyframe Animations */
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
+}
+
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes meteor {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(215deg) translateX(-500px);
+    opacity: 0;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam calc(var(--duration)*1s) infinite linear;
 }

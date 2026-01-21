@@ -1,5 +1,4 @@
 import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { type EscrowIDL } from '@/lib/escrow-idl';
 
 // Constants
 // In a real app, this would be the deployed program ID
@@ -19,7 +18,7 @@ export class EscrowService {
      */
     async fundJob(
         wallet: any,
-        jobId: string,
+        _jobId: string,
         amount: number
     ): Promise<string> {
         if (!wallet.publicKey) throw new Error('Wallet not connected');
@@ -61,7 +60,7 @@ export class EscrowService {
      */
     async releasePayment(
         wallet: any,
-        escrowAccount: PublicKey,
+        _escrowAccount: PublicKey,
         recipient: PublicKey,
         amount: number
     ): Promise<string> {

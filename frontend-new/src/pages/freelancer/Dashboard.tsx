@@ -2,10 +2,12 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link } from "react-router-dom"
 import {
     DollarSign, Briefcase, FileText, TrendingUp, Clock, CheckCircle2,
-    Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet
+    Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Meteors } from "@/components/ui/meteors"
+import { BorderBeam } from "@/components/ui/border-beam"
 
 // Mock data - in production, fetch from API
 const FREELANCER_DATA = {
@@ -24,10 +26,10 @@ const FREELANCER_DATA = {
         proposalsViewed: 4,
     },
     recentActivity: [
-        { icon: CheckCircle2, color: "text-green-400", title: "Milestone Approved", desc: "Payment of 50 SOL released for 'Solana API Integration'", time: "2 hours ago" },
-        { icon: FileText, color: "text-blue-400", title: "Proposal Viewed", desc: "Client viewed your proposal for 'Rust Smart Contract Audit'", time: "5 hours ago" },
-        { icon: Clock, color: "text-yellow-400", title: "Contract Started", desc: "You started working on 'Frontend UI for NFT Marketplace'", time: "1 day ago" },
-        { icon: MessageSquare, color: "text-purple-400", title: "New Message", desc: "DeFi Protocol X sent you a message about the milestone", time: "1 day ago" },
+        { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10", title: "Milestone Approved", desc: "Payment of 50 SOL released for 'Solana API Integration'", time: "2 hours ago" },
+        { icon: FileText, color: "text-blue-400", bg: "bg-blue-500/10", title: "Proposal Viewed", desc: "Client viewed your proposal for 'Rust Smart Contract Audit'", time: "5 hours ago" },
+        { icon: Zap, color: "text-amber-400", bg: "bg-amber-500/10", title: "Contract Started", desc: "You started working on 'Frontend UI for NFT Marketplace'", time: "1 day ago" },
+        { icon: MessageSquare, color: "text-purple-400", bg: "bg-purple-500/10", title: "New Message", desc: "DeFi Protocol X sent you a message about the milestone", time: "1 day ago" },
     ],
     pendingProposals: [
         { id: 1, jobTitle: "Rust Smart Contract Audit", client: "Security DAO", amount: 120, status: "viewed", daysAgo: 2 },
@@ -47,42 +49,51 @@ export function FreelancerDashboard() {
     return (
         <DashboardLayout role="freelancer">
             {/* Header with Profile Summary */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xl font-bold">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 animate-fade-in-up">
+                <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold font-heading shadow-lg shadow-indigo-500/20">
                         {data.avatarInitial}
                     </div>
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-bold text-white">Welcome back, {data.name}</h1>
-                        <div className="flex items-center gap-4 mt-1">
-                            <span className="flex items-center gap-1 text-amber-400">
-                                <Star className="w-4 h-4 fill-current" />
-                                <span className="font-medium">{data.rating}</span>
-                                <span className="text-zinc-500">({data.reviewCount} reviews)</span>
+                        <h1 className="text-3xl font-bold text-white font-heading tracking-tight">Welcome back, {data.name}</h1>
+                        <div className="flex items-center gap-4 mt-2 text-sm">
+                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                                <Star className="w-3.5 h-3.5 fill-current" />
+                                <span className="font-semibold">{data.rating}</span>
+                                <span className="text-amber-500/70">({data.reviewCount} reviews)</span>
                             </span>
-                            <span className="text-zinc-500">{data.completedJobs} jobs completed</span>
+                            <span className="text-zinc-400 font-medium">{data.completedJobs} jobs completed</span>
                         </div>
                     </div>
                 </div>
                 <Link to="/jobs">
-                    <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                    <Button className="h-12 px-6 rounded-xl bg-white text-black hover:bg-zinc-200 font-bold transition-all hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.1)] group">
                         Browse New Jobs
-                        <ArrowUpRight className="w-4 h-4 ml-2" />
+                        <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                     </Button>
                 </Link>
             </div>
 
             {/* Main Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <StatCard
-                    icon={DollarSign}
-                    iconBg="bg-purple-500/10"
-                    iconColor="text-purple-400"
-                    label="Total Earnings"
-                    value={`${data.stats.totalEarnings} SOL`}
-                    trend="+12%"
-                    trendUp={true}
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+                {/* Total Earnings Card with Meteor Effect */}
+                <div className="relative overflow-hidden rounded-2xl bg-[#0a0a0c] border border-white/10 p-5 col-span-1 shadow-2xl">
+                    <Meteors number={15} />
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                <DollarSign className="w-5 h-5" />
+                            </div>
+                            <span className="text-sm text-zinc-400 font-medium uppercase tracking-wide">Total Earnings</span>
+                        </div>
+                        <div className="text-3xl font-bold text-white mb-2">{data.stats.totalEarnings} SOL</div>
+                        <div className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-lg w-fit">
+                            <TrendingUp className="w-3 h-3" />
+                            <span className="font-medium">+12% this month</span>
+                        </div>
+                    </div>
+                </div>
+
                 <StatCard
                     icon={Shield}
                     iconBg="bg-emerald-500/10"
@@ -90,6 +101,7 @@ export function FreelancerDashboard() {
                     label="In Escrow"
                     value={`${data.stats.escrowBalance} SOL`}
                     subtext="Secured on-chain"
+                    delay={0.1}
                 />
                 <StatCard
                     icon={Briefcase}
@@ -98,6 +110,7 @@ export function FreelancerDashboard() {
                     label="Active Jobs"
                     value={data.stats.activeJobs.toString()}
                     subtext={`${data.stats.pendingMilestones} milestones pending`}
+                    delay={0.2}
                 />
                 <StatCard
                     icon={FileText}
@@ -106,60 +119,60 @@ export function FreelancerDashboard() {
                     label="Proposals"
                     value={data.stats.proposalsSent.toString()}
                     subtext={`${data.stats.proposalsViewed} viewed by clients`}
+                    delay={0.3}
                 />
             </div>
 
             {/* Two Column Layout */}
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Left Column - Active Contracts */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-8">
                     {/* Active Contracts */}
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold text-white">Active Contracts</h2>
-                            <Link to="/freelancer/contracts" className="text-sm text-purple-400 hover:text-purple-300">
+                    <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-xl font-heading font-semibold text-white tracking-tight">Active Contracts</h2>
+                            <Link to="/freelancer/contracts" className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
                                 View all
                             </Link>
                         </div>
-                        <div className="space-y-3">
-                            {data.activeContracts.map((contract) => (
+                        <div className="space-y-4">
+                            {data.activeContracts.map((contract, i) => (
                                 <div
                                     key={contract.id}
-                                    className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl hover:border-zinc-700 transition-colors"
+                                    className="group relative p-5 bg-[#0a0a0c] border border-white/5 rounded-2xl hover:border-white/10 transition-all duration-300 overflow-hidden hover:bg-white/[0.02]"
                                 >
-                                    <div className="flex items-start justify-between mb-3">
+                                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-5 gap-4">
                                         <div>
-                                            <h3 className="font-medium text-white">{contract.title}</h3>
-                                            <span className="text-sm text-zinc-400">{contract.client}</span>
+                                            <h3 className="font-bold text-white text-lg mb-1">{contract.title}</h3>
+                                            <span className="text-sm text-zinc-400 font-medium">{contract.client}</span>
                                         </div>
-                                        <div className="text-right">
-                                            <div className="text-sm font-medium text-emerald-400 flex items-center gap-1">
-                                                <Shield className="w-3 h-3" />
+                                        <div className="text-right flex items-center gap-3 sm:block">
+                                            <div className="text-base font-bold text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
+                                                <Shield className="w-3.5 h-3.5 fill-current" />
                                                 ◎ {contract.escrowAmount}
                                             </div>
-                                            <span className="text-xs text-zinc-500">in escrow</span>
                                         </div>
                                     </div>
 
                                     {/* Progress Bar */}
-                                    <div className="mb-2">
-                                        <div className="flex justify-between text-xs mb-1">
-                                            <span className="text-zinc-400">Progress</span>
-                                            <span className="text-zinc-400">{contract.progress}%</span>
+                                    <div className="mb-4">
+                                        <div className="flex justify-between text-xs font-medium mb-2">
+                                            <span className="text-zinc-500 uppercase tracking-wider">Milestone Progress</span>
+                                            <span className="text-white">{contract.progress}%</span>
                                         </div>
-                                        <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
+                                                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
                                                 style={{ width: `${contract.progress}%` }}
                                             />
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs text-zinc-500">
-                                            Next: {contract.nextMilestone}
+                                    <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                                        <span className="text-xs font-medium text-zinc-500">
+                                            Next: <span className="text-zinc-300">{contract.nextMilestone}</span>
                                         </span>
-                                        <Button size="sm" variant="outline" className="h-7 text-xs border-zinc-700">
+                                        <Button size="sm" variant="ghost" className="h-8 text-xs font-medium text-white hover:bg-white/10">
                                             Submit Work
                                         </Button>
                                     </div>
@@ -169,41 +182,39 @@ export function FreelancerDashboard() {
                     </div>
 
                     {/* Pending Proposals */}
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-semibold text-white">Pending Proposals</h2>
-                            <Link to="/freelancer/proposals" className="text-sm text-purple-400 hover:text-purple-300">
+                    <div className="animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-xl font-heading font-semibold text-white tracking-tight">Pending Proposals</h2>
+                            <Link to="/freelancer/proposals" className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
                                 View all
                             </Link>
                         </div>
-                        <div className="bg-zinc-900/30 border border-zinc-800 rounded-xl divide-y divide-zinc-800">
+                        <div className="bg-[#0a0a0c] border border-white/5 rounded-2xl divide-y divide-white/5 overflow-hidden">
                             {data.pendingProposals.map((proposal) => (
                                 <div
                                     key={proposal.id}
-                                    className="p-4 flex items-center justify-between hover:bg-zinc-900/50 transition-colors"
+                                    className="p-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors group"
                                 >
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-4">
                                         <div className={cn(
-                                            "w-2 h-2 rounded-full",
-                                            proposal.status === "viewed" ? "bg-green-500" : "bg-zinc-500"
+                                            "w-2.5 h-2.5 rounded-full ring-4 ring-black",
+                                            proposal.status === "viewed" ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" : "bg-zinc-600"
                                         )} />
                                         <div>
-                                            <h4 className="text-sm font-medium text-white">{proposal.jobTitle}</h4>
-                                            <span className="text-xs text-zinc-500">{proposal.client}</span>
+                                            <h4 className="text-sm font-semibold text-white group-hover:text-indigo-400 transition-colors">{proposal.jobTitle}</h4>
+                                            <span className="text-xs text-zinc-500 font-medium">{proposal.client}</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="text-right">
-                                            <div className="text-sm font-medium text-white">◎ {proposal.amount}</div>
-                                            <div className="flex items-center gap-1 text-xs">
-                                                {proposal.status === "viewed" ? (
-                                                    <span className="text-green-400 flex items-center gap-1">
-                                                        <Eye className="w-3 h-3" /> Viewed
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-zinc-500">{proposal.daysAgo}d ago</span>
-                                                )}
-                                            </div>
+                                    <div className="text-right">
+                                        <div className="text-sm font-bold text-white mb-0.5">◎ {proposal.amount}</div>
+                                        <div className="flex items-center justify-end gap-1 text-xs">
+                                            {proposal.status === "viewed" ? (
+                                                <span className="text-emerald-400 flex items-center gap-1 font-medium bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                                                    <Eye className="w-3 h-3" /> Viewed
+                                                </span>
+                                            ) : (
+                                                <span className="text-zinc-500">{proposal.daysAgo}d ago</span>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -213,40 +224,49 @@ export function FreelancerDashboard() {
                 </div>
 
                 {/* Right Column - Activity & Quick Actions */}
-                <div className="space-y-6">
+                <div className="space-y-8">
                     {/* Quick Actions */}
-                    <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl">
-                        <h3 className="text-sm font-medium text-zinc-400 mb-3">Quick Actions</h3>
+                    <div className="p-6 bg-[#0a0a0c] border border-white/5 rounded-2xl animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                        <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Quick Actions</h3>
                         <div className="space-y-2">
-                            <Link to="/escrow" className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 transition-colors">
-                                <Wallet className="w-5 h-5 text-purple-400" />
-                                <span className="text-sm text-white">View Escrow Balance</span>
+                            <Link to="/escrow" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
+                                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-indigo-500 group-hover:border-indigo-500 transition-colors">
+                                    <Wallet className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-medium text-white">Escrow Balance</span>
                             </Link>
-                            <Link to="/freelancer/proposals" className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 transition-colors">
-                                <FileText className="w-5 h-5 text-blue-400" />
-                                <span className="text-sm text-white">Track Proposals</span>
+                            <Link to="/freelancer/proposals" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
+                                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-blue-500 group-hover:border-blue-500 transition-colors">
+                                    <FileText className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-medium text-white">Track Proposals</span>
                             </Link>
-                            <Link to="/messages" className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-800/50 transition-colors">
-                                <MessageSquare className="w-5 h-5 text-green-400" />
-                                <span className="text-sm text-white">Messages</span>
+                            <Link to="/messages" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
+                                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-500 transition-colors">
+                                    <MessageSquare className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-medium text-white">Messages</span>
                             </Link>
                         </div>
                     </div>
 
                     {/* Recent Activity */}
-                    <div>
-                        <h2 className="text-lg font-semibold text-white mb-4">Recent Activity</h2>
-                        <div className="bg-zinc-900/30 border border-zinc-800 rounded-xl divide-y divide-zinc-800">
+                    <div className="animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+                        <h2 className="text-xl font-heading font-semibold text-white tracking-tight mb-5">Recent Activity</h2>
+                        <div className="space-y-4">
                             {data.recentActivity.map((item, i) => (
-                                <div key={i} className="p-3 flex items-start gap-3 hover:bg-zinc-900/50 transition-colors">
-                                    <div className={`mt-0.5 ${item.color}`}>
-                                        <item.icon className="w-4 h-4" />
+                                <div key={i} className="relative pl-6 pb-4 border-l border-white/10 last:pb-0 last:border-0">
+                                    <div className={cn(
+                                        "absolute left-[-1.3rem] w-10 h-10 rounded-full border-4 border-[#020204] flex items-center justify-center",
+                                        item.bg
+                                    )}>
+                                        <item.icon className={cn("w-4 h-4", item.color)} />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-sm font-medium text-white">{item.title}</h4>
-                                        <p className="text-xs text-zinc-400 mt-0.5 truncate">{item.desc}</p>
+                                    <div className="mb-0.5">
+                                        <h4 className="text-sm font-bold text-white leading-none">{item.title}</h4>
+                                        <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider ml-auto block mt-1">{item.time}</span>
                                     </div>
-                                    <span className="text-xs text-zinc-500 whitespace-nowrap">{item.time}</span>
+                                    <p className="text-xs text-zinc-400 leading-relaxed">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -266,7 +286,8 @@ function StatCard({
     value,
     trend,
     trendUp,
-    subtext
+    subtext,
+    delay = 0
 }: {
     icon: any
     iconBg: string
@@ -276,28 +297,27 @@ function StatCard({
     trend?: string
     trendUp?: boolean
     subtext?: string
+    delay?: number
 }) {
     return (
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
-            <div className="flex items-center gap-3 mb-3">
-                <div className={cn("w-9 h-9 rounded-full flex items-center justify-center", iconBg)}>
-                    <Icon className={cn("w-4 h-4", iconColor)} />
+        <div
+            className="group relative bg-[#0a0a0c] border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-in-up"
+            style={{ animationDelay: `${delay}s` }}
+        >
+            <div className="flex items-center gap-3 mb-4">
+                <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110", iconBg)}>
+                    <Icon className={cn("w-5 h-5", iconColor)} />
                 </div>
-                <span className="text-xs text-zinc-400 font-medium">{label}</span>
+                <span className="text-sm text-zinc-400 font-medium uppercase tracking-wide">{label}</span>
             </div>
-            <div className="text-2xl font-bold text-white">{value}</div>
-            {trend && (
-                <div className={cn(
-                    "flex items-center gap-1 mt-1 text-xs",
-                    trendUp ? "text-green-400" : "text-red-400"
-                )}>
-                    <TrendingUp className="w-3 h-3" />
-                    <span>{trend} this month</span>
-                </div>
-            )}
+            <div className="text-2xl font-bold text-white mb-1 group-hover:text-indigo-400 transition-colors">{value}</div>
+
             {subtext && (
-                <div className="text-xs text-zinc-500 mt-1">{subtext}</div>
+                <div className="text-xs text-zinc-500 font-medium">{subtext}</div>
             )}
+
+            {/* Hover Glow */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
         </div>
     )
 }

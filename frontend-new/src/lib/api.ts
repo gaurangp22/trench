@@ -458,7 +458,7 @@ export const ContractAPI = {
 export const login = AuthAPI.login;
 export const signup = AuthAPI.signup;
 
-export const fetchJobs = async (query?: string, filter?: string) => {
+export const fetchJobs = async (query?: string, _filter?: string) => {
     const params: JobSearchParams = {};
     if (query) params.q = query;
     const result = await JobAPI.search(params);

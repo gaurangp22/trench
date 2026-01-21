@@ -212,8 +212,6 @@ export function OnboardingChecklist({ userRole, onDismiss, className }: Onboardi
 }
 
 function StepItem({ step, index, onClick }: { step: ChecklistStep; index: number; onClick: () => void }) {
-    const Icon = step.icon
-
     const content = (
         <div
             onClick={!step.href ? onClick : undefined}

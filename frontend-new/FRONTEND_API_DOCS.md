@@ -323,6 +323,4 @@ src/
 
 ---
 
-## Contact
 
-Frontend is maintained by the frontend team. For questions about API integration, check `src/lib/api.ts` which has all the type definitions and API methods.

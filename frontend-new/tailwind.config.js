@@ -14,7 +14,10 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ["Inter", "sans-serif"],
+                sans: ['Inter', 'sans-serif'],
+                heading: ['Outfit', 'sans-serif'],
+                expressive: ['Space Grotesk', 'sans-serif'],
+                editorial: ['Playfair Display', 'serif'],
             },
             colors: {
                 border: "hsl(var(--border))",
