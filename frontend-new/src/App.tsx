@@ -16,6 +16,7 @@ import { ClientDashboard } from "@/pages/client/Dashboard"
 import { FreelancerDashboard } from "@/pages/freelancer/Dashboard"
 import { MyProposals } from "@/pages/freelancer/MyProposals"
 import { ActiveContracts } from "@/pages/freelancer/ActiveContracts"
+import { FreelancerProfile } from "@/pages/FreelancerProfile"
 
 function App() {
   console.log("App.tsx: Rendering...");
@@ -28,6 +29,7 @@ function App() {
             <Route path="/jobs" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
             <Route path="/jobs/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
             <Route path="/talent" element={<><Navbar /><main><Talent /></main><Footer /></>} />
+            <Route path="/talent/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
             <Route path="/how-it-works" element={<><Navbar /><main><HowItWorks /></main><Footer /></>} />
             <Route path="/escrow" element={<><Navbar /><main><Escrow /></main><Footer /></>} />
             <Route path="/messages" element={<><Navbar /><main><Messages /></main><Footer /></>} />

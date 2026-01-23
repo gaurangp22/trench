@@ -418,3 +418,226 @@ func (h *ProfileHandler) DeletePortfolioItem(w http.ResponseWriter, r *http.Requ
 		"message": "portfolio item deleted",
 	})
 }
+
+// ============================================
+// Social Links Handlers
+// ============================================
+
+// GetSocials handles GET /api/v1/profile/socials
+func (h *ProfileHandler) GetSocials(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	socials, err := h.profileService.GetSocials(r.Context(), claims.UserID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to get socials")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"socials": socials,
+	})
+}
+
+// SetSocials handles PUT /api/v1/profile/socials
+func (h *ProfileHandler) SetSocials(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	var req service.SetSocialsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	if err := h.profileService.SetSocials(r.Context(), claims.UserID, &req); err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to update socials")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "socials updated successfully",
+	})
+}
+
+// ============================================
+// Token Work Handlers
+// ============================================
+
+// GetTokenWork handles GET /api/v1/profile/token-work
+func (h *ProfileHandler) GetTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	items, err := h.profileService.GetTokenWork(r.Context(), claims.UserID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to get token work")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"token_work": items,
+	})
+}
+
+// CreateTokenWork handles POST /api/v1/profile/token-work
+func (h *ProfileHandler) CreateTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	var input struct {
+		ContractAddress string  `json:"contract_address"`
+		Chain           string  `json:"chain"`
+		TokenName       *string `json:"token_name"`
+		TokenSymbol     *string `json:"token_symbol"`
+		TokenImageURL   *string `json:"token_image_url"`
+		ATHMarketCap    *string `json:"ath_market_cap"`
+		SortOrder       int     `json:"sort_order"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	if input.ContractAddress == "" {
+		writeError(w, http.StatusBadRequest, "contract_address is required")
+		return
+	}
+
+	if input.Chain == "" {
+		input.Chain = "solana"
+	}
+
+	item := &domain.TokenWorkItem{
+		ContractAddress: input.ContractAddress,
+		Chain:           input.Chain,
+		TokenName:       input.TokenName,
+		TokenSymbol:     input.TokenSymbol,
+		TokenImageURL:   input.TokenImageURL,
+		SortOrder:       input.SortOrder,
+	}
+
+	if err := h.profileService.AddTokenWork(r.Context(), claims.UserID, item); err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to create token work item")
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, map[string]interface{}{
+		"message": "token work item created",
+		"item":    item,
+	})
+}
+
+// UpdateTokenWork handles PUT /api/v1/profile/token-work/:id
+func (h *ProfileHandler) UpdateTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	// Extract item ID from URL
+	path := r.URL.Path
+	parts := strings.Split(path, "/")
+	if len(parts) < 5 {
+		writeError(w, http.StatusBadRequest, "invalid item ID")
+		return
+	}
+
+	itemID, err := uuid.Parse(parts[len(parts)-1])
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid item ID format")
+		return
+	}
+
+	var input struct {
+		TokenName     *string `json:"token_name"`
+		TokenSymbol   *string `json:"token_symbol"`
+		TokenImageURL *string `json:"token_image_url"`
+		ATHMarketCap  *string `json:"ath_market_cap"`
+		SortOrder     int     `json:"sort_order"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	item := &domain.TokenWorkItem{
+		ID:            itemID,
+		TokenName:     input.TokenName,
+		TokenSymbol:   input.TokenSymbol,
+		TokenImageURL: input.TokenImageURL,
+		SortOrder:     input.SortOrder,
+	}
+
+	if err := h.profileService.UpdateTokenWork(r.Context(), claims.UserID, item); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			writeError(w, http.StatusNotFound, "token work item not found")
+			return
+		}
+		if errors.Is(err, apperrors.ErrForbidden) {
+			writeError(w, http.StatusForbidden, "not authorized to update this item")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to update token work item")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "token work item updated",
+	})
+}
+
+// DeleteTokenWork handles DELETE /api/v1/profile/token-work/:id
+func (h *ProfileHandler) DeleteTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	// Extract item ID from URL
+	path := r.URL.Path
+	parts := strings.Split(path, "/")
+	if len(parts) < 5 {
+		writeError(w, http.StatusBadRequest, "invalid item ID")
+		return
+	}
+
+	itemID, err := uuid.Parse(parts[len(parts)-1])
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid item ID format")
+		return
+	}
+
+	if err := h.profileService.DeleteTokenWork(r.Context(), claims.UserID, itemID); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			writeError(w, http.StatusNotFound, "token work item not found")
+			return
+		}
+		if errors.Is(err, apperrors.ErrForbidden) {
+			writeError(w, http.StatusForbidden, "not authorized to delete this item")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to delete token work item")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "token work item deleted",
+	})
+}

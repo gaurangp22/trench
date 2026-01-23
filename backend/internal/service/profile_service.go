@@ -12,10 +12,12 @@ import (
 )
 
 type ProfileService struct {
-	profileRepo   repository.ProfileRepository
-	skillRepo     repository.SkillRepository
-	portfolioRepo repository.PortfolioRepository
-	userRepo      repository.UserRepository
+	profileRepo     repository.ProfileRepository
+	skillRepo       repository.SkillRepository
+	portfolioRepo   repository.PortfolioRepository
+	userRepo        repository.UserRepository
+	socialRepo      repository.SocialRepository
+	tokenWorkRepo   repository.TokenWorkRepository
 }
 
 func NewProfileService(
@@ -23,21 +25,27 @@ func NewProfileService(
 	skillRepo repository.SkillRepository,
 	portfolioRepo repository.PortfolioRepository,
 	userRepo repository.UserRepository,
+	socialRepo repository.SocialRepository,
+	tokenWorkRepo repository.TokenWorkRepository,
 ) *ProfileService {
 	return &ProfileService{
-		profileRepo:   profileRepo,
-		skillRepo:     skillRepo,
-		portfolioRepo: portfolioRepo,
-		userRepo:      userRepo,
+		profileRepo:     profileRepo,
+		skillRepo:       skillRepo,
+		portfolioRepo:   portfolioRepo,
+		userRepo:        userRepo,
+		socialRepo:      socialRepo,
+		tokenWorkRepo:   tokenWorkRepo,
 	}
 }
 
 // ProfileResponse combines profile with related data
 type ProfileResponse struct {
-	Profile   *domain.Profile        `json:"profile"`
-	User      *ProfileUserInfo       `json:"user"`
-	Skills    []ProfileSkillInfo     `json:"skills"`
-	Portfolio []domain.PortfolioItem `json:"portfolio"`
+	Profile   *domain.Profile         `json:"profile"`
+	User      *ProfileUserInfo        `json:"user"`
+	Skills    []ProfileSkillInfo      `json:"skills"`
+	Portfolio []domain.PortfolioItem  `json:"portfolio"`
+	Socials   []domain.ProfileSocial  `json:"socials"`
+	TokenWork []domain.TokenWorkItem  `json:"token_work"`
 }
 
 type ProfileUserInfo struct {
@@ -91,6 +99,20 @@ func (s *ProfileService) buildProfileResponse(ctx context.Context, profile *doma
 		return nil, err
 	}
 
+	// Fetch socials
+	socials, err := s.socialRepo.GetByProfileID(ctx, profile.ID)
+	if err != nil {
+		// Non-fatal, just use empty slice
+		socials = []domain.ProfileSocial{}
+	}
+
+	// Fetch token work
+	tokenWork, err := s.tokenWorkRepo.GetByProfileID(ctx, profile.ID)
+	if err != nil {
+		// Non-fatal, just use empty slice
+		tokenWork = []domain.TokenWorkItem{}
+	}
+
 	// Build skill info with names
 	skillInfos := make([]ProfileSkillInfo, 0, len(skills))
 	for _, ps := range skills {
@@ -117,6 +139,8 @@ func (s *ProfileService) buildProfileResponse(ctx context.Context, profile *doma
 		},
 		Skills:    skillInfos,
 		Portfolio: portfolio,
+		Socials:   socials,
+		TokenWork: tokenWork,
 	}, nil
 }
 
@@ -388,4 +412,121 @@ func (s *ProfileService) GetSkillsByCategory(ctx context.Context, category strin
 // SearchSkills searches for skills by name
 func (s *ProfileService) SearchSkills(ctx context.Context, query string) ([]domain.Skill, error) {
 	return s.skillRepo.Search(ctx, query)
+}
+
+// ============================================
+// Social Links Management
+// ============================================
+
+// SetSocialsRequest represents a request to set profile socials
+type SetSocialsRequest struct {
+	Socials []SocialInput `json:"socials"`
+}
+
+type SocialInput struct {
+	Platform string `json:"platform"` // website, twitter, telegram, discord
+	URL      string `json:"url"`
+}
+
+// GetSocials returns social links for a user's profile
+func (s *ProfileService) GetSocials(ctx context.Context, userID uuid.UUID) ([]domain.ProfileSocial, error) {
+	profile, err := s.profileRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return s.socialRepo.GetByProfileID(ctx, profile.ID)
+}
+
+// SetSocials replaces all social links for a profile
+func (s *ProfileService) SetSocials(ctx context.Context, userID uuid.UUID, req *SetSocialsRequest) error {
+	profile, err := s.profileRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	// Delete existing socials
+	if err := s.socialRepo.DeleteAllByProfileID(ctx, profile.ID); err != nil {
+		return err
+	}
+
+	// Add new socials
+	for _, input := range req.Socials {
+		if input.URL == "" {
+			continue
+		}
+		social := &domain.ProfileSocial{
+			ProfileID: profile.ID,
+			Platform:  input.Platform,
+			URL:       input.URL,
+		}
+		if err := s.socialRepo.Upsert(ctx, social); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ============================================
+// Token Work Management
+// ============================================
+
+// GetTokenWork returns token work items for a user's profile
+func (s *ProfileService) GetTokenWork(ctx context.Context, userID uuid.UUID) ([]domain.TokenWorkItem, error) {
+	profile, err := s.profileRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return s.tokenWorkRepo.GetByProfileID(ctx, profile.ID)
+}
+
+// AddTokenWork adds a new token work item
+func (s *ProfileService) AddTokenWork(ctx context.Context, userID uuid.UUID, item *domain.TokenWorkItem) error {
+	profile, err := s.profileRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	item.ProfileID = profile.ID
+	return s.tokenWorkRepo.Create(ctx, item)
+}
+
+// UpdateTokenWork updates a token work item
+func (s *ProfileService) UpdateTokenWork(ctx context.Context, userID uuid.UUID, item *domain.TokenWorkItem) error {
+	profile, err := s.profileRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	// Verify ownership
+	existing, err := s.tokenWorkRepo.GetByID(ctx, item.ID)
+	if err != nil {
+		return err
+	}
+
+	if existing.ProfileID != profile.ID {
+		return apperrors.ErrForbidden
+	}
+
+	return s.tokenWorkRepo.Update(ctx, item)
+}
+
+// DeleteTokenWork deletes a token work item
+func (s *ProfileService) DeleteTokenWork(ctx context.Context, userID uuid.UUID, itemID uuid.UUID) error {
+	profile, err := s.profileRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	// Verify ownership
+	existing, err := s.tokenWorkRepo.GetByID(ctx, itemID)
+	if err != nil {
+		return err
+	}
+
+	if existing.ProfileID != profile.ID {
+		return apperrors.ErrForbidden
+	}
+
+	return s.tokenWorkRepo.Delete(ctx, itemID)
 }

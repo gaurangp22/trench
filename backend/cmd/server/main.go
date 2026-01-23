@@ -44,6 +44,8 @@ func main() {
 	profileRepo := postgres.NewProfileRepository(db.Pool)
 	skillRepo := postgres.NewSkillRepository(db.Pool)
 	portfolioRepo := postgres.NewPortfolioRepository(db.Pool)
+	socialRepo := postgres.NewSocialRepository(db.Pool)
+	tokenWorkRepo := postgres.NewTokenWorkRepository(db.Pool)
 	jobRepo := postgres.NewJobRepository(db.Pool)
 	proposalRepo := postgres.NewProposalRepository(db.Pool)
 	contractRepo := postgres.NewContractRepository(db.Pool)
@@ -55,7 +57,7 @@ func main() {
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, walletRepo, sessionRepo, jwtManager)
-	profileService := service.NewProfileService(profileRepo, skillRepo, portfolioRepo, userRepo)
+	profileService := service.NewProfileService(profileRepo, skillRepo, portfolioRepo, userRepo, socialRepo, tokenWorkRepo)
 	jobService := service.NewJobService(jobRepo, proposalRepo, userRepo)
 	contractService := service.NewContractService(
 		contractRepo, milestoneRepo, escrowRepo, paymentRepo,
@@ -113,6 +115,16 @@ func main() {
 	mux.Handle("POST /api/v1/profile/portfolio", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.CreatePortfolioItem)))
 	mux.Handle("PUT /api/v1/profile/portfolio/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdatePortfolioItem)))
 	mux.Handle("DELETE /api/v1/profile/portfolio/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.DeletePortfolioItem)))
+
+	// Profile socials routes (protected)
+	mux.Handle("GET /api/v1/profile/socials", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.GetSocials)))
+	mux.Handle("PUT /api/v1/profile/socials", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.SetSocials)))
+
+	// Profile token work routes (protected)
+	mux.Handle("GET /api/v1/profile/token-work", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.GetTokenWork)))
+	mux.Handle("POST /api/v1/profile/token-work", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.CreateTokenWork)))
+	mux.Handle("PUT /api/v1/profile/token-work/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdateTokenWork)))
+	mux.Handle("DELETE /api/v1/profile/token-work/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.DeleteTokenWork)))
 
 	// Job routes (public)
 	mux.HandleFunc("GET /api/v1/jobs", jobHandler.SearchJobs)

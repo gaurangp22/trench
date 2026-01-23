@@ -8,6 +8,7 @@ export function Auth() {
     const [isLogin, setIsLogin] = useState(true)
     const [role, setRole] = useState<'client' | 'freelancer'>('client')
     const [email, setEmail] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -23,11 +24,11 @@ export function Auth() {
             if (isLogin) {
                 await login(email, password)
             } else {
-                await signup(email, password, role)
+                await signup(email, password, username, role)
             }
             // On success, redirect to dashboard or home
             // In a real app, you'd store the token in context/local storage here
-            navigate(role === 'client' ? '/post-job' : '/jobs') // Redirect specific to role
+            navigate(role === 'client' ? '/client/dashboard' : '/freelancer/dashboard') // Redirect to dashboard
         } catch (err: any) {
             console.error("Auth error:", err)
             setError(err.response?.data?.message || err.message || "Authentication failed")
@@ -77,8 +78,8 @@ export function Auth() {
                                 type="button"
                                 onClick={() => setRole('client')}
                                 className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${role === 'client'
-                                        ? 'bg-purple-500/10 border-purple-500/50 text-white'
-                                        : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
+                                    ? 'bg-purple-500/10 border-purple-500/50 text-white'
+                                    : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
                                     }`}
                             >
                                 <User className={`w-6 h-6 mb-2 ${role === 'client' ? 'text-purple-400' : 'text-zinc-500'}`} />
@@ -88,8 +89,8 @@ export function Auth() {
                                 type="button"
                                 onClick={() => setRole('freelancer')}
                                 className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${role === 'freelancer'
-                                        ? 'bg-purple-500/10 border-purple-500/50 text-white'
-                                        : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
+                                    ? 'bg-purple-500/10 border-purple-500/50 text-white'
+                                    : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700'
                                     }`}
                             >
                                 <Briefcase className={`w-6 h-6 mb-2 ${role === 'freelancer' ? 'text-purple-400' : 'text-zinc-500'}`} />
@@ -99,6 +100,25 @@ export function Auth() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {!isLogin && (
+                            <div>
+                                <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">Username</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <User className="h-5 w-5 text-zinc-500" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        className="w-full h-11 pl-10 pr-4 bg-zinc-950 border border-zinc-800 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500/50 transition-all"
+                                        placeholder="cooldev123"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         <div>
                             <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">Email</label>
                             <div className="relative">

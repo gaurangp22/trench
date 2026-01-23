@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams, Link } from "react-router-dom"
 import { Search, MapPin, DollarSign, Star, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { fetchTalent, type ProfileResponse } from "@/lib/api"
@@ -256,13 +256,15 @@ export function Talent() {
                                             </span>
                                         ))}
                                         {profile.skills.length > 4 && (
-                                            <span className="px-2.5 py-1 text-zinc-500 text-xs text-xs">+{profile.skills.length - 4}</span>
+                                            <span className="px-2.5 py-1 text-zinc-500 text-xs">+{profile.skills.length - 4}</span>
                                         )}
                                     </div>
 
-                                    <Button className="w-full bg-white text-black hover:bg-zinc-200">
-                                        View Profile
-                                    </Button>
+                                    <Link to={`/talent/${profile.id}`}>
+                                        <Button className="w-full bg-white text-black hover:bg-zinc-200">
+                                            View Profile
+                                        </Button>
+                                    </Link>
                                 </div>
                             ))}
                         </div>

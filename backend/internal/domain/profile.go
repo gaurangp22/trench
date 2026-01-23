@@ -81,6 +81,38 @@ type ProfileLanguage struct {
 	Proficiency string    `json:"proficiency" db:"proficiency"`
 }
 
+// ProfileSocial represents a social media link for a freelancer profile
+type ProfileSocial struct {
+	ID        uuid.UUID `json:"id" db:"id"`
+	ProfileID uuid.UUID `json:"profile_id" db:"profile_id"`
+	Platform  string    `json:"platform" db:"platform"` // website, twitter, telegram, discord
+	URL       string    `json:"url" db:"url"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// TokenWorkItem represents a token/coin that the freelancer worked on
+type TokenWorkItem struct {
+	ID              uuid.UUID        `json:"id" db:"id"`
+	ProfileID       uuid.UUID        `json:"profile_id" db:"profile_id"`
+	ContractAddress string           `json:"contract_address" db:"contract_address"`
+	Chain           string           `json:"chain" db:"chain"` // solana, ethereum, etc.
+	TokenName       *string          `json:"token_name" db:"token_name"`
+	TokenSymbol     *string          `json:"token_symbol" db:"token_symbol"`
+	TokenImageURL   *string          `json:"token_image_url" db:"token_image_url"`
+	ATHMarketCap    *decimal.Decimal `json:"ath_market_cap" db:"ath_market_cap"`
+	LastFetchedAt   *time.Time       `json:"last_fetched_at" db:"last_fetched_at"`
+	SortOrder       int              `json:"sort_order" db:"sort_order"`
+	CreatedAt       time.Time        `json:"created_at" db:"created_at"`
+}
+
+// Social platform constants
+const (
+	SocialPlatformWebsite  = "website"
+	SocialPlatformTwitter  = "twitter"
+	SocialPlatformTelegram = "telegram"
+	SocialPlatformDiscord  = "discord"
+)
+
 // Availability status constants
 const (
 	AvailabilityAvailable    = "available"

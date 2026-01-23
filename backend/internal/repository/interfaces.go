@@ -63,6 +63,24 @@ type PortfolioRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
+// SocialRepository defines social links data access methods
+type SocialRepository interface {
+	GetByProfileID(ctx context.Context, profileID uuid.UUID) ([]domain.ProfileSocial, error)
+	Upsert(ctx context.Context, social *domain.ProfileSocial) error
+	Delete(ctx context.Context, profileID uuid.UUID, platform string) error
+	DeleteAllByProfileID(ctx context.Context, profileID uuid.UUID) error
+}
+
+// TokenWorkRepository defines token work items data access methods
+type TokenWorkRepository interface {
+	Create(ctx context.Context, item *domain.TokenWorkItem) error
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.TokenWorkItem, error)
+	GetByProfileID(ctx context.Context, profileID uuid.UUID) ([]domain.TokenWorkItem, error)
+	Update(ctx context.Context, item *domain.TokenWorkItem) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+
 // SkillRepository defines skill data access methods
 type SkillRepository interface {
 	GetAll(ctx context.Context) ([]domain.Skill, error)

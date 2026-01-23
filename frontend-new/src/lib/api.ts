@@ -91,6 +91,13 @@ export interface ProfileResponse {
     profile: Profile;
     skills?: { id: string; name: string }[];
     portfolio?: PortfolioItem[];
+    socials?: ProfileSocial[];
+    token_work?: TokenWorkItem[];
+    user?: {
+        id: string;
+        username: string;
+        wallet_address?: string;
+    };
     stats?: {
         total_earnings?: number;
         jobs_completed?: number;
@@ -105,6 +112,26 @@ export interface PortfolioItem {
     description: string;
     url?: string;
     image_url?: string;
+    created_at: string;
+}
+
+export interface ProfileSocial {
+    id?: string;
+    platform: 'website' | 'twitter' | 'telegram' | 'discord';
+    url: string;
+    created_at?: string;
+}
+
+export interface TokenWorkItem {
+    id: string;
+    contract_address: string;
+    chain: string;
+    token_name?: string;
+    token_symbol?: string;
+    token_image_url?: string;
+    ath_market_cap?: number;
+    last_fetched_at?: string;
+    sort_order: number;
     created_at: string;
 }
 
@@ -178,8 +205,14 @@ export const AuthAPI = {
         return res.data;
     },
 
-    signup: async (email: string, password: string, role: 'client' | 'freelancer') => {
-        const res = await api.post('/auth/signup', { email, password, role });
+    signup: async (email: string, password: string, username: string, role: 'client' | 'freelancer') => {
+        const res = await api.post('/auth/signup', {
+            email,
+            password,
+            username,
+            is_client: role === 'client',
+            is_freelancer: role === 'freelancer'
+        });
         if (res.data.token) {
             localStorage.setItem('token', res.data.token);
         }
@@ -388,6 +421,43 @@ export const ProfileAPI = {
     deletePortfolioItem: async (id: string) => {
         const res = await api.delete(`/profile/portfolio/${id}`);
         return res.data;
+    },
+
+    // Socials
+    getSocials: async (): Promise<{ socials: ProfileSocial[] }> => {
+        const res = await api.get('/profile/socials');
+        return res.data;
+    },
+
+    setSocials: async (socials: Omit<ProfileSocial, 'id' | 'created_at'>[]): Promise<void> => {
+        await api.put('/profile/socials', { socials });
+    },
+
+    // Token Work
+    getTokenWork: async (): Promise<{ token_work: TokenWorkItem[] }> => {
+        const res = await api.get('/profile/token-work');
+        return res.data;
+    },
+
+    addTokenWork: async (data: {
+        contract_address: string;
+        chain?: string;
+        token_name?: string;
+        token_symbol?: string;
+        token_image_url?: string;
+        ath_market_cap?: number;
+        sort_order?: number;
+    }): Promise<{ item: TokenWorkItem }> => {
+        const res = await api.post('/profile/token-work', data);
+        return res.data;
+    },
+
+    updateTokenWork: async (id: string, data: Partial<TokenWorkItem>): Promise<void> => {
+        await api.put(`/profile/token-work/${id}`, data);
+    },
+
+    deleteTokenWork: async (id: string): Promise<void> => {
+        await api.delete(`/profile/token-work/${id}`);
     }
 };
 
