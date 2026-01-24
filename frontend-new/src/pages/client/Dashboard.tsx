@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
     DollarSign, Briefcase, Users, Clock, CheckCircle2,
     Shield, Eye, MessageSquare, Wallet, Plus, AlertCircle, ArrowUpRight
@@ -8,45 +8,50 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Meteors } from "@/components/ui/meteors"
 
-// Mock data - in production, fetch from API
+// Mock data - realistic Web3 freelance platform data
 const CLIENT_DATA = {
-    name: "Sarah",
-    company: "DeFi Protocol X",
-    avatarInitial: "S",
-    memberSince: "Nov 2023",
+    name: "Marcus",
+    company: "Solana Ventures",
+    avatarInitial: "M",
+    memberSince: "Aug 2024",
     stats: {
-        totalSpent: 4250,
-        escrowFunded: 520,
-        activeJobs: 4,
-        pendingApprovals: 2,
-        totalHires: 18,
-        openProposals: 32,
+        totalSpent: 12850,
+        escrowFunded: 2340,
+        activeJobs: 5,
+        pendingApprovals: 3,
+        totalHires: 47,
+        openProposals: 89,
     },
     pendingApprovals: [
-        { id: 1, jobTitle: "Solana API Integration", freelancer: "Alex D.", amount: 50, milestone: "API Testing Phase", submittedAgo: "2 hours" },
-        { id: 2, jobTitle: "Smart Contract Audit", freelancer: "Maya R.", amount: 75, milestone: "Initial Review", submittedAgo: "1 day" },
+        { id: 101, jobTitle: "Jupiter DEX Integration for Portfolio Tracker", freelancer: "CryptoDevAlex", amount: 180, milestone: "Swap Functionality Complete", submittedAgo: "3 hours" },
+        { id: 102, jobTitle: "Anchor Program - Staking Rewards Calculator", freelancer: "RustMaster_Sol", amount: 250, milestone: "Contract Deployed to Devnet", submittedAgo: "8 hours" },
+        { id: 103, jobTitle: "NFT Collection Landing Page", freelancer: "WebFlowPro", amount: 85, milestone: "Responsive Design + Animations", submittedAgo: "1 day" },
     ],
     activeJobs: [
-        { id: 1, title: "Solana API Integration", freelancer: "Alex D.", progress: 65, escrowAmount: 150, status: "in_progress" },
-        { id: 2, title: "Frontend UI for NFT Marketplace", freelancer: "Jordan K.", progress: 45, escrowAmount: 85, status: "in_progress" },
-        { id: 3, title: "Smart Contract Audit", freelancer: "Maya R.", progress: 25, escrowAmount: 120, status: "awaiting_review" },
-        { id: 4, title: "Token Economics Design", freelancer: null, proposalCount: 12, status: "hiring" },
+        { id: 101, title: "Jupiter DEX Integration for Portfolio Tracker", freelancer: "CryptoDevAlex", progress: 75, escrowAmount: 450, status: "in_progress" },
+        { id: 102, title: "Anchor Program - Staking Rewards Calculator", freelancer: "RustMaster_Sol", progress: 60, escrowAmount: 800, status: "awaiting_review" },
+        { id: 103, title: "NFT Collection Landing Page", freelancer: "WebFlowPro", progress: 90, escrowAmount: 180, status: "awaiting_review" },
+        { id: 104, title: "Telegram Trading Bot with Birdeye API", freelancer: "BotBuilder99", progress: 35, escrowAmount: 520, status: "in_progress" },
+        { id: 105, title: "Tokenomics Whitepaper & Economic Model", freelancer: null, proposalCount: 23, status: "hiring" },
     ],
     recentActivity: [
-        { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10", title: "Milestone Submitted", desc: "Alex D. submitted 'API Testing Phase' for review", time: "2 hours ago" },
-        { icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", title: "New Proposal", desc: "5 new proposals received for 'Token Economics Design'", time: "4 hours ago" },
-        { icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", title: "Payment Released", desc: "50 SOL released to Jordan K. for UI milestone", time: "1 day ago" },
-        { icon: MessageSquare, color: "text-purple-400", bg: "bg-purple-500/10", title: "New Message", desc: "Maya R. has a question about audit scope", time: "1 day ago" },
+        { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10", title: "Milestone Approved", desc: "Released 180 SOL to CryptoDevAlex for swap integration", time: "1 hour ago" },
+        { icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", title: "New Proposals", desc: "8 new proposals for 'Tokenomics Whitepaper' - 3 highly rated", time: "3 hours ago" },
+        { icon: Shield, color: "text-emerald-400", bg: "bg-emerald-500/10", title: "Escrow Funded", desc: "520 SOL deposited for Telegram Bot contract", time: "6 hours ago" },
+        { icon: Clock, color: "text-amber-400", bg: "bg-amber-500/10", title: "Deadline Approaching", desc: "NFT Landing Page milestone due in 2 days", time: "12 hours ago" },
+        { icon: MessageSquare, color: "text-purple-400", bg: "bg-purple-500/10", title: "New Message", desc: "RustMaster_Sol: 'Contract tests passing, ready for review'", time: "1 day ago" },
     ],
     spendingByMonth: [
-        { month: "Oct", amount: 320 },
-        { month: "Nov", amount: 580 },
-        { month: "Dec", amount: 890 },
-        { month: "Jan", amount: 520 },
+        { month: "Sep", amount: 1850 },
+        { month: "Oct", amount: 2940 },
+        { month: "Nov", amount: 3560 },
+        { month: "Dec", amount: 2890 },
+        { month: "Jan", amount: 1610 },
     ]
 }
 
 export function ClientDashboard() {
+    const navigate = useNavigate()
     const data = CLIENT_DATA
 
     return (
@@ -147,7 +152,11 @@ export function ClientDashboard() {
                                             </div>
                                             <div className="flex items-center gap-4">
                                                 <span className="text-sm font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">◎ {approval.amount}</span>
-                                                <Button size="sm" className="h-9 px-4 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black rounded-lg">
+                                                <Button
+                                                    size="sm"
+                                                    className="h-9 px-4 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black rounded-lg"
+                                                    onClick={() => navigate(`/client/contracts/${approval.id}`)}
+                                                >
                                                     Review & Approve
                                                 </Button>
                                             </div>
@@ -227,15 +236,29 @@ export function ClientDashboard() {
 
                                     <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/5">
                                         {job.status === "awaiting_review" ? (
-                                            <Button size="sm" className="h-8 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black">
+                                            <Button
+                                                size="sm"
+                                                className="h-8 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-black"
+                                                onClick={() => navigate(`/client/contracts/${job.id}`)}
+                                            >
                                                 Review Work
                                             </Button>
                                         ) : job.status === "hiring" ? (
-                                            <Button size="sm" variant="outline" className="h-8 text-xs border-white/10 text-zinc-300 hover:text-white hover:bg-white/5">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-8 text-xs border-white/10 text-zinc-300 hover:text-white hover:bg-white/5"
+                                                onClick={() => navigate(`/client/jobs/${job.id}/proposals`)}
+                                            >
                                                 <Eye className="w-3 h-3 mr-1.5" /> View Proposals
                                             </Button>
                                         ) : (
-                                            <Button size="sm" variant="ghost" className="h-8 text-xs text-zinc-400 hover:text-white hover:bg-white/5">
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-8 text-xs text-zinc-400 hover:text-white hover:bg-white/5"
+                                                onClick={() => navigate(`/client/contracts/${job.id}`)}
+                                            >
                                                 View Details <ArrowUpRight className="w-3 h-3 ml-1" />
                                             </Button>
                                         )}
@@ -294,6 +317,12 @@ export function ClientDashboard() {
                                     <Briefcase className="w-4 h-4 text-zinc-400 group-hover:text-white" />
                                 </div>
                                 <span className="text-sm font-medium text-white">Manage Jobs</span>
+                            </Link>
+                            <Link to="/client/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
+                                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-purple-500 group-hover:border-purple-500 transition-colors">
+                                    <CheckCircle2 className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-medium text-white">Active Contracts</span>
                             </Link>
                             <Link to="/messages" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
                                 <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-500 transition-colors">

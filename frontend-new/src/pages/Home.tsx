@@ -4,6 +4,7 @@ import { PremiumCategories } from "@/components/ui/premium-categories"
 import { PremiumFeatures } from "@/components/ui/premium-features"
 import { PremiumBenefits } from "@/components/ui/premium-benefits"
 import { PremiumCTA } from "@/components/ui/premium-cta"
+import { Testimonials } from "@/components/ui/testimonials"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -80,7 +81,10 @@ export function Home() {
             {/* 5. Benefits Cards */}
             <PremiumBenefits />
 
-            {/* 6. Final Call To Action */}
+            {/* 6. Testimonials */}
+            <Testimonials />
+
+            {/* 7. Final Call To Action */}
             <PremiumCTA />
         </div>
     )

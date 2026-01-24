@@ -54,6 +54,8 @@ func main() {
 	paymentRepo := postgres.NewPaymentRepository(db.Pool)
 	reviewRepo := postgres.NewReviewRepository(db.Pool)
 	notificationRepo := postgres.NewNotificationRepository(db.Pool)
+	conversationRepo := postgres.NewConversationRepository(db.Pool)
+	messageRepo := postgres.NewMessageRepository(db.Pool)
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, walletRepo, sessionRepo, jwtManager)
@@ -65,6 +67,7 @@ func main() {
 	)
 	reviewService := service.NewReviewService(reviewRepo, notificationRepo, contractRepo, userRepo)
 	notificationService := service.NewNotificationService(notificationRepo)
+	messageService := service.NewMessageService(conversationRepo, messageRepo, userRepo, contractRepo, profileRepo)
 
 	// Initialize handlers
 	authHandler := handler.NewAuthHandler(authService)
@@ -73,6 +76,7 @@ func main() {
 	contractHandler := handler.NewContractHandler(contractService)
 	reviewHandler := handler.NewReviewHandler(reviewService)
 	notificationHandler := handler.NewNotificationHandler(notificationService)
+	messageHandler := handler.NewMessageHandler(messageService)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -170,6 +174,16 @@ func main() {
 	mux.Handle("GET /api/v1/notifications/unread-count", authMiddleware.Authenticate(http.HandlerFunc(notificationHandler.GetUnreadCount)))
 	mux.Handle("POST /api/v1/notifications/{id}/read", authMiddleware.Authenticate(http.HandlerFunc(notificationHandler.MarkAsRead)))
 	mux.Handle("POST /api/v1/notifications/read-all", authMiddleware.Authenticate(http.HandlerFunc(notificationHandler.MarkAllAsRead)))
+
+	// Message routes (protected)
+	mux.Handle("GET /api/v1/conversations", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetConversations)))
+	mux.Handle("POST /api/v1/conversations", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.CreateConversation)))
+	mux.Handle("GET /api/v1/conversations/{id}", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetConversation)))
+	mux.Handle("GET /api/v1/conversations/{id}/messages", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetMessages)))
+	mux.Handle("POST /api/v1/conversations/{id}/messages", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.SendMessage)))
+	mux.Handle("POST /api/v1/conversations/{id}/read", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.MarkConversationRead)))
+	mux.Handle("GET /api/v1/messages/unread-count", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetUnreadCount)))
+	mux.Handle("GET /api/v1/contracts/{id}/conversation", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetContractConversation)))
 
 	// Apply global middleware
 	var handler http.Handler = mux

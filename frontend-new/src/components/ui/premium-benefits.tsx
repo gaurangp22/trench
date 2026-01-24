@@ -1,71 +1,100 @@
-import { ShieldCheck, Banknote, DollarSign, Globe2 } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { ShieldCheck, Lightning, GlobeHemisphereWest, SealCheck } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 const benefits = [
     {
-        icon: ShieldCheck,
+        Icon: ShieldCheck,
         title: "Trustless Escrow",
-        description: "Smart contracts hold funds until milestones are approved.",
-        gradient: "from-blue-500/20 to-cyan-500/20",
-        iconColor: "text-cyan-400",
-        meteorColor: "#22d3ee"
+        headline: "Your money, your control.",
+        description: "Funds are held in audited smart contracts—not our database. Release payment only when you're 100% satisfied with the delivered work.",
+        stats: [
+            { value: "$24M+", label: "Secured" },
+            { value: "0", label: "Disputes" }
+        ],
+        accent: "#06B6D4",
+        gradient: "from-cyan-500 to-blue-600"
     },
     {
-        icon: Banknote,
+        Icon: Lightning,
         title: "Instant Settlement",
-        description: "Get paid in seconds via Solana. No 3-5 day bank holds.",
-        gradient: "from-green-500/20 to-emerald-500/20",
-        iconColor: "text-emerald-400",
-        meteorColor: "#34d399"
+        headline: "Seconds, not business days.",
+        description: "The moment you approve work, payment hits the freelancer's wallet. No 3-5 day holds, no frozen accounts, no banking hours.",
+        stats: [
+            { value: "<1s", label: "Transfer" },
+            { value: "24/7", label: "Availability" }
+        ],
+        accent: "#F59E0B",
+        gradient: "from-amber-500 to-orange-600"
     },
     {
-        icon: Globe2,
-        title: "Global Access",
-        description: "Work with anyone, anywhere. All you need is a wallet.",
-        gradient: "from-purple-500/20 to-pink-500/20",
-        iconColor: "text-pink-400",
-        meteorColor: "#f472b6"
+        Icon: GlobeHemisphereWest,
+        title: "Borderless by Default",
+        headline: "One wallet, infinite reach.",
+        description: "Hire talent from 150+ countries without wire fees, currency conversion, or international payment headaches. Just connect and transact.",
+        stats: [
+            { value: "150+", label: "Countries" },
+            { value: "$0", label: "Wire Fees" }
+        ],
+        accent: "#8B5CF6",
+        gradient: "from-violet-500 to-purple-600"
     },
     {
-        icon: DollarSign,
-        title: "Low Fees",
-        description: "Just 5% platform fee. Save more of what you earn.",
-        gradient: "from-amber-500/20 to-orange-500/20",
-        iconColor: "text-amber-400",
-        meteorColor: "#fbbf24"
+        Icon: SealCheck,
+        title: "Verified Reputation",
+        headline: "Trust built on-chain.",
+        description: "Every completed project adds to your immutable reputation. Verified reviews, transparent history, and credentials that follow you across the ecosystem.",
+        stats: [
+            { value: "100%", label: "On-Chain" },
+            { value: "Immutable", label: "History" }
+        ],
+        accent: "#10B981",
+        gradient: "from-emerald-500 to-teal-600"
     }
 ];
 
 export function PremiumBenefits() {
     return (
-        <section className="py-24 bg-[#0a0a0c] border-y border-white/5 relative overflow-hidden">
-            {/* Background Mesh/Grid */}
-            <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03]" />
+        <section className="py-32 bg-[#020204] relative overflow-hidden">
+            {/* Subtle grid background */}
+            <div className="absolute inset-0 opacity-[0.02]" style={{
+                backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                backgroundSize: '60px 60px'
+            }} />
 
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {benefits.map((benefit, i) => (
-                        <div key={i} className="group relative p-6 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="max-w-3xl mb-24"
+                >
+                    <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
+                        Why TrenchJobs
+                    </span>
+                    <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
+                        Built for how
+                        <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400">
+                            work should work.
+                        </span>
+                    </h2>
+                    <p className="text-xl text-zinc-400 leading-relaxed">
+                        Everything traditional platforms got wrong—the fees, the delays, the trust issues—we engineered away.
+                    </p>
+                </motion.div>
 
-                            {/* Meteor Effect in Background */}
-                            <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
-                                <MeteorEffect color={benefit.meteorColor} />
-                            </div>
-
-                            <div className={cn(
-                                "w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-gradient-to-br relative z-10",
-                                benefit.gradient
-                            )}>
-                                <benefit.icon className={cn("w-6 h-6", benefit.iconColor)} />
-                            </div>
-
-                            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-white transition-colors relative z-10">
-                                {benefit.title}
-                            </h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed group-hover:text-zinc-400 transition-colors relative z-10">
-                                {benefit.description}
-                            </p>
-                        </div>
+                {/* Benefits - Alternating Layout */}
+                <div className="space-y-32">
+                    {benefits.map((benefit, index) => (
+                        <BenefitRow
+                            key={benefit.title}
+                            benefit={benefit}
+                            index={index}
+                            isReversed={index % 2 === 1}
+                        />
                     ))}
                 </div>
             </div>
@@ -73,28 +102,156 @@ export function PremiumBenefits() {
     );
 }
 
-function MeteorEffect({ number = 10, color = "#ffffff" }: { number?: number, color?: string }) {
+function BenefitRow({
+    benefit,
+    isReversed
+}: {
+    benefit: typeof benefits[0];
+    index: number;
+    isReversed: boolean;
+}) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+
     return (
-        <>
-            {[...new Array(number || 5)].map((_, idx) => (
-                <span
-                    key={idx}
-                    className={cn(
-                        "animate-meteor absolute top-1/2 left-1/2 h-0.5 w-0.5 rounded-[9999px] shadow-[0_0_0_1px_#ffffff10] rotate-[215deg]",
-                        "before:content-[''] before:absolute before:top-1/2 before:transform before:-translate-y-[50%] before:w-[50px] before:h-[1px] before:bg-gradient-to-r before:from-transparent before:to-transparent"
-                    )}
+        <div
+            ref={ref}
+            className={cn(
+                "grid lg:grid-cols-2 gap-12 lg:gap-20 items-center",
+                isReversed && "lg:grid-flow-dense"
+            )}
+        >
+            {/* Content */}
+            <motion.div
+                initial={{ opacity: 0, x: isReversed ? 50 : -50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.7 }}
+                className={isReversed ? "lg:col-start-2" : ""}
+            >
+                <div
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6"
                     style={{
-                        top: 0,
-                        left: Math.floor(Math.random() * (400 - -400) + -400) + "px",
-                        animationDelay: Math.random() * (0.8 - 0.2) + 0.2 + "s",
-                        animationDuration: Math.floor(Math.random() * (8 - 2) + 2) + "s",
-                        backgroundColor: color, // Head color
-                        // We use a CSS variable or direct style for the tail gradient if we wanted to be perfectly dynamic, 
-                        // but specifically setting the before element's gradient via style is tricky without styled-components.
-                        // Instead, we trust the base CSS `meteor` animation and just tint the head.
+                        backgroundColor: `${benefit.accent}15`,
+                        color: benefit.accent
                     }}
+                >
+                    <benefit.Icon size={14} weight="duotone" />
+                    {benefit.title}
+                </div>
+
+                <h3 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                    {benefit.headline}
+                </h3>
+
+                <p className="text-lg text-zinc-400 leading-relaxed mb-8 max-w-lg">
+                    {benefit.description}
+                </p>
+
+                {/* Stats */}
+                <div className="flex gap-12">
+                    {benefit.stats.map((stat, i) => (
+                        <div key={i}>
+                            <div
+                                className="text-4xl font-bold font-heading mb-1"
+                                style={{ color: benefit.accent }}
+                            >
+                                {stat.value}
+                            </div>
+                            <div className="text-sm text-zinc-500 font-medium">
+                                {stat.label}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </motion.div>
+
+            {/* Visual */}
+            <motion.div
+                initial={{ opacity: 0, x: isReversed ? -50 : 50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className={isReversed ? "lg:col-start-1 lg:row-start-1" : ""}
+            >
+                <BenefitVisual benefit={benefit} />
+            </motion.div>
+        </div>
+    );
+}
+
+function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
+    return (
+        <div className="relative">
+            {/* Glow */}
+            <div
+                className="absolute -inset-4 rounded-3xl blur-3xl opacity-20"
+                style={{ backgroundColor: benefit.accent }}
+            />
+
+            {/* Card */}
+            <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]">
+                {/* Gradient accent line */}
+                <div
+                    className={cn(
+                        "absolute top-0 left-0 right-0 h-1",
+                        `bg-gradient-to-r ${benefit.gradient}`
+                    )}
                 />
-            ))}
-        </>
+
+                <div className="p-8 md:p-10">
+                    {/* Large Icon */}
+                    <div
+                        className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8"
+                        style={{
+                            background: `linear-gradient(135deg, ${benefit.accent}20, ${benefit.accent}05)`,
+                            border: `1px solid ${benefit.accent}30`
+                        }}
+                    >
+                        <benefit.Icon
+                            size={40}
+                            weight="duotone"
+                            style={{ color: benefit.accent }}
+                        />
+                    </div>
+
+                    {/* Abstract visualization */}
+                    <div className="space-y-4">
+                        {/* Animated bars */}
+                        <div className="flex items-end gap-2 h-20">
+                            {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.5].map((height, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ height: 0 }}
+                                    whileInView={{ height: `${height * 100}%` }}
+                                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                                    className="flex-1 rounded-full"
+                                    style={{
+                                        backgroundColor: i % 2 === 0 ? benefit.accent : `${benefit.accent}40`
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Stat highlight */}
+                        <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
+                            <span className="text-sm text-zinc-500">
+                                {benefit.stats[0].label}
+                            </span>
+                            <span
+                                className="text-2xl font-bold font-mono"
+                                style={{ color: benefit.accent }}
+                            >
+                                {benefit.stats[0].value}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Corner decoration */}
+                <div
+                    className="absolute bottom-0 right-0 w-40 h-40 rounded-tl-full opacity-10"
+                    style={{ backgroundColor: benefit.accent }}
+                />
+            </div>
+        </div>
     );
 }

@@ -248,6 +248,25 @@ export const AuthAPI = {
 
     isAuthenticated: () => {
         return !!localStorage.getItem('token');
+    },
+
+    me: async (): Promise<{ user: User; profile: Profile } | null> => {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+        try {
+            const res = await api.get('/profile');
+            // Map profile response to user + profile
+            return {
+                user: {
+                    id: res.data.user?.id || res.data.profile?.user_id,
+                    email: res.data.user?.email || '',
+                    role: res.data.profile?.professional_title ? 'freelancer' : 'client'
+                },
+                profile: res.data.profile
+            };
+        } catch {
+            return null;
+        }
     }
 };
 
@@ -540,4 +559,161 @@ export const fetchTalent = async (query?: string) => {
     if (query) params.q = query;
     const result = await ProfileAPI.search(params);
     return { profiles: result.profiles };
+};
+
+// ============================================
+// Messages/Conversations API
+// ============================================
+
+export interface Conversation {
+    id: string;
+    participants: Participant[];
+    last_message?: Message;
+    unread_count: number;
+    context?: ConversationContext;
+    updated_at: string;
+    created_at: string;
+}
+
+export interface Participant {
+    user_id: string;
+    username: string;
+    avatar_url?: string;
+    is_online: boolean;
+}
+
+export interface ConversationContext {
+    type: 'contract' | 'job' | 'proposal';
+    id: string;
+    title: string;
+    status?: string;
+    amount_sol?: string;
+}
+
+export interface Message {
+    id: string;
+    conversation_id: string;
+    sender_id: string;
+    sender_username?: string;
+    sender_avatar?: string;
+    message_text: string;
+    message_type: 'text' | 'system' | 'milestone_update';
+    is_edited: boolean;
+    created_at: string;
+}
+
+export interface SendMessageRequest {
+    message_text: string;
+    message_type?: string;
+}
+
+export interface CreateConversationRequest {
+    participant_id: string;
+    contract_id?: string;
+    job_id?: string;
+    initial_message?: string;
+}
+
+// ============================================
+// Reviews API
+// ============================================
+
+export interface Review {
+    id: string;
+    contract_id: string;
+    reviewer_id: string;
+    reviewee_id: string;
+    overall_rating: number;
+    communication_rating?: number;
+    quality_rating?: number;
+    expertise_rating?: number;
+    professionalism_rating?: number;
+    would_recommend?: boolean;
+    review_text?: string;
+    is_public: boolean;
+    created_at: string;
+    reviewer_username?: string;
+}
+
+export interface CreateReviewRequest {
+    contract_id: string;
+    overall_rating: number;
+    communication_rating?: number;
+    quality_rating?: number;
+    expertise_rating?: number;
+    professionalism_rating?: number;
+    would_recommend?: boolean;
+    review_text?: string;
+    is_public?: boolean;
+}
+
+export const ReviewAPI = {
+    create: async (data: CreateReviewRequest): Promise<Review> => {
+        const res = await api.post('/reviews', data);
+        return res.data;
+    },
+
+    getById: async (id: string): Promise<Review> => {
+        const res = await api.get(`/reviews/${id}`);
+        return res.data;
+    },
+
+    getByContract: async (contractId: string): Promise<{ reviews: Review[] }> => {
+        const res = await api.get(`/contracts/${contractId}/reviews`);
+        return res.data;
+    },
+
+    getByUser: async (userId: string, limit = 20, offset = 0): Promise<{ reviews: Review[]; total: number }> => {
+        const res = await api.get(`/users/${userId}/reviews`, { params: { limit, offset } });
+        return res.data;
+    }
+};
+
+export const MessageAPI = {
+    // Get all conversations for current user
+    getConversations: async (limit = 20, offset = 0): Promise<{ conversations: Conversation[]; total: number }> => {
+        const res = await api.get('/conversations', { params: { limit, offset } });
+        return res.data;
+    },
+
+    // Get a single conversation
+    getConversation: async (id: string): Promise<Conversation> => {
+        const res = await api.get(`/conversations/${id}`);
+        return res.data;
+    },
+
+    // Get messages for a conversation
+    getMessages: async (conversationId: string, limit = 50, offset = 0): Promise<{ messages: Message[]; total: number }> => {
+        const res = await api.get(`/conversations/${conversationId}/messages`, { params: { limit, offset } });
+        return res.data;
+    },
+
+    // Send a message
+    sendMessage: async (conversationId: string, data: SendMessageRequest): Promise<Message> => {
+        const res = await api.post(`/conversations/${conversationId}/messages`, data);
+        return res.data;
+    },
+
+    // Create a new conversation
+    createConversation: async (data: CreateConversationRequest): Promise<Conversation> => {
+        const res = await api.post('/conversations', data);
+        return res.data;
+    },
+
+    // Get or create conversation for a contract
+    getContractConversation: async (contractId: string): Promise<Conversation> => {
+        const res = await api.get(`/contracts/${contractId}/conversation`);
+        return res.data;
+    },
+
+    // Mark conversation as read
+    markAsRead: async (conversationId: string): Promise<void> => {
+        await api.post(`/conversations/${conversationId}/read`);
+    },
+
+    // Get total unread count
+    getUnreadCount: async (): Promise<number> => {
+        const res = await api.get('/messages/unread-count');
+        return res.data.unread_count;
+    }
 };

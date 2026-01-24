@@ -1,202 +1,320 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Users, Lock, CheckCircle, User, Search, Briefcase, Coins, ArrowRight, Wallet } from "lucide-react";
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { FileText, UsersThree, LockKey, CheckCircle, UserCircle, MagnifyingGlass, Briefcase, Coins, CaretRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
-const features = {
-    client: [
-        {
-            title: "Post Your Vision",
-            description: "Describe your project requirements. Set a fixed price or hourly rate in SOL.",
-            icon: FileText,
-            color: "text-blue-400",
-            bg: "bg-blue-400/10",
-            border: "border-blue-400/20"
-        },
-        {
-            title: "Select Top Talent",
-            description: "Review proposals, portfolios, and on-chain reputation scores.",
-            icon: Users,
-            color: "text-purple-400",
-            bg: "bg-purple-400/10",
-            border: "border-purple-400/20"
-        },
-        {
-            title: "Secure Funding",
-            description: "Deposit funds into a smart contract escrow. Money is safe until you approve.",
-            icon: Lock,
-            color: "text-amber-400",
-            bg: "bg-amber-400/10",
-            border: "border-amber-400/20"
-        },
-        {
-            title: "Approve & Release",
-            description: "Review deliverables. Release payment instantly with zero friction.",
-            icon: CheckCircle,
-            color: "text-emerald-400",
-            bg: "bg-emerald-400/10",
-            border: "border-emerald-400/20"
-        }
-    ],
-    freelancer: [
-        {
-            title: "Build Profile",
-            description: "Showcase your skills and previous on-chain work history.",
-            icon: User,
-            color: "text-pink-400",
-            bg: "bg-pink-400/10",
-            border: "border-pink-400/20"
-        },
-        {
-            title: "Find Contracts",
-            description: "Browse curated jobs matching your expertise and rate expectations.",
-            icon: Search,
-            color: "text-indigo-400",
-            bg: "bg-indigo-400/10",
-            border: "border-indigo-400/20"
-        },
-        {
-            title: "Deliver Work",
-            description: "Submit milestones and track progress directly on the dashboard.",
-            icon: Briefcase,
-            color: "text-cyan-400",
-            bg: "bg-cyan-400/10",
-            border: "border-cyan-400/20"
-        },
-        {
-            title: "Get Paid Instantly",
-            description: "Receive SOL directly to your wallet. No platform hold periods.",
-            icon: Coins,
-            color: "text-green-400",
-            bg: "bg-green-400/10",
-            border: "border-green-400/20"
-        }
-    ]
-};
+const clientSteps = [
+    {
+        title: "Post Your Project",
+        description: "Define your requirements with precision. Set milestones, budget in SOL, and timeline. Our AI helps you craft the perfect brief.",
+        Icon: FileText,
+        accent: "#3B82F6",
+        visual: "post"
+    },
+    {
+        title: "Curate Your Team",
+        description: "Review verified proposals backed by on-chain reputation. See real work history, ratings, and past earnings transparency.",
+        Icon: UsersThree,
+        accent: "#8B5CF6",
+        visual: "select"
+    },
+    {
+        title: "Fund Securely",
+        description: "Deposit funds into audited smart contract escrow. Your money is cryptographically secured—only you control the release.",
+        Icon: LockKey,
+        accent: "#F59E0B",
+        visual: "escrow"
+    },
+    {
+        title: "Approve & Pay",
+        description: "Review deliverables at each milestone. Approve work and release payment instantly—funds arrive in seconds, not days.",
+        Icon: CheckCircle,
+        accent: "#10B981",
+        visual: "release"
+    }
+];
+
+const freelancerSteps = [
+    {
+        title: "Showcase Expertise",
+        description: "Build your on-chain portfolio. Every completed project adds to your verifiable reputation that follows you everywhere.",
+        Icon: UserCircle,
+        accent: "#EC4899",
+        visual: "profile"
+    },
+    {
+        title: "Discover Opportunities",
+        description: "Browse curated contracts filtered by your skills and rate. Get matched with projects that value your expertise.",
+        Icon: MagnifyingGlass,
+        accent: "#6366F1",
+        visual: "search"
+    },
+    {
+        title: "Deliver Excellence",
+        description: "Submit milestones with built-in progress tracking. Communicate directly with clients through encrypted channels.",
+        Icon: Briefcase,
+        accent: "#06B6D4",
+        visual: "work"
+    },
+    {
+        title: "Get Paid Instantly",
+        description: "Receive SOL directly to your wallet the moment work is approved. No holds, no minimums, no questions asked.",
+        Icon: Coins,
+        accent: "#22C55E",
+        visual: "paid"
+    }
+];
 
 export function PremiumFeatures() {
     const [activeTab, setActiveTab] = useState<'client' | 'freelancer'>('client');
+    const containerRef = useRef<HTMLDivElement>(null);
+    const steps = activeTab === 'client' ? clientSteps : freelancerSteps;
 
     return (
-        <section className="py-24 sm:py-32 bg-[#020204] relative">
-            <div className="container max-w-7xl mx-auto px-6">
+        <section className="py-32 bg-[#020204] relative overflow-hidden">
+            {/* Background gradient */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-emerald-600/5 rounded-full blur-[150px]" />
+            </div>
 
+            <div className="container max-w-6xl mx-auto px-6 relative z-10">
                 {/* Header */}
-                <div className="flex flex-col items-center text-center mb-20">
-                    <h2 className="text-3xl md:text-5xl font-heading font-semibold text-white mb-6">
-                        How it works
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="text-center mb-20"
+                >
+                    <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
+                        The Process
+                    </span>
+                    <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6">
+                        Four steps to
+                        <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                            trustless work.
+                        </span>
                     </h2>
 
-                    {/* Premium Segmented Control */}
-                    <div className="p-1 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full inline-flex relative">
-                        {/* Sliding Background */}
-                        <motion.div
-                            className="absolute top-1 bottom-1 bg-white/10 rounded-full"
-                            initial={false}
-                            animate={{
-                                x: activeTab === 'client' ? 0 : '100%',
-                                width: '50%'
-                            }}
-                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                        />
-
+                    {/* Toggle */}
+                    <div className="inline-flex mt-8 p-1.5 bg-white/[0.03] backdrop-blur border border-white/[0.06] rounded-full">
                         <button
                             onClick={() => setActiveTab('client')}
                             className={cn(
-                                "relative z-10 px-8 py-2.5 rounded-full text-sm font-medium transition-colors duration-300",
-                                activeTab === 'client' ? "text-white" : "text-zinc-500 hover:text-white"
+                                "relative px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
+                                activeTab === 'client'
+                                    ? "text-white"
+                                    : "text-zinc-500 hover:text-zinc-300"
                             )}
                         >
-                            For Clients
+                            {activeTab === 'client' && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute inset-0 bg-white/10 rounded-full"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="relative z-10">I'm Hiring</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('freelancer')}
                             className={cn(
-                                "relative z-10 px-8 py-2.5 rounded-full text-sm font-medium transition-colors duration-300",
-                                activeTab === 'freelancer' ? "text-white" : "text-zinc-500 hover:text-white"
+                                "relative px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
+                                activeTab === 'freelancer'
+                                    ? "text-white"
+                                    : "text-zinc-500 hover:text-zinc-300"
                             )}
                         >
-                            For Freelancers
+                            {activeTab === 'freelancer' && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute inset-0 bg-white/10 rounded-full"
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+                            )}
+                            <span className="relative z-10">I'm a Freelancer</span>
                         </button>
                     </div>
+                </motion.div>
+
+                {/* Timeline */}
+                <div ref={containerRef} className="relative">
+                    {/* Center Line */}
+                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent hidden lg:block" />
+
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-8 lg:space-y-0"
+                    >
+                        {steps.map((step, index) => (
+                            <TimelineStep
+                                key={step.title}
+                                step={step}
+                                index={index}
+                                isLeft={index % 2 === 0}
+                            />
+                        ))}
+                    </motion.div>
                 </div>
-
-                {/* Steps Display */}
-                <div className="relative">
-                    {/* Connecting Line (Desktop) */}
-                    <div className="hidden md:block absolute top-12 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeTab}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.4 }}
-                            className="grid md:grid-cols-4 gap-8"
-                        >
-                            {features[activeTab].map((step, i) => (
-                                <div key={i} className="relative group">
-                                    {/* Step Number Badge */}
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#0a0a0c] border border-white/10 flex items-center justify-center z-10 shadow-xl">
-                                        <span className="text-xs font-bold text-zinc-500 font-mono">0{i + 1}</span>
-                                    </div>
-
-                                    {/* Card */}
-                                    <div className="pt-12 p-6 h-full rounded-2xl bg-[#0a0a0c] border border-white/5 hover:border-white/10 transition-all duration-300 group-hover:translate-y-[-4px]">
-                                        <div className={cn(
-                                            "w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 duration-300",
-                                            step.bg,
-                                            step.border,
-                                            "border"
-                                        )}>
-                                            <step.icon className={cn("w-6 h-6", step.color)} />
-                                        </div>
-
-                                        <h3 className="text-lg font-semibold text-white mb-3 group-hover:text-white/90">
-                                            {step.title}
-                                        </h3>
-                                        <p className="text-sm text-zinc-400 leading-relaxed">
-                                            {step.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Mobile Arrow */}
-                                    {i < 3 && (
-                                        <div className="md:hidden flex justify-center py-4 text-zinc-700">
-                                            <ArrowRight className="w-5 h-5 rotate-90" />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-
-                {/* Integration/Wallet Hint */}
-                <div className="mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6 opacity-60 hover:opacity-100 transition-opacity">
-                    <div className="flex items-center gap-3 text-sm text-zinc-500">
-                        <Wallet className="w-4 h-4" />
-                        <span>Seamlessly integrated with top wallets</span>
-                    </div>
-                    <div className="flex items-center gap-8 grayscale hover:grayscale-0 transition-all duration-500">
-                        {/* Simple text representation if SVGs are too complex, or reuse SVGs */}
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#AB9FF2] rounded-full" />
-                            <span className="text-sm font-medium text-white">Phantom</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#FC7227] rounded-full" />
-                            <span className="text-sm font-medium text-white">Solflare</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#000] border border-white/20 rounded-full" />
-                            <span className="text-sm font-medium text-white">Backpack</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </section>
+    );
+}
+
+function TimelineStep({
+    step,
+    index,
+    isLeft
+}: {
+    step: typeof clientSteps[0];
+    index: number;
+    isLeft: boolean;
+}) {
+    const ref = useRef<HTMLDivElement>(null);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+    return (
+        <div
+            ref={ref}
+            className={cn(
+                "relative lg:grid lg:grid-cols-2 lg:gap-16 items-center",
+                "py-8 lg:py-16"
+            )}
+        >
+            {/* Timeline Node */}
+            <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={isInView ? { scale: 1 } : { scale: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="relative"
+                >
+                    <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center border-2"
+                        style={{
+                            backgroundColor: `${step.accent}15`,
+                            borderColor: `${step.accent}40`
+                        }}
+                    >
+                        <span
+                            className="text-lg font-bold font-mono"
+                            style={{ color: step.accent }}
+                        >
+                            {String(index + 1).padStart(2, '0')}
+                        </span>
+                    </div>
+                    {/* Glow */}
+                    <div
+                        className="absolute inset-0 rounded-full blur-xl opacity-50"
+                        style={{ backgroundColor: step.accent }}
+                    />
+                </motion.div>
+            </div>
+
+            {/* Content */}
+            <motion.div
+                initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.1 }}
+                className={cn(
+                    "relative",
+                    isLeft ? "lg:pr-20 lg:text-right" : "lg:col-start-2 lg:pl-20"
+                )}
+            >
+                {/* Mobile number badge */}
+                <div
+                    className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center mb-4 border"
+                    style={{
+                        backgroundColor: `${step.accent}15`,
+                        borderColor: `${step.accent}40`
+                    }}
+                >
+                    <span className="text-sm font-bold font-mono" style={{ color: step.accent }}>
+                        {String(index + 1).padStart(2, '0')}
+                    </span>
+                </div>
+
+                <div
+                    className={cn(
+                        "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium mb-4",
+                    )}
+                    style={{
+                        backgroundColor: `${step.accent}10`,
+                        color: step.accent
+                    }}
+                >
+                    <step.Icon size={14} weight="duotone" />
+                    <span>Step {index + 1}</span>
+                </div>
+
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                    {step.title}
+                </h3>
+
+                <p className="text-zinc-400 text-lg leading-relaxed max-w-md">
+                    {step.description}
+                </p>
+            </motion.div>
+
+            {/* Visual/Card side */}
+            <motion.div
+                initial={{ opacity: 0, x: isLeft ? 50 : -50 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.3 }}
+                className={cn(
+                    "mt-8 lg:mt-0",
+                    isLeft ? "lg:col-start-2 lg:pl-20" : "lg:pr-20 lg:row-start-1"
+                )}
+            >
+                <StepVisual step={step} />
+            </motion.div>
+        </div>
+    );
+}
+
+function StepVisual({ step }: { step: typeof clientSteps[0] }) {
+    return (
+        <div
+            className="relative p-6 rounded-2xl border overflow-hidden group"
+            style={{
+                backgroundColor: `${step.accent}05`,
+                borderColor: `${step.accent}15`
+            }}
+        >
+            {/* Gradient corner */}
+            <div
+                className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-30"
+                style={{ backgroundColor: step.accent }}
+            />
+
+            <div className="relative">
+                {/* Icon */}
+                <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                    style={{
+                        backgroundColor: `${step.accent}15`,
+                        border: `1px solid ${step.accent}30`
+                    }}
+                >
+                    <step.Icon size={24} weight="duotone" style={{ color: step.accent }} />
+                </div>
+
+                {/* Simulated UI elements */}
+                <div className="space-y-3">
+                    <div className="h-3 bg-white/10 rounded-full w-3/4" />
+                    <div className="h-3 bg-white/5 rounded-full w-full" />
+                    <div className="h-3 bg-white/5 rounded-full w-2/3" />
+                </div>
+
+                {/* Action hint */}
+                <div className="mt-6 flex items-center gap-2 text-sm" style={{ color: step.accent }}>
+                    <span className="font-medium">Learn more</span>
+                    <CaretRight size={16} weight="bold" />
+                </div>
+            </div>
+        </div>
     );
 }

@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { GradientSlideButton } from './gradient-slide-button';
 
 // Types for component props
 interface HeroProps {
@@ -460,13 +461,15 @@ const AnimatedShaderHero: React.FC<HeroProps> = ({
                     {buttons && (
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-[fadeInUp_0.7s_ease-out_0.55s_both]">
                             {buttons.primary && (
-                                <button
+                                <GradientSlideButton
                                     onClick={buttons.primary.onClick}
-                                    className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 bg-white text-[#030305] rounded-full font-heading font-semibold text-[15px] tracking-wide transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.25)]"
+                                    className="rounded-full px-7 py-3.5 font-heading font-semibold text-[15px] tracking-wide hover:scale-[1.03]"
+                                    colorFrom="#8B5CF6"
+                                    colorTo="#EC4899"
                                 >
                                     {buttons.primary.text}
                                     {buttons.primary.icon}
-                                </button>
+                                </GradientSlideButton>
                             )}
                             {buttons.secondary && (
                                 <button

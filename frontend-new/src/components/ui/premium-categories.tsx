@@ -1,210 +1,247 @@
 import { Link } from "react-router-dom";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
-import { Monitor, Palette, PenTool, Megaphone, Code2, Cpu, Globe } from "lucide-react";
+import { motion } from "framer-motion";
+import { Code, Desktop, PaintBrush, Brain, Megaphone, PencilLine, ArrowUpRight } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 const categories = [
     {
         name: "Blockchain & Web3",
         filter: "Blockchain",
-        icon: Code2,
-        description: "Smart contracts, DeFi, dApps",
-        className: "md:col-span-2 md:row-span-2",
-        gradient: "from-blue-600 via-indigo-600 to-blue-600",
-        beamColor: "#2563eb" // Blue-600
-    },
-    {
-        name: "Design & Creative",
-        filter: "Design",
-        icon: Palette,
-        description: "UI/UX, Brand Identity, Motion",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-orange-500 via-amber-500 to-orange-500",
-        beamColor: "#f97316" // Orange-500
+        Icon: Code,
+        description: "Smart contracts, DeFi protocols, NFT infrastructure",
+        jobs: "2.4k+ jobs",
+        gradient: "from-violet-600 via-purple-600 to-indigo-600",
+        accentColor: "violet",
     },
     {
         name: "Development",
         filter: "Development",
-        icon: Monitor,
-        description: "Full Stack, Frontend, Backend",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-cyan-500 via-blue-500 to-cyan-500",
-        beamColor: "#06b6d4" // Cyan-500
+        Icon: Desktop,
+        description: "Full-stack applications, APIs, system architecture",
+        jobs: "1.8k+ jobs",
+        gradient: "from-cyan-500 via-blue-500 to-indigo-500",
+        accentColor: "cyan",
     },
     {
-        name: "AI & ML",
+        name: "Design & Creative",
+        filter: "Design",
+        Icon: PaintBrush,
+        description: "Brand identity, UI/UX, motion graphics",
+        jobs: "900+ jobs",
+        gradient: "from-orange-500 via-amber-500 to-yellow-500",
+        accentColor: "amber",
+    },
+    {
+        name: "AI & Machine Learning",
         filter: "Data",
-        icon: Cpu,
-        description: "Models, Training, Analysis",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-emerald-500 via-teal-500 to-emerald-500",
-        beamColor: "#10b981" // Emerald-500
+        Icon: Brain,
+        description: "Model training, data pipelines, AI integration",
+        jobs: "650+ jobs",
+        gradient: "from-emerald-500 via-teal-500 to-cyan-500",
+        accentColor: "emerald",
     },
     {
-        name: "Marketing",
+        name: "Marketing & Growth",
         filter: "Marketing",
-        icon: Megaphone,
-        description: "Growth, SEO, Social",
-        className: "md:col-span-1 md:row-span-2",
-        gradient: "from-red-500 via-rose-500 to-red-500",
-        beamColor: "#ef4444" // Red-500
+        Icon: Megaphone,
+        description: "Community building, SEO, social campaigns",
+        jobs: "500+ jobs",
+        gradient: "from-rose-500 via-pink-500 to-fuchsia-500",
+        accentColor: "rose",
     },
     {
-        name: "Writing",
+        name: "Writing & Content",
         filter: "Writing",
-        icon: PenTool,
-        description: "Copy, Technical, Content",
-        className: "md:col-span-1 md:row-span-1",
-        gradient: "from-slate-500 via-zinc-500 to-slate-500",
-        beamColor: "#64748b" // Slate-500
+        Icon: PencilLine,
+        description: "Technical docs, copywriting, whitepapers",
+        jobs: "400+ jobs",
+        gradient: "from-slate-400 via-zinc-400 to-neutral-400",
+        accentColor: "slate",
     },
 ];
 
 export function PremiumCategories() {
     return (
-        <section className="py-24 sm:py-32 bg-[#020204] relative">
-            <div className="container max-w-7xl mx-auto px-6">
-                <div className="mb-16 md:text-center max-w-2xl mx-auto">
-                    <h2 className="text-3xl md:text-5xl font-heading font-semibold text-white mb-6">
-                        Find talent in <span className="text-zinc-500">every field.</span>
-                    </h2>
-                    <p className="text-lg text-zinc-400">
-                        From smart contract engineers to creative directors, find the experts you need to build the future.
-                    </p>
+        <section className="py-32 bg-[#020204] relative overflow-hidden">
+            {/* Ambient background */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-emerald-600/8 rounded-full blur-[150px]" />
+                <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[150px]" />
+            </div>
+
+            <div className="container max-w-7xl mx-auto px-6 relative z-10">
+                {/* Header - Left aligned for asymmetry */}
+                <div className="max-w-2xl mb-20">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
+                            Explore Talent
+                        </span>
+                        <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
+                            Every skill you need,
+                            <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                                one platform.
+                            </span>
+                        </h2>
+                        <p className="text-xl text-zinc-400 leading-relaxed">
+                            Browse thousands of verified professionals across every Web3 discipline.
+                        </p>
+                    </motion.div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[180px] gap-4">
-                    {categories.map((category, i) => (
-                        <BentoCard key={i} category={category} />
-                    ))}
-
+                {/* Featured Category - Large Hero Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.7 }}
+                    className="mb-6"
+                >
                     <Link
-                        to="/jobs"
-                        className="group relative md:col-span-1 md:row-span-1 bg-[#0a0a0c] border border-white/5 rounded-3xl overflow-hidden flex items-center justify-center hover:border-white/10 transition-colors"
+                        to={`/jobs?filter=${categories[0].filter}`}
+                        className="group relative block overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#0c0c10] to-[#0a0a0c]"
                     >
-                        <div className="absolute inset-0 bg-white/[0.02] group-hover:bg-white/[0.05] transition-colors" />
-                        {/* Subtle Beam for "View All" */}
-                        <BorderBeam duration={8} size={200} className="from-transparent via-white/20 to-transparent" />
-                        <div className="text-center">
-                            <span className="text-zinc-400 text-sm font-medium group-hover:text-white transition-colors">View All Categories</span>
+                        {/* Large gradient background on hover */}
+                        <div className={cn(
+                            "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700",
+                            `bg-gradient-to-br ${categories[0].gradient}`
+                        )} style={{ opacity: 0.08 }} />
+
+                        {/* Animated gradient orb */}
+                        <motion.div
+                            className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full blur-[100px] opacity-30 group-hover:opacity-50 transition-opacity duration-700"
+                            style={{ background: `linear-gradient(135deg, #8B5CF6, #A855F7, #7C3AED)` }}
+                            animate={{ scale: [1, 1.1, 1], rotate: [0, 10, 0] }}
+                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                        />
+
+                        <div className="relative p-10 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className={cn(
+                                        "w-16 h-16 rounded-2xl flex items-center justify-center",
+                                        "bg-gradient-to-br from-violet-500/20 to-purple-600/20 border border-violet-500/30",
+                                        "group-hover:scale-110 group-hover:border-violet-400/50 transition-all duration-500"
+                                    )}>
+                                        <Code size={32} weight="duotone" className="text-violet-400" />
+                                    </div>
+                                    <div className="px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20">
+                                        <span className="text-violet-400 text-sm font-medium">{categories[0].jobs}</span>
+                                    </div>
+                                </div>
+
+                                <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 group-hover:text-violet-50 transition-colors">
+                                    {categories[0].name}
+                                </h3>
+                                <p className="text-lg text-zinc-400 max-w-lg group-hover:text-zinc-300 transition-colors">
+                                    {categories[0].description}
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-3 text-white/60 group-hover:text-white transition-colors">
+                                <span className="text-sm font-medium">Explore category</span>
+                                <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-300">
+                                    <ArrowUpRight size={20} weight="bold" className=" group-hover:text-black transition-colors" />
+                                </div>
+                            </div>
                         </div>
                     </Link>
+                </motion.div>
+
+                {/* Secondary Categories - Asymmetric Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {categories.slice(1).map((category, i) => (
+                        <motion.div
+                            key={category.name}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                        >
+                            <Link
+                                to={`/jobs?filter=${category.filter}`}
+                                className="group relative block h-full overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0c] hover:border-white/15 transition-all duration-500"
+                            >
+                                {/* Subtle hover gradient */}
+                                <div className={cn(
+                                    "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                                    `bg-gradient-to-br ${category.gradient}`
+                                )} style={{ opacity: 0.05 }} />
+
+                                <div className="relative p-7">
+                                    <div className="flex items-start justify-between mb-8">
+                                        <div className={cn(
+                                            "w-12 h-12 rounded-xl flex items-center justify-center",
+                                            `bg-${category.accentColor}-500/10 border border-${category.accentColor}-500/20`,
+                                            "group-hover:scale-110 transition-transform duration-500"
+                                        )}
+                                        style={{
+                                            background: `linear-gradient(135deg, ${getAccentColor(category.accentColor)}15, ${getAccentColor(category.accentColor)}08)`,
+                                            borderColor: `${getAccentColor(category.accentColor)}30`
+                                        }}
+                                        >
+                                            <category.Icon
+                                                size={24}
+                                                weight="duotone"
+                                                style={{ color: getAccentColor(category.accentColor) }}
+                                            />
+                                        </div>
+
+                                        <ArrowUpRight size={20} weight="bold" className=" text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                                    </div>
+
+                                    <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-white/90 transition-colors">
+                                        {category.name}
+                                    </h3>
+                                    <p className="text-sm text-zinc-500 mb-4 leading-relaxed group-hover:text-zinc-400 transition-colors">
+                                        {category.description}
+                                    </p>
+
+                                    <div className="pt-4 border-t border-white/[0.04]">
+                                        <span className="text-xs font-medium text-zinc-600 group-hover:text-zinc-400 transition-colors">
+                                            {category.jobs}
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
+                        </motion.div>
+                    ))}
                 </div>
+
+                {/* Browse All Link */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="mt-12 text-center"
+                >
+                    <Link
+                        to="/jobs"
+                        className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group"
+                    >
+                        <span className="text-sm font-medium">View all categories</span>
+                        <ArrowUpRight size={16} weight="bold" className=" group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </Link>
+                </motion.div>
             </div>
         </section>
     );
 }
 
-function BentoCard({ category }: { category: typeof categories[0] }) {
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-
-    function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
-        const { left, top } = currentTarget.getBoundingClientRect();
-        mouseX.set(clientX - left);
-        mouseY.set(clientY - top);
-    }
-
-    return (
-        <Link
-            to={`/jobs?filter=${category.filter}`}
-            className={cn(
-                "group relative border border-white/10 bg-[#0a0a0c] rounded-3xl overflow-hidden hover:border-white/20 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1",
-                category.className
-            )}
-            onMouseMove={handleMouseMove}
-        >
-            {/* Mouse follower gradient */}
-            <motion.div
-                className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
-                style={{
-                    background: useMotionTemplate`
-            radial-gradient(
-              650px circle at ${mouseX}px ${mouseY}px,
-              rgba(255,255,255,0.06),
-              transparent 80%
-            )
-          `,
-                }}
-            />
-
-            {/* Electric Border Beam */}
-            <BorderBeam
-                duration={10}
-                size={300}
-                color={category.beamColor}
-                className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-            />
-
-            <div className="relative h-full p-6 flex flex-col">
-                {/* Icon Background Glow */}
-                <div className={cn(
-                    "w-12 h-12 rounded-2xl flex items-center justify-center mb-auto text-white relative overflow-hidden",
-                    "bg-gradient-to-br opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110",
-                    category.gradient
-                )}>
-                    <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                    <category.icon className="w-6 h-6 relative z-10" />
-                </div>
-
-                <div className="mt-4 relative z-10">
-                    <h3 className="text-lg md:text-xl font-semibold text-white mb-1 group-hover:translate-x-1 transition-transform duration-300">
-                        {category.name}
-                    </h3>
-                    <p className="text-sm text-zinc-500 group-hover:text-zinc-400 transition-colors">
-                        {category.description}
-                    </p>
-                </div>
-
-                {/* Arrow hint often found in bento grids */}
-                <div className="absolute top-6 right-6 opacity-0 -translate-y-2 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                    <Globe className="w-5 h-5 text-zinc-600 group-hover:text-white transition-colors" />
-                </div>
-            </div>
-        </Link>
-    );
-}
-
-interface BorderBeamProps {
-    className?: string;
-    size?: number;
-    duration?: number;
-    borderWidth?: number;
-    anchor?: number;
-    color?: string;
-    delay?: number;
-}
-
-function BorderBeam({
-    className,
-    size = 200,
-    duration = 15,
-    anchor = 90,
-    borderWidth = 1.5,
-    color = "#ffffff", // Default white if not specified
-    delay = 0,
-}: BorderBeamProps) {
-    return (
-        <div
-            style={
-                {
-                    "--size": size,
-                    "--duration": duration,
-                    "--anchor": anchor,
-                    "--border-width": borderWidth,
-                    "--color-from": "transparent",
-                    "--color-to": color,
-                    "--delay": `-${delay}s`,
-                } as React.CSSProperties
-            }
-            className={cn(
-                "pointer-events-none absolute inset-0 rounded-[inherit] [border:calc(var(--border-width)*1px)_solid_transparent]",
-                // Mask styles
-                "![mask-clip:padding-box,border-box] ![mask-composite:intersect] [mask:linear-gradient(transparent,transparent),linear-gradient(white,white)]",
-                // Layer styles
-                "after:absolute after:aspect-square after:w-[calc(var(--size)*1px)] after:animate-border-beam after:[animation-delay:var(--delay)] after:[background:linear-gradient(to_left,var(--color-to),var(--color-from),transparent)] after:[offset-anchor:calc(var(--anchor)*1%)_50%] after:[offset-path:rect(0_auto_auto_0_round_calc(var(--size)*1px))]",
-                className
-            )}
-        />
-    );
+function getAccentColor(color: string): string {
+    const colors: Record<string, string> = {
+        violet: "#8B5CF6",
+        cyan: "#06B6D4",
+        amber: "#F59E0B",
+        emerald: "#10B981",
+        rose: "#F43F5E",
+        slate: "#64748B",
+    };
+    return colors[color] || "#8B5CF6";
 }

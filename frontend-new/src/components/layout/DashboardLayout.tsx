@@ -10,10 +10,12 @@ import {
     LogOut,
     Menu,
     X,
-    Wallet
+    Wallet,
+    FileText
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+import { useAuth } from "@/context/AuthContext"
 
 interface DashboardLayoutProps {
     children: React.ReactNode
@@ -24,11 +26,18 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
     const [isSidebarOpen, setIsSidebarOpen] = useState(true)
     const location = useLocation()
     const navigate = useNavigate()
+    const { logout } = useAuth()
+
+    const handleLogout = () => {
+        logout()
+        navigate('/')
+    }
 
     const clientLinks = [
         { name: "Overview", href: "/client/dashboard", icon: LayoutDashboard },
         { name: "Post a Job", href: "/client/post-job", icon: PlusCircle },
         { name: "My Jobs", href: "/client/jobs", icon: Briefcase },
+        { name: "Contracts", href: "/client/contracts", icon: FileText },
         { name: "Messages", href: "/messages", icon: MessageSquare },
         { name: "Settings", href: "/settings", icon: Settings },
     ]
@@ -116,7 +125,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                                 "w-full justify-start text-zinc-500 hover:text-red-400 hover:bg-red-500/5 hover:border-red-500/10 border border-transparent rounded-xl",
                                 !isSidebarOpen && "justify-center px-0"
                             )}
-                            onClick={() => navigate('/')}
+                            onClick={handleLogout}
                         >
                             <LogOut className="w-4 h-4 shrink-0" />
                             {isSidebarOpen && <span className="ml-3">Sign Out</span>}

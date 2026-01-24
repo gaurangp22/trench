@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
     DollarSign, Briefcase, FileText, TrendingUp, CheckCircle2,
     Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet, Zap
@@ -9,41 +9,45 @@ import { cn } from "@/lib/utils"
 import { Meteors } from "@/components/ui/meteors"
 
 
-// Mock data - in production, fetch from API
+// Mock data - realistic Web3 freelancer profile
 const FREELANCER_DATA = {
-    name: "Alex",
-    avatarInitial: "A",
-    rating: 4.9,
-    reviewCount: 47,
-    completedJobs: 32,
-    memberSince: "Jan 2024",
+    name: "Jordan",
+    avatarInitial: "J",
+    rating: 4.8,
+    reviewCount: 156,
+    completedJobs: 89,
+    memberSince: "Mar 2024",
     stats: {
-        totalEarnings: 1250,
-        escrowBalance: 320,
-        activeJobs: 3,
-        pendingMilestones: 2,
-        proposalsSent: 12,
-        proposalsViewed: 4,
+        totalEarnings: 8420,
+        escrowBalance: 1850,
+        activeJobs: 4,
+        pendingMilestones: 3,
+        proposalsSent: 18,
+        proposalsViewed: 7,
     },
     recentActivity: [
-        { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10", title: "Milestone Approved", desc: "Payment of 50 SOL released for 'Solana API Integration'", time: "2 hours ago" },
-        { icon: FileText, color: "text-blue-400", bg: "bg-blue-500/10", title: "Proposal Viewed", desc: "Client viewed your proposal for 'Rust Smart Contract Audit'", time: "5 hours ago" },
-        { icon: Zap, color: "text-amber-400", bg: "bg-amber-500/10", title: "Contract Started", desc: "You started working on 'Frontend UI for NFT Marketplace'", time: "1 day ago" },
-        { icon: MessageSquare, color: "text-purple-400", bg: "bg-purple-500/10", title: "New Message", desc: "DeFi Protocol X sent you a message about the milestone", time: "1 day ago" },
+        { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10", title: "Payment Received", desc: "420 SOL released for Raydium LP integration milestone", time: "1 hour ago" },
+        { icon: FileText, color: "text-blue-400", bg: "bg-blue-500/10", title: "Proposal Shortlisted", desc: "MemeVault DAO shortlisted your proposal - interview scheduled", time: "4 hours ago" },
+        { icon: Star, color: "text-amber-400", bg: "bg-amber-500/10", title: "5-Star Review", desc: "SolanaFloor left a review: 'Exceptional work on the sniper bot'", time: "8 hours ago" },
+        { icon: Zap, color: "text-purple-400", bg: "bg-purple-500/10", title: "New Contract", desc: "Started work on pump.fun token launcher UI", time: "1 day ago" },
+        { icon: MessageSquare, color: "text-indigo-400", bg: "bg-indigo-500/10", title: "Client Message", desc: "Photon Team: 'Can we add Jito bundles to the bot?'", time: "1 day ago" },
     ],
     pendingProposals: [
-        { id: 1, jobTitle: "Rust Smart Contract Audit", client: "Security DAO", amount: 120, status: "viewed", daysAgo: 2 },
-        { id: 2, jobTitle: "Solana NFT Marketplace", client: "NFT Collective", amount: 85, status: "sent", daysAgo: 3 },
-        { id: 3, jobTitle: "DeFi Dashboard UI", client: "Yield Protocol", amount: 45, status: "sent", daysAgo: 5 },
+        { id: 201, jobTitle: "Solana Copy Trading Bot with Helius RPC", client: "AlphaTraders", amount: 650, status: "viewed", daysAgo: 1 },
+        { id: 202, jobTitle: "Metaplex Core NFT Minting dApp", client: "PixelPunks Collective", amount: 380, status: "viewed", daysAgo: 2 },
+        { id: 203, jobTitle: "DeFi Portfolio Dashboard (Next.js)", client: "SolanaMetrics", amount: 290, status: "sent", daysAgo: 3 },
+        { id: 204, jobTitle: "Anchor Program - Token Vesting", client: "LaunchPad DAO", amount: 520, status: "sent", daysAgo: 4 },
     ],
     activeContracts: [
-        { id: 1, title: "Solana API Integration", client: "DeFi Protocol X", progress: 65, escrowAmount: 150, nextMilestone: "API Testing" },
-        { id: 2, title: "Frontend UI for NFT Marketplace", client: "NFT Collective", progress: 25, escrowAmount: 85, nextMilestone: "Component Library" },
-        { id: 3, title: "Smart Contract Security Review", client: "Security DAO", progress: 10, escrowAmount: 120, nextMilestone: "Initial Audit" },
+        { id: 301, title: "Raydium AMM Integration for Trading Terminal", client: "Photon Team", progress: 82, escrowAmount: 680, nextMilestone: "Jito Bundle Support" },
+        { id: 302, title: "pump.fun Token Launcher Dashboard", client: "MemeFactory", progress: 45, escrowAmount: 420, nextMilestone: "Token Creation Flow" },
+        { id: 303, title: "NFT Rarity Sniper with Magic Eden API", client: "SolanaFloor", progress: 95, escrowAmount: 350, nextMilestone: "Final Testing & Deploy" },
+        { id: 304, title: "Wallet Analytics Chrome Extension", client: "Solscan Labs", progress: 20, escrowAmount: 280, nextMilestone: "Transaction Parser" },
     ]
 }
 
 export function FreelancerDashboard() {
+    const navigate = useNavigate()
     const data = FREELANCER_DATA
 
     return (
@@ -172,7 +176,12 @@ export function FreelancerDashboard() {
                                         <span className="text-xs font-medium text-zinc-500">
                                             Next: <span className="text-zinc-300">{contract.nextMilestone}</span>
                                         </span>
-                                        <Button size="sm" variant="ghost" className="h-8 text-xs font-medium text-white hover:bg-white/10">
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-8 text-xs font-medium text-white hover:bg-white/10"
+                                            onClick={() => navigate(`/freelancer/contracts/${contract.id}`)}
+                                        >
                                             Submit Work
                                         </Button>
                                     </div>
@@ -240,6 +249,12 @@ export function FreelancerDashboard() {
                                     <FileText className="w-4 h-4 text-zinc-400 group-hover:text-white" />
                                 </div>
                                 <span className="text-sm font-medium text-white">Track Proposals</span>
+                            </Link>
+                            <Link to="/freelancer/contracts" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
+                                <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-purple-500 group-hover:border-purple-500 transition-colors">
+                                    <Briefcase className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+                                </div>
+                                <span className="text-sm font-medium text-white">Active Contracts</span>
                             </Link>
                             <Link to="/messages" className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all group">
                                 <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:border-emerald-500 transition-colors">

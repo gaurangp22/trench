@@ -158,7 +158,9 @@ type ConversationRepository interface {
 	GetByUserID(ctx context.Context, userID uuid.UUID, limit, offset int) ([]domain.Conversation, int, error)
 	GetByContractID(ctx context.Context, contractID uuid.UUID) (*domain.Conversation, error)
 	AddParticipant(ctx context.Context, conversationID, userID uuid.UUID) error
+	GetParticipants(ctx context.Context, conversationID uuid.UUID) ([]domain.ConversationParticipant, error)
 	UpdateLastRead(ctx context.Context, conversationID, userID uuid.UUID) error
+	IsParticipant(ctx context.Context, conversationID, userID uuid.UUID) (bool, error)
 }
 
 // MessageRepository defines message data access methods
@@ -168,6 +170,8 @@ type MessageRepository interface {
 	GetByConversationID(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error)
 	Update(ctx context.Context, message *domain.Message) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	GetLastMessage(ctx context.Context, conversationID uuid.UUID) (*domain.Message, error)
+	GetUnreadCount(ctx context.Context, userID uuid.UUID) (int, error)
 }
 
 // ReviewRepository defines review data access methods

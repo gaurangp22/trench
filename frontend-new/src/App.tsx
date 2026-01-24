@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { Navbar } from "@/components/layout/Navbar"
 import { Footer } from "@/components/layout/Footer"
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute"
 import { Home } from "@/pages/Home"
 import { Jobs } from "@/pages/Jobs"
 import { JobDetail } from "@/pages/JobDetail"
@@ -10,12 +11,17 @@ import { Talent } from "@/pages/Talent"
 import { HowItWorks } from "@/pages/HowItWorks"
 import { Messages } from "@/pages/Messages"
 import { WalletContextProvider } from "@/context/WalletContextProvider"
+import { AuthProvider } from "@/context/AuthContext"
 import { PostJob } from "@/pages/client/PostJob"
 import { ManageJobs } from "@/pages/client/ManageJobs"
 import { ClientDashboard } from "@/pages/client/Dashboard"
+import { JobProposals } from "@/pages/client/JobProposals"
+import { Contracts } from "@/pages/client/Contracts"
+import { ContractDetail } from "@/pages/client/ContractDetail"
 import { FreelancerDashboard } from "@/pages/freelancer/Dashboard"
 import { MyProposals } from "@/pages/freelancer/MyProposals"
 import { ActiveContracts } from "@/pages/freelancer/ActiveContracts"
+import { FreelancerContractDetail } from "@/pages/freelancer/ContractDetail"
 import { FreelancerProfile } from "@/pages/FreelancerProfile"
 
 function App() {
@@ -23,29 +29,82 @@ function App() {
   return (
     <Router>
       <WalletContextProvider>
-        <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
-          <Routes>
-            <Route path="/" element={<><Navbar /><main><Home /></main><Footer /></>} />
-            <Route path="/jobs" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
-            <Route path="/jobs/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
-            <Route path="/talent" element={<><Navbar /><main><Talent /></main><Footer /></>} />
-            <Route path="/talent/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
-            <Route path="/how-it-works" element={<><Navbar /><main><HowItWorks /></main><Footer /></>} />
-            <Route path="/escrow" element={<><Navbar /><main><Escrow /></main><Footer /></>} />
-            <Route path="/messages" element={<><Navbar /><main><Messages /></main><Footer /></>} />
-            <Route path="/auth/*" element={<Auth />} />
+        <AuthProvider>
+          <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<><Navbar /><main><Home /></main><Footer /></>} />
+              <Route path="/jobs" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
+              <Route path="/jobs/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
+              <Route path="/talent" element={<><Navbar /><main><Talent /></main><Footer /></>} />
+              <Route path="/talent/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
+              <Route path="/how-it-works" element={<><Navbar /><main><HowItWorks /></main><Footer /></>} />
+              <Route path="/escrow" element={<><Navbar /><main><Escrow /></main><Footer /></>} />
+              <Route path="/auth/*" element={<Auth />} />
 
-            {/* Client Dashboard Routes */}
-            <Route path="/client/dashboard" element={<ClientDashboard />} />
-            <Route path="/client/post-job" element={<PostJob />} />
-            <Route path="/client/jobs" element={<ManageJobs />} />
+              {/* Protected Routes - Any authenticated user */}
+              <Route path="/messages" element={
+                <ProtectedRoute>
+                  <><Navbar /><main><Messages /></main><Footer /></>
+                </ProtectedRoute>
+              } />
 
-            {/* Freelancer Dashboard Routes */}
-            <Route path="/freelancer/dashboard" element={<FreelancerDashboard />} />
-            <Route path="/freelancer/proposals" element={<MyProposals />} />
-            <Route path="/freelancer/contracts" element={<ActiveContracts />} />
-          </Routes>
-        </div>
+              {/* Client Dashboard Routes - Client only */}
+              <Route path="/client/dashboard" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ClientDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/client/post-job" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <PostJob />
+                </ProtectedRoute>
+              } />
+              <Route path="/client/jobs" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ManageJobs />
+                </ProtectedRoute>
+              } />
+              <Route path="/client/jobs/:id/proposals" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <JobProposals />
+                </ProtectedRoute>
+              } />
+              <Route path="/client/contracts" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <Contracts />
+                </ProtectedRoute>
+              } />
+              <Route path="/client/contracts/:id" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ContractDetail />
+                </ProtectedRoute>
+              } />
+
+              {/* Freelancer Dashboard Routes - Freelancer only */}
+              <Route path="/freelancer/dashboard" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <FreelancerDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/proposals" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <MyProposals />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/contracts" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <ActiveContracts />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/contracts/:id" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <FreelancerContractDetail />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </div>
+        </AuthProvider>
       </WalletContextProvider>
     </Router>
   )

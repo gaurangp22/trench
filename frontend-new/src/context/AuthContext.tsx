@@ -1,58 +1,168 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { api, type User } from '@/lib/api';
+import { api, AuthAPI, type User, type Profile } from '@/lib/api';
 import bs58 from 'bs58';
 
+interface AuthUser extends User {
+    username?: string;
+    avatar_url?: string;
+    display_name?: string;
+}
+
 interface AuthContextType {
-    user: User | null;
+    user: AuthUser | null;
+    profile: Profile | null;
     isLoading: boolean;
     isAuthenticated: boolean;
-    login: () => Promise<void>;
+    loginWithEmail: (email: string, password: string) => Promise<void>;
+    signupWithEmail: (email: string, password: string, username: string, role: 'client' | 'freelancer') => Promise<void>;
+    loginWithWallet: () => Promise<void>;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
-    isLoading: false,
+    profile: null,
+    isLoading: true,
     isAuthenticated: false,
-    login: async () => { },
+    loginWithEmail: async () => { },
+    signupWithEmail: async () => { },
+    loginWithWallet: async () => { },
     logout: () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const { publicKey, signMessage, disconnect } = useWallet();
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const { publicKey, signMessage, disconnect, connected } = useWallet();
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Check for existing token on mount
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            // Validate token or just assume valid for now? 
-            // Better to fetch profile to validate.
-            fetchProfile();
-        }
+        checkAuth();
     }, []);
 
-    const fetchProfile = async () => {
+    const checkAuth = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
+
         try {
-            // We need a specific endpoint to get 'me'. 
-            // The backend has GET /api/v1/profile (protected) which returns profile info inside response
-            // Or we check /api/v1/auth/me if it existed.
-            // Let's assume we can get user info or we just check if 401.
             const res = await api.get('/profile');
-            // Assuming res.data contains user info or we map it.
-            // If profile is returned:
-            setUser(res.data as User);
-        } catch (error) {
-            console.error("Failed to fetch profile", error);
-            logout(); // Token likely invalid
+            const userData = res.data;
+
+            // Extract user and profile from response
+            if (userData.profile) {
+                setProfile(userData.profile);
+                // Determine role from backend flags or profile data
+                const role: 'client' | 'freelancer' = userData.user?.is_freelancer ? 'freelancer' :
+                    (userData.user?.is_client ? 'client' :
+                        (userData.profile.professional_title ? 'freelancer' : 'client'));
+                setUser({
+                    id: userData.user?.id || userData.profile.user_id,
+                    email: userData.user?.email || '',
+                    role: role,
+                    username: userData.user?.username,
+                    avatar_url: userData.profile.avatar_url,
+                    display_name: userData.profile.display_name
+                });
+            } else if (userData.user) {
+                // User exists but no profile yet - still authenticated
+                const role: 'client' | 'freelancer' = userData.user.is_freelancer ? 'freelancer' : 'client';
+                setUser({
+                    id: userData.user.id,
+                    email: userData.user.email || '',
+                    role: role,
+                    username: userData.user.username
+                });
+            }
+        } catch (error: any) {
+            // 404 means profile not found, but user may still be authenticated
+            // Only clear token on 401 (unauthorized) errors
+            if (error.response?.status === 401) {
+                console.error("Auth check failed - unauthorized", error);
+                localStorage.removeItem('token');
+                setUser(null);
+                setProfile(null);
+            } else if (error.response?.status === 404) {
+                // Profile not found - user is authenticated but has no profile
+                // Try to extract user info from JWT token
+                console.log("Profile not found - extracting user from token");
+                try {
+                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                    const role: 'client' | 'freelancer' = tokenPayload.is_freelancer ? 'freelancer' : 'client';
+                    setUser({
+                        id: tokenPayload.user_id || tokenPayload.sub,
+                        email: tokenPayload.email || '',
+                        role: role,
+                        username: tokenPayload.username
+                    });
+                } catch (decodeErr) {
+                    console.error("Failed to decode token", decodeErr);
+                }
+            } else {
+                console.error("Auth check failed", error);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const login = async () => {
+    const loginWithEmail = async (email: string, password: string) => {
+        setIsLoading(true);
+        try {
+            const response = await AuthAPI.login(email, password);
+            // Token is already stored by AuthAPI.login
+
+            if (response.user) {
+                // Backend returns is_client/is_freelancer booleans, convert to role string
+                const role: 'client' | 'freelancer' = response.user.is_freelancer ? 'freelancer' : 'client';
+                setUser({
+                    id: response.user.id,
+                    email: response.user.email,
+                    role: role,
+                    username: response.user.username
+                });
+            }
+
+            // Fetch full profile (may fail with 404 for new users - that's OK)
+            await checkAuth();
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const signupWithEmail = async (email: string, password: string, username: string, role: 'client' | 'freelancer') => {
+        setIsLoading(true);
+        try {
+            const response = await AuthAPI.signup(email, password, username, role);
+            // Token is already stored by AuthAPI.signup
+
+            if (response.user) {
+                // Backend returns is_client/is_freelancer booleans, convert to role string
+                // Fall back to the role we sent if backend doesn't return it
+                const userRole: 'client' | 'freelancer' = response.user.is_freelancer ? 'freelancer' :
+                    (response.user.is_client ? 'client' : role);
+                setUser({
+                    id: response.user.id,
+                    email: response.user.email,
+                    role: userRole,
+                    username: response.user.username || username
+                });
+            }
+
+            // Fetch full profile (may fail with 404 for new users - that's OK)
+            await checkAuth();
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const loginWithWallet = async () => {
         if (!publicKey || !signMessage) return;
 
         setIsLoading(true);
@@ -73,12 +183,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 signature: bs58.encode(signature),
             });
 
-            const { token, user } = loginRes.data;
+            const { token, user: userData } = loginRes.data;
             localStorage.setItem('token', token);
-            setUser(user);
+            setUser(userData);
+
+            // Fetch full profile
+            await checkAuth();
         } catch (error) {
-            console.error("Login failed", error);
-            alert("Authentication failed. Please try again.");
+            console.error("Wallet login failed", error);
+            throw error;
         } finally {
             setIsLoading(false);
         }
@@ -87,11 +200,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
-        disconnect();
+        setProfile(null);
+        if (connected) {
+            disconnect();
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, login, logout }}>
+        <AuthContext.Provider value={{
+            user,
+            profile,
+            isLoading,
+            isAuthenticated: !!user,
+            loginWithEmail,
+            signupWithEmail,
+            loginWithWallet,
+            logout
+        }}>
             {children}
         </AuthContext.Provider>
     );

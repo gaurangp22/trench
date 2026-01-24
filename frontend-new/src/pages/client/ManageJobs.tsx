@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, MoreVertical, Eye, Coins, Loader2, Search, Briefcase } from "lucide-react"
@@ -9,6 +10,7 @@ import { JobAPI, type Job } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
 export function ManageJobs() {
+    const navigate = useNavigate()
     const { publicKey, signTransaction, sendTransaction } = useWallet()
     // Changed to string to handle UUIDs
     const [releasingJobId, setReleasingJobId] = useState<string | null>(null)
@@ -195,7 +197,12 @@ export function ManageJobs() {
                                                 Release Pay
                                             </Button>
                                         )}
-                                        <Button size="sm" variant="outline" className="border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 px-4 rounded-xl">
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="border-white/10 text-zinc-300 hover:text-white hover:bg-white/5 h-10 px-4 rounded-xl"
+                                            onClick={() => navigate(`/client/jobs/${job.id}/proposals`)}
+                                        >
                                             <Eye className="w-4 h-4 mr-2" />
                                             View Proposals
                                         </Button>
