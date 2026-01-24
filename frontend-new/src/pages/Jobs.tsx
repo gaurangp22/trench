@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import { motion, useInView } from "framer-motion"
-import { Search, Filter, Star, Shield, CheckCircle, X, ChevronDown, Briefcase, ArrowUpRight } from "lucide-react"
+import { Search, Star, Shield, CheckCircle, X, ChevronDown, Briefcase, ArrowUpRight } from "lucide-react"
 import { GradientSlideButton } from "@/components/ui/gradient-slide-button"
 import { fetchJobs } from "@/lib/api"
 import { cn } from "@/lib/utils"
@@ -132,7 +132,6 @@ export function Jobs() {
     const [budgetRange, setBudgetRange] = useState([0, 200])
     const [showVerifiedOnly, setShowVerifiedOnly] = useState(false)
     const [showFundedOnly, setShowFundedOnly] = useState(false)
-    const [showFilters, setShowFilters] = useState(false)
 
     const [jobs, setJobs] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
@@ -227,14 +226,6 @@ export function Jobs() {
 
     const hasActiveFilters = category !== "all" || experienceLevel !== "all" ||
         showVerifiedOnly || showFundedOnly || budgetRange[0] > 0 || budgetRange[1] < 200
-
-    const activeFilterCount = [
-        category !== "all",
-        experienceLevel !== "all",
-        showVerifiedOnly,
-        showFundedOnly,
-        budgetRange[0] > 0 || budgetRange[1] < 200
-    ].filter(Boolean).length
 
     return (
         <div className="min-h-screen bg-[#020204] pt-24 pb-20">

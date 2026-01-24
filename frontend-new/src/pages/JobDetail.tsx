@@ -141,7 +141,7 @@ export function JobDetail() {
                             {/* Category Badge */}
                             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-4">
                                 <Briefcase className="w-3.5 h-3.5" />
-                                {job.category || "Web3 Development"}
+                                Web3 Development
                             </div>
 
                             <h1 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white mb-4 leading-tight">
