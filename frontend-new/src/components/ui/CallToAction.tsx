@@ -1,20 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { GradientSlideButton } from "./GradientSlideButton";
-// import { HyperspaceBackground } from "./HyperspaceBackground";
+import { HyperspaceBackground } from "./HyperspaceBackground";
 
 export function CallToAction() {
     const navigate = useNavigate();
 
     return (
         <section className="relative py-32 overflow-hidden bg-black">
-            {/* Hyperspace Background - DISABLED FOR TESTING */}
-            {/* <HyperspaceBackground
+            {/* Hyperspace Background - optimized with visibility-based pausing */}
+            <HyperspaceBackground
                 starSpeed={1.03}
                 starTrailOpacity={0.7}
                 starColor="#10B981"
                 starSize={0.8}
-            /> */}
+                starCount={120}
+            />
 
             {/* Subtle gradient overlay for text readability */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30 pointer-events-none" />

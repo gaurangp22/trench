@@ -1,5 +1,4 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
 interface HyperspaceBackgroundProps
@@ -8,6 +7,7 @@ interface HyperspaceBackgroundProps
   starSpeed?: number
   starColor?: string
   starSize?: number
+  starCount?: number
   className?: string
 }
 
@@ -40,9 +40,11 @@ export function HyperspaceBackground({
   starSpeed = 1.01,
   starColor = "#FFFFFF",
   starSize = 0.5,
+  starCount = 150, // Reduced from 300
   className,
   ...props
 }: HyperspaceBackgroundProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
   const [r, g, b] = hexToRgb(starColor)
 
@@ -50,23 +52,18 @@ export function HyperspaceBackground({
     if (typeof window === "undefined") return
 
     const canvas = canvasRef.current
-    if (!canvas) return
+    const container = containerRef.current
+    if (!canvas || !container) return
     const context = canvas.getContext("2d")
     if (!context) return
 
+    let isRunning = false
+    let animationFrameId: number
+
     const resizeCanvas = () => {
-      const container = canvas.parentElement
       if (container) {
         canvas.width = container.offsetWidth
         canvas.height = container.offsetHeight
-      }
-    }
-
-    const debounceResize = () => {
-      let timeout: NodeJS.Timeout
-      return () => {
-        clearTimeout(timeout)
-        timeout = setTimeout(resizeCanvas, 100)
       }
     }
 
@@ -118,10 +115,11 @@ export function HyperspaceBackground({
       }
     }
 
-    const stars = new Array(300).fill(null).map(() => new Star())
+    const stars = new Array(starCount).fill(null).map(() => new Star())
 
-    let animationFrameId: number
     const render = () => {
+      if (!isRunning) return
+
       const invertedOpacity = 1 - starTrailOpacity
       context.fillStyle = `rgba(0, 0, 0, ${invertedOpacity})`
       context.fillRect(0, 0, canvas.width, canvas.height)
@@ -161,19 +159,52 @@ export function HyperspaceBackground({
       animationFrameId = requestAnimationFrame(render)
     }
 
-    render()
+    const start = () => {
+      if (isRunning) return
+      isRunning = true
+      render()
+    }
 
-    const debouncedResize = debounceResize()
-    window.addEventListener("resize", debouncedResize)
+    const pause = () => {
+      if (!isRunning) return
+      isRunning = false
+      cancelAnimationFrame(animationFrameId)
+    }
+
+    // Visibility-based pausing - only animate when in viewport
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            start()
+          } else {
+            pause()
+          }
+        })
+      },
+      { threshold: 0 }
+    )
+
+    observer.observe(container)
+
+    // Debounced resize
+    let resizeTimeout: NodeJS.Timeout
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(resizeCanvas, 100)
+    }
+
+    window.addEventListener("resize", handleResize)
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
-      window.removeEventListener("resize", debouncedResize)
+      pause()
+      observer.disconnect()
+      window.removeEventListener("resize", handleResize)
     }
-  }, [starTrailOpacity, starSpeed, starColor, starSize])
+  }, [starTrailOpacity, starSpeed, starColor, starSize, starCount, r, g, b])
 
   return (
-    <div className={cn("absolute inset-0 h-full w-full", className)} {...props}>
+    <div ref={containerRef} className={cn("absolute inset-0 h-full w-full", className)} {...props}>
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
     </div>
   )

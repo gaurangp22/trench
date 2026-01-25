@@ -102,13 +102,15 @@ void main(void) {
     O=vec4(col,1);
 }`;
 
-// WebGL Renderer
+// WebGL Renderer with visibility-based pausing
 class ShaderRenderer {
     private canvas: HTMLCanvasElement;
     private gl: WebGL2RenderingContext;
     private program: WebGLProgram | null = null;
     private animationId: number = 0;
     private startTime: number = 0;
+    private pausedTime: number = 0;
+    private isRunning: boolean = false;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -156,24 +158,39 @@ class ShaderRenderer {
     }
 
     render = () => {
+        if (!this.isRunning) return;
+
         const gl = this.gl;
         const program = this.program!;
 
         gl.useProgram(program);
         gl.uniform2f(gl.getUniformLocation(program, 'resolution'), this.canvas.width, this.canvas.height);
-        gl.uniform1f(gl.getUniformLocation(program, 'time'), (performance.now() - this.startTime) * 0.001);
+        gl.uniform1f(gl.getUniformLocation(program, 'time'), (performance.now() - this.startTime - this.pausedTime) * 0.001);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
         this.animationId = requestAnimationFrame(this.render);
     }
 
+    start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        this.render();
+    }
+
+    pause() {
+        if (!this.isRunning) return;
+        this.isRunning = false;
+        cancelAnimationFrame(this.animationId);
+    }
+
     destroy() {
+        this.isRunning = false;
         cancelAnimationFrame(this.animationId);
     }
 }
 
-// Hook
-const useShader = () => {
+// Hook with visibility-based pausing
+const useShader = (sectionRef: React.RefObject<HTMLElement>) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rendererRef = useRef<ShaderRenderer | null>(null);
 
@@ -185,14 +202,35 @@ const useShader = () => {
 
         const handleResize = () => renderer.resize();
         handleResize();
-        renderer.render();
+
+        // Use IntersectionObserver to pause shader when not visible
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        renderer.start();
+                    } else {
+                        renderer.pause();
+                    }
+                });
+            },
+            { threshold: 0 } // Trigger as soon as any part is visible/hidden
+        );
+
+        if (sectionRef.current) {
+            observer.observe(sectionRef.current);
+        }
+
+        // Start initially if visible
+        renderer.start();
 
         window.addEventListener('resize', handleResize);
         return () => {
             window.removeEventListener('resize', handleResize);
+            observer.disconnect();
             renderer.destroy();
         };
-    }, []);
+    }, [sectionRef]);
 
     return canvasRef;
 };
@@ -206,10 +244,11 @@ const Hero: React.FC<HeroProps> = ({
     audienceToggle,
     className = ""
 }) => {
-    const canvasRef = useShader();
+    const sectionRef = useRef<HTMLElement>(null);
+    const canvasRef = useShader(sectionRef);
 
     return (
-        <section className={`relative min-h-screen overflow-hidden bg-[#020204] ${className}`}>
+        <section ref={sectionRef} className={`relative min-h-screen overflow-hidden bg-[#020204] ${className}`}>
             {/* Shader Background */}
             <canvas
                 ref={canvasRef}

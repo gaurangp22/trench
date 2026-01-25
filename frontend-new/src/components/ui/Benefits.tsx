@@ -1,5 +1,3 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
 import { ShieldCheck, Lightning, GlobeHemisphereWest, SealCheck } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
@@ -57,20 +55,9 @@ const benefits = [
 export function Benefits() {
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Subtle grid background */}
-            <div className="absolute inset-0 opacity-[0.02]" style={{
-                backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-                backgroundSize: '60px 60px'
-            }} />
-
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-3xl mb-24"
-                >
+                <div className="max-w-3xl mb-24">
                     <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
                         Why TrenchJobs
                     </span>
@@ -84,7 +71,7 @@ export function Benefits() {
                     <p className="text-xl text-zinc-400 leading-relaxed">
                         Everything traditional platforms got wrong—the fees, the delays, the trust issues—we engineered away.
                     </p>
-                </motion.div>
+                </div>
 
                 {/* Benefits - Alternating Layout */}
                 <div className="space-y-32">
@@ -92,7 +79,6 @@ export function Benefits() {
                         <BenefitRow
                             key={benefit.title}
                             benefit={benefit}
-                            index={index}
                             isReversed={index % 2 === 1}
                         />
                     ))}
@@ -107,27 +93,17 @@ function BenefitRow({
     isReversed
 }: {
     benefit: typeof benefits[0];
-    index: number;
     isReversed: boolean;
 }) {
-    const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
-
     return (
         <div
-            ref={ref}
             className={cn(
                 "grid lg:grid-cols-2 gap-12 lg:gap-20 items-center",
                 isReversed && "lg:grid-flow-dense"
             )}
         >
             {/* Content */}
-            <motion.div
-                initial={{ opacity: 0, x: isReversed ? 50 : -50 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.7 }}
-                className={isReversed ? "lg:col-start-2" : ""}
-            >
+            <div className={isReversed ? "lg:col-start-2" : ""}>
                 <div
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6"
                     style={{
@@ -163,38 +139,21 @@ function BenefitRow({
                         </div>
                     ))}
                 </div>
-            </motion.div>
+            </div>
 
             {/* Visual */}
-            <motion.div
-                initial={{ opacity: 0, x: isReversed ? -50 : 50 }}
-                animate={isInView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.2 }}
-                className={isReversed ? "lg:col-start-1 lg:row-start-1" : ""}
-            >
+            <div className={isReversed ? "lg:col-start-1 lg:row-start-1" : ""}>
                 <BenefitVisual benefit={benefit} />
-            </motion.div>
+            </div>
         </div>
     );
 }
 
 function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
     return (
-        <div
-            className="relative"
-            style={{
-                // Use box-shadow instead of blur for better performance
-                filter: 'none'
-            }}
-        >
-
-            {/* Card - using box-shadow for glow instead of blur filter */}
-            <div
-                className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]"
-                style={{
-                    boxShadow: `0 0 60px ${benefit.accent}20, 0 0 30px ${benefit.accent}10`
-                }}
-            >
+        <div className="relative">
+            {/* Card */}
+            <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]">
                 {/* Gradient accent line */}
                 <div
                     className={cn(
@@ -221,7 +180,7 @@ function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
 
                     {/* Abstract visualization */}
                     <div className="space-y-4">
-                        {/* Static bars - removed animation for performance */}
+                        {/* Static bars */}
                         <div className="flex items-end gap-2 h-20">
                             {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.5].map((height, i) => (
                                 <div
