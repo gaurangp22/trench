@@ -63,11 +63,7 @@ const categories = [
 export function Categories() {
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Ambient background - optimized */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 left-0 w-[250px] h-[250px] bg-emerald-600/10 rounded-full blur-[60px]" />
-                <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-blue-600/8 rounded-full blur-[60px]" />
-            </div>
+            {/* Ambient background - removed blur for performance */}
 
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
                 {/* Header - Left aligned for asymmetry */}
@@ -112,11 +108,6 @@ export function Categories() {
                             `bg-gradient-to-br ${categories[0].gradient}`
                         )} style={{ opacity: 0.08 }} />
 
-                        {/* Gradient orb - optimized */}
-                        <div
-                            className="absolute -top-10 -right-10 w-[200px] h-[200px] rounded-full blur-[40px] opacity-30 group-hover:opacity-50 transition-opacity duration-700"
-                            style={{ background: `linear-gradient(135deg, #8B5CF6, #A855F7, #7C3AED)` }}
-                        />
 
                         <div className="relative p-10 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">
                             <div className="flex-1">

@@ -73,16 +73,16 @@ float clouds(vec2 p) {
 
 void main(void) {
     vec2 uv=(FC-.5*R)/MN,st=uv*vec2(2,1);
-    
+
     // Offset the effect to the RIGHT side and UP
     uv.x -= 0.5; // Push visual center to the right
     uv.y -= 0.12; // Push visual center upward (negative = up in this coord system)
     st.x -= 0.3;
-    
+
     vec3 col=vec3(0);
     float bg=clouds(vec2(st.x+T*.4,-st.y));
     uv*=1.-.3*(sin(T*.15)*.5+.5);
-    
+
     for (float i=1.; i<12.; i++) {
         uv+=.1*cos(i*vec2(.1+.01*i, .8)+i*i+T*.4+.1*uv.x);
         vec2 p=uv;
@@ -94,11 +94,11 @@ void main(void) {
         // Deep indigo-purple tint
         col=mix(col,vec3(bg*.08, bg*.05, bg*.18),d);
     }
-    
+
     // Subtle vignette
     float vignette = 1.0 - smoothstep(0.5, 1.5, length(uv));
     col *= 0.8 + 0.2 * vignette;
-    
+
     O=vec4(col,1);
 }`;
 

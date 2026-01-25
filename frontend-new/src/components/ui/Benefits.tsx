@@ -180,15 +180,21 @@ function BenefitRow({
 
 function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
     return (
-        <div className="relative">
-            {/* Glow - optimized */}
-            <div
-                className="absolute -inset-2 rounded-3xl blur-xl opacity-15"
-                style={{ backgroundColor: benefit.accent }}
-            />
+        <div
+            className="relative"
+            style={{
+                // Use box-shadow instead of blur for better performance
+                filter: 'none'
+            }}
+        >
 
-            {/* Card */}
-            <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]">
+            {/* Card - using box-shadow for glow instead of blur filter */}
+            <div
+                className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]"
+                style={{
+                    boxShadow: `0 0 60px ${benefit.accent}20, 0 0 30px ${benefit.accent}10`
+                }}
+            >
                 {/* Gradient accent line */}
                 <div
                     className={cn(

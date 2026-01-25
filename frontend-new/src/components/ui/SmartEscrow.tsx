@@ -9,11 +9,7 @@ export function SmartEscrow() {
 
     return (
         <section ref={ref} className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Background Effects - optimized */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/4" />
-                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-600/8 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4" />
-            </div>
+            {/* Background Effects - removed blur for performance */}
 
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
@@ -93,8 +89,6 @@ export function SmartEscrow() {
                         className="order-1 lg:order-2"
                     >
                         <div className="relative">
-                            {/* Glow - reduced */}
-                            <div className="absolute -inset-4 bg-gradient-to-br from-emerald-500/15 via-teal-500/5 to-transparent blur-xl rounded-[2rem]" />
 
                             {/* Main Card */}
                             <div className="relative bg-[#0a0a0c] border border-white/[0.08] rounded-[2rem] overflow-hidden">

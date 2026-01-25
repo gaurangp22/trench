@@ -31,7 +31,7 @@ interface HeroProps {
 }
 
 // Dark/Purple themed shader with cosmic nebula effect
-// Deep Cosmic Blue/Indigo theme - Serious & Premium
+// Deep Cosmic Blue/Indigo theme - ORIGINAL QUALITY restored
 const darkShaderSource = `#version 300 es
 precision highp float;
 out vec4 O;
@@ -84,22 +84,19 @@ void main(void) {
   vec3 col=vec3(0);
   float bg=clouds(vec2(st.x+T*.3,-st.y));
   uv*=1.-.3*(sin(T*.15)*.5+.5);
-  
+
   for (float i=1.; i<12.; i++) {
     uv+=.1*cos(i*vec2(.1+.01*i, .8)+i*i+T*.4+.1*uv.x);
     vec2 p=uv;
     float d=length(p);
-    // Modified: Deep Blue/Indigo/Silver scheme (removed high red content)
     col+=.00125/d*(cos(sin(i)*vec3(0.5, 0.8, 3.0))+1.);
     float b=noise(i+p+bg*1.731);
     col+=.002*b/length(max(p,vec2(b*p.x*.02,p.y)));
-    // Deep dark blue tint
     col=mix(col,vec3(bg*.02,bg*.02,bg*.1),d);
   }
-  
-  // Subtle blue/white glow
+
   col += vec3(0.01, 0.02, 0.05) * (1.0 - length(uv) * 0.5);
-  
+
   O=vec4(col,1);
 }`;
 
@@ -327,7 +324,7 @@ class PointerHandler {
     }
 }
 
-// Reusable Shader Background Hook remains same
+// Reusable Shader Background Hook
 const useShaderBackground = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationFrameRef = useRef<number>(0);

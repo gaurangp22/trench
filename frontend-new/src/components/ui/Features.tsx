@@ -72,10 +72,7 @@ export function Features() {
 
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Background gradient - optimized */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-emerald-600/8 rounded-full blur-[60px]" />
-            </div>
+            {/* Background gradient - removed blur for performance */}
 
             <div className="container max-w-6xl mx-auto px-6 relative z-10">
                 {/* Header */}
@@ -206,11 +203,6 @@ function TimelineStep({
                             {String(index + 1).padStart(2, '0')}
                         </span>
                     </div>
-                    {/* Glow */}
-                    <div
-                        className="absolute inset-0 rounded-full blur-xl opacity-50"
-                        style={{ backgroundColor: step.accent }}
-                    />
                 </motion.div>
             </div>
 
@@ -284,11 +276,6 @@ function StepVisual({ step }: { step: typeof clientSteps[0] }) {
                 borderColor: `${step.accent}15`
             }}
         >
-            {/* Gradient corner */}
-            <div
-                className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-30"
-                style={{ backgroundColor: step.accent }}
-            />
 
             <div className="relative">
                 {/* Icon */}
