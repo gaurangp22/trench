@@ -190,7 +190,7 @@ class ShaderRenderer {
 }
 
 // Hook with visibility-based pausing
-const useShader = (sectionRef: React.RefObject<HTMLElement>) => {
+const useShader = (sectionRef: React.RefObject<HTMLElement | null>) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rendererRef = useRef<ShaderRenderer | null>(null);
 
