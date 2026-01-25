@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { GradientSlideButton } from "./gradient-slide-button";
-import { HyperspaceBackground } from "./hyperspace-background";
+import { GradientSlideButton } from "./GradientSlideButton";
+import { HyperspaceBackground } from "./HyperspaceBackground";
 
-export function PremiumCTA() {
+export function CallToAction() {
     const navigate = useNavigate();
 
     return (

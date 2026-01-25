@@ -54,7 +54,7 @@ const benefits = [
     }
 ];
 
-export function PremiumBenefits() {
+export function Benefits() {
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
             {/* Subtle grid background */}
@@ -181,9 +181,9 @@ function BenefitRow({
 function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
     return (
         <div className="relative">
-            {/* Glow */}
+            {/* Glow - optimized */}
             <div
-                className="absolute -inset-4 rounded-3xl blur-3xl opacity-20"
+                className="absolute -inset-2 rounded-3xl blur-xl opacity-15"
                 style={{ backgroundColor: benefit.accent }}
             />
 
@@ -215,16 +215,14 @@ function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
 
                     {/* Abstract visualization */}
                     <div className="space-y-4">
-                        {/* Animated bars */}
+                        {/* Static bars - removed animation for performance */}
                         <div className="flex items-end gap-2 h-20">
                             {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.5].map((height, i) => (
-                                <motion.div
+                                <div
                                     key={i}
-                                    initial={{ height: 0 }}
-                                    whileInView={{ height: `${height * 100}%` }}
-                                    transition={{ duration: 0.5, delay: i * 0.1 }}
                                     className="flex-1 rounded-full"
                                     style={{
+                                        height: `${height * 100}%`,
                                         backgroundColor: i % 2 === 0 ? benefit.accent : `${benefit.accent}40`
                                     }}
                                 />

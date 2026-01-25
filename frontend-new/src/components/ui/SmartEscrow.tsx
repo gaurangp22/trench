@@ -9,10 +9,10 @@ export function SmartEscrow() {
 
     return (
         <section ref={ref} className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Background Effects */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-600/8 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/4" />
-                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-teal-600/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/4" />
+            {/* Background Effects - optimized */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/4" />
+                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-600/8 rounded-full blur-[60px] translate-y-1/2 -translate-x-1/4" />
             </div>
 
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
@@ -93,11 +93,11 @@ export function SmartEscrow() {
                         className="order-1 lg:order-2"
                     >
                         <div className="relative">
-                            {/* Glow */}
-                            <div className="absolute -inset-4 bg-gradient-to-br from-emerald-500/20 via-teal-500/10 to-transparent blur-3xl rounded-[2rem]" />
+                            {/* Glow - reduced */}
+                            <div className="absolute -inset-4 bg-gradient-to-br from-emerald-500/15 via-teal-500/5 to-transparent blur-xl rounded-[2rem]" />
 
                             {/* Main Card */}
-                            <div className="relative bg-[#0a0a0c]/90 backdrop-blur-xl border border-white/[0.08] rounded-[2rem] overflow-hidden">
+                            <div className="relative bg-[#0a0a0c] border border-white/[0.08] rounded-[2rem] overflow-hidden">
                                 {/* Top gradient line */}
                                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
 
@@ -123,8 +123,8 @@ export function SmartEscrow() {
 
                                     {/* Main Value Display */}
                                     <div className="relative bg-gradient-to-br from-black/60 to-black/40 rounded-2xl p-8 border border-white/[0.04] mb-8">
-                                        {/* Subtle shimmer */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/5 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
+                                        {/* Subtle gradient overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/5 to-transparent" />
 
                                         <div className="relative text-center">
                                             <div className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-3">
@@ -181,11 +181,7 @@ export function SmartEscrow() {
                                 transition={{ duration: 0.5, delay: 0.8 }}
                                 className="absolute -right-4 top-24 hidden lg:block"
                             >
-                                <motion.div
-                                    animate={{ y: [0, -8, 0] }}
-                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                    className="bg-[#111113] border border-white/[0.08] p-4 rounded-xl shadow-2xl"
-                                >
+                                <div className="bg-[#111113] border border-white/[0.08] p-4 rounded-xl shadow-2xl">
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
                                             <CheckCircle size={16} weight="duotone" className="text-emerald-400" />
@@ -195,7 +191,7 @@ export function SmartEscrow() {
                                             <div className="text-xs text-zinc-500">Just now</div>
                                         </div>
                                     </div>
-                                </motion.div>
+                                </div>
                             </motion.div>
                         </div>
                     </motion.div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { PlusCircle, MoreVertical, Eye, Coins, Loader2, Search, Briefcase } from "lucide-react"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { EscrowService } from "@/services/escrow"

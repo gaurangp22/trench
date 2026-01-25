@@ -4,9 +4,9 @@ import {
     DollarSign, Briefcase, Users, Clock, CheckCircle2,
     Shield, Eye, MessageSquare, Wallet, Plus, AlertCircle, ArrowUpRight
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
-import { Meteors } from "@/components/ui/meteors"
+import { Meteors } from "@/components/ui/Meteors"
 
 // Mock data - realistic Web3 freelance platform data
 const CLIENT_DATA = {

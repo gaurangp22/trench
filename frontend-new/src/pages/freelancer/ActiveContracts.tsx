@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { MessageSquare, Loader2, Search, Briefcase, Shield, CheckCircle, Clock, ChevronRight } from "lucide-react"
-import { BorderBeam } from "@/components/ui/border-beam"
+import { BorderBeam } from "@/components/ui/BorderBeam"
 import { cn } from "@/lib/utils"
 import { ContractAPI, MessageAPI, type Contract } from "@/lib/api"
 

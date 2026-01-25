@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import { MessageAPI, type Conversation, type Message } from "@/lib/api"
 

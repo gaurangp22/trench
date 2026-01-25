@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Button } from "@/components/ui/button"
-import { GradientSlideButton } from "@/components/ui/gradient-slide-button"
+import { Button } from "@/components/ui/Button"
+import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import {
     ArrowLeft, Shield, CheckCircle, Clock, MessageSquare,
     Loader2, Star, ChevronRight, RefreshCw

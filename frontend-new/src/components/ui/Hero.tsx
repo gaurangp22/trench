@@ -198,7 +198,7 @@ const useShader = () => {
 };
 
 // HERO COMPONENT - Premium Asymmetric Design
-const PremiumHero: React.FC<HeroProps> = ({
+const Hero: React.FC<HeroProps> = ({
     headline,
     subtitle,
     primaryCTA,
@@ -309,6 +309,6 @@ const PremiumHero: React.FC<HeroProps> = ({
     );
 };
 
-export default PremiumHero;
-export { PremiumHero };
+export default Hero;
+export { Hero };
 export type { HeroProps };

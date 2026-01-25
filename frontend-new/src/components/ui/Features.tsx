@@ -65,16 +65,16 @@ const freelancerSteps = [
     }
 ];
 
-export function PremiumFeatures() {
+export function Features() {
     const [activeTab, setActiveTab] = useState<'client' | 'freelancer'>('client');
     const containerRef = useRef<HTMLDivElement>(null);
     const steps = activeTab === 'client' ? clientSteps : freelancerSteps;
 
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Background gradient */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-emerald-600/5 rounded-full blur-[150px]" />
+            {/* Background gradient - optimized */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-emerald-600/8 rounded-full blur-[60px]" />
             </div>
 
             <div className="container max-w-6xl mx-auto px-6 relative z-10">
@@ -97,7 +97,7 @@ export function PremiumFeatures() {
                     </h2>
 
                     {/* Toggle */}
-                    <div className="inline-flex mt-8 p-1.5 bg-white/[0.03] backdrop-blur border border-white/[0.06] rounded-full">
+                    <div className="inline-flex mt-8 p-1.5 bg-[#0a0a0c] border border-white/[0.06] rounded-full">
                         <button
                             onClick={() => setActiveTab('client')}
                             className={cn(

@@ -4,9 +4,9 @@ import {
     DollarSign, Briefcase, FileText, TrendingUp, CheckCircle2,
     Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet, Zap
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
-import { Meteors } from "@/components/ui/meteors"
+import { Meteors } from "@/components/ui/Meteors"
 
 
 // Mock data - realistic Web3 freelancer profile

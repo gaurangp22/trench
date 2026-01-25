@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { Loader2, ArrowUpRight, Search } from "lucide-react"
 import { ProposalAPI, type Proposal } from "@/lib/api"
 import { cn } from "@/lib/utils"

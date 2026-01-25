@@ -5,7 +5,7 @@ import {
     Star, MapPin, Calendar, ShieldCheck, Briefcase,
     MessageSquare, ChevronLeft, User, FileText, Award, Sparkles, Globe
 } from "lucide-react";
-import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
+import { GradientSlideButton } from "@/components/ui/GradientSlideButton";
 import { ProfileAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type PortfolioItem } from "@/lib/api";
 import { PortfolioTab } from "@/components/portfolio/PortfolioTab";
 import { cn } from "@/lib/utils";

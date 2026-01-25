@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Shield, CheckCircle, Clock, HelpCircle, ExternalLink } from "lucide-react"
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 
 // Mock escrow data - in production, fetch from blockchain

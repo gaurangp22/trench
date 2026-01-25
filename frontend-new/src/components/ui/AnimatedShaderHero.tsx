@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { GradientSlideButton } from './gradient-slide-button';
+import { GradientSlideButton } from './GradientSlideButton';
 
 // Types for component props
 interface HeroProps {

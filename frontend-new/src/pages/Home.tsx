@@ -1,10 +1,10 @@
-import { PremiumHero } from "@/components/ui/premium-hero"
-import { SmartEscrow } from "@/components/ui/smart-escrow"
-import { PremiumCategories } from "@/components/ui/premium-categories"
-import { PremiumFeatures } from "@/components/ui/premium-features"
-import { PremiumBenefits } from "@/components/ui/premium-benefits"
-import { PremiumCTA } from "@/components/ui/premium-cta"
-import { Testimonials } from "@/components/ui/testimonials"
+import { Hero } from "@/components/ui/Hero"
+import { SmartEscrow } from "@/components/ui/SmartEscrow"
+import { Categories } from "@/components/ui/Categories"
+import { Features } from "@/components/ui/Features"
+import { Benefits } from "@/components/ui/Benefits"
+import { CallToAction } from "@/components/ui/CallToAction"
+import { Testimonials } from "@/components/ui/Testimonials"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -48,7 +48,7 @@ export function Home() {
         <div className="min-h-screen bg-[#020204] text-white antialiased">
 
             {/* 1. Premium Hero */}
-            <PremiumHero
+            <Hero
                 headline={{
                     eyebrow: content.eyebrow,
                     main: content.main,
@@ -70,22 +70,22 @@ export function Home() {
             />
 
             {/* 2. Bento Grid Categories */}
-            <PremiumCategories />
+            <Categories />
 
             {/* 3. Smart Escrow Section */}
             <SmartEscrow />
 
             {/* 4. Interactive How It Works */}
-            <PremiumFeatures />
+            <Features />
 
             {/* 5. Benefits Cards */}
-            <PremiumBenefits />
+            <Benefits />
 
             {/* 6. Testimonials */}
             <Testimonials />
 
             {/* 7. Final Call To Action */}
-            <PremiumCTA />
+            <CallToAction />
         </div>
     )
 }

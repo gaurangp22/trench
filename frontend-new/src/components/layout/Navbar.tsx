@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useWalletModal } from "@solana/wallet-adapter-react-ui"
-import { GradientSlideButton } from "@/components/ui/gradient-slide-button"
+import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { useAuth } from "@/context/AuthContext"
 
 export function Navbar() {

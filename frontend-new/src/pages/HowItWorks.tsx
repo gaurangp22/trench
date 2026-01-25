@@ -1,7 +1,7 @@
 import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, useInView } from "framer-motion"
-import { GradientSlideButton } from "@/components/ui/gradient-slide-button"
+import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import {
     FileText, Users, ShieldCheck, CheckCircle2, UserCircle, Search,
     Briefcase, Wallet, ArrowRight, Sparkles, Lock, Zap, Globe

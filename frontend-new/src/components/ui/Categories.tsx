@@ -60,13 +60,13 @@ const categories = [
     },
 ];
 
-export function PremiumCategories() {
+export function Categories() {
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
-            {/* Ambient background */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/4 left-0 w-[500px] h-[500px] bg-emerald-600/8 rounded-full blur-[150px]" />
-                <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[150px]" />
+            {/* Ambient background - optimized */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/4 left-0 w-[250px] h-[250px] bg-emerald-600/10 rounded-full blur-[60px]" />
+                <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-blue-600/8 rounded-full blur-[60px]" />
             </div>
 
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
@@ -112,12 +112,10 @@ export function PremiumCategories() {
                             `bg-gradient-to-br ${categories[0].gradient}`
                         )} style={{ opacity: 0.08 }} />
 
-                        {/* Animated gradient orb */}
-                        <motion.div
-                            className="absolute -top-20 -right-20 w-[400px] h-[400px] rounded-full blur-[100px] opacity-30 group-hover:opacity-50 transition-opacity duration-700"
+                        {/* Gradient orb - optimized */}
+                        <div
+                            className="absolute -top-10 -right-10 w-[200px] h-[200px] rounded-full blur-[40px] opacity-30 group-hover:opacity-50 transition-opacity duration-700"
                             style={{ background: `linear-gradient(135deg, #8B5CF6, #A855F7, #7C3AED)` }}
-                            animate={{ scale: [1, 1.1, 1], rotate: [0, 10, 0] }}
-                            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                         />
 
                         <div className="relative p-10 md:p-14 flex flex-col md:flex-row md:items-center justify-between gap-8">

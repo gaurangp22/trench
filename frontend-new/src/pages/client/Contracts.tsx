@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/Button"
 import {
     Search, Shield, ChevronRight, Loader2, FileText
 } from "lucide-react"

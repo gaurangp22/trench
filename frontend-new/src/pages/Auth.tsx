@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { motion, useInView } from "framer-motion"
-import { GradientSlideButton } from "@/components/ui/gradient-slide-button"
+import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { useAuth } from "@/context/AuthContext"
 import { ArrowRight, Mail, Lock, User, Briefcase, Shield, Zap, Check } from "lucide-react"
 import { cn } from "@/lib/utils"

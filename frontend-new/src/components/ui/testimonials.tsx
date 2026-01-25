@@ -1,4 +1,4 @@
-import { Marquee } from "@/components/ui/marquee"
+import { Marquee } from "@/components/ui/Marquee"
 import { Star } from "lucide-react"
 
 const testimonials = [
@@ -62,7 +62,7 @@ const testimonials = [
 
 function TestimonialCard({ item }: { item: typeof testimonials[0] }) {
     return (
-        <div className="relative flex h-full w-[340px] flex-col items-start justify-between rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm p-5 transition-all hover:border-white/20 hover:bg-zinc-900/80">
+        <div className="relative flex h-full w-[340px] flex-col items-start justify-between rounded-2xl border border-white/10 bg-zinc-900/80 p-5 transition-all hover:border-white/20 hover:bg-zinc-900">
             {/* Rating */}
             <div className="flex gap-0.5 mb-3">
                 {Array(item.rating).fill(0).map((_, i) => (

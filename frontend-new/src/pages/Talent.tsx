@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { useSearchParams, Link } from "react-router-dom"
 import { Search, MapPin, Star, ShieldCheck, Users, Sparkles } from "lucide-react"
 import { motion, useInView } from "framer-motion"
-import { GradientSlideButton } from "@/components/ui/gradient-slide-button"
+import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { fetchTalent, type ProfileResponse } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
