@@ -28,7 +28,7 @@ const GradientSlideButton = React.forwardRef<
       <button
         ref={ref}
         className={cn(
-          "group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-3 text-sm font-medium transition-all duration-300",
+          "group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-3 text-sm font-medium transition-all duration-300 cursor-pointer",
           "bg-white/10 backdrop-blur-sm border border-white/20",
           "hover:border-white/40 hover:shadow-lg",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",

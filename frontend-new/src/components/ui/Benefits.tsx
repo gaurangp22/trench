@@ -1,5 +1,32 @@
 import { ShieldCheck, Lightning, GlobeHemisphereWest, SealCheck } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useRef, useEffect, useState } from "react";
+
+// Optimized hook - only triggers once when element enters viewport
+function useInViewOnce(threshold = 0.2) {
+    const ref = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const element = ref.current;
+        if (!element) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect(); // Stop observing after first trigger
+                }
+            },
+            { threshold }
+        );
+
+        observer.observe(element);
+        return () => observer.disconnect();
+    }, [threshold]);
+
+    return { ref, isVisible };
+}
 
 const benefits = [
     {
@@ -53,11 +80,87 @@ const benefits = [
 ];
 
 export function Benefits() {
+    const headerView = useInViewOnce(0.3);
+
     return (
         <section className="py-32 bg-[#020204] relative overflow-hidden">
+            {/* CSS Keyframes for animations */}
+            <style>{`
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(30px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                @keyframes fadeInLeft {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-40px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                @keyframes fadeInRight {
+                    from {
+                        opacity: 0;
+                        transform: translateX(40px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+                @keyframes scaleIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.9);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+                @keyframes growBar {
+                    from {
+                        transform: scaleY(0);
+                    }
+                    to {
+                        transform: scaleY(1);
+                    }
+                }
+                .animate-fade-in-up {
+                    animation: fadeInUp 0.7s ease-out forwards;
+                }
+                .animate-fade-in-left {
+                    animation: fadeInLeft 0.7s ease-out forwards;
+                }
+                .animate-fade-in-right {
+                    animation: fadeInRight 0.7s ease-out forwards;
+                }
+                .animate-scale-in {
+                    animation: scaleIn 0.6s ease-out forwards;
+                }
+                .animate-grow-bar {
+                    transform-origin: bottom;
+                    animation: growBar 0.8s ease-out forwards;
+                }
+            `}</style>
+
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
                 {/* Header */}
-                <div className="max-w-3xl mb-24">
+                <div
+                    ref={headerView.ref}
+                    className={cn(
+                        "max-w-3xl mb-24 opacity-0",
+                        headerView.isVisible && "animate-fade-in-up"
+                    )}
+                >
                     <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
                         Why TrenchJobs
                     </span>
@@ -80,6 +183,7 @@ export function Benefits() {
                             key={benefit.title}
                             benefit={benefit}
                             isReversed={index % 2 === 1}
+                            index={index}
                         />
                     ))}
                 </div>
@@ -90,20 +194,34 @@ export function Benefits() {
 
 function BenefitRow({
     benefit,
-    isReversed
+    isReversed,
+    index
 }: {
     benefit: typeof benefits[0];
     isReversed: boolean;
+    index: number;
 }) {
+    const rowView = useInViewOnce(0.2);
+    const contentAnimation = isReversed ? 'animate-fade-in-right' : 'animate-fade-in-left';
+    const visualAnimation = isReversed ? 'animate-fade-in-left' : 'animate-fade-in-right';
+
     return (
         <div
+            ref={rowView.ref}
             className={cn(
                 "grid lg:grid-cols-2 gap-12 lg:gap-20 items-center",
                 isReversed && "lg:grid-flow-dense"
             )}
         >
             {/* Content */}
-            <div className={isReversed ? "lg:col-start-2" : ""}>
+            <div
+                className={cn(
+                    "opacity-0",
+                    isReversed ? "lg:col-start-2" : "",
+                    rowView.isVisible && contentAnimation
+                )}
+                style={{ animationDelay: '0.1s' }}
+            >
                 <div
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6"
                     style={{
@@ -142,18 +260,25 @@ function BenefitRow({
             </div>
 
             {/* Visual */}
-            <div className={isReversed ? "lg:col-start-1 lg:row-start-1" : ""}>
-                <BenefitVisual benefit={benefit} />
+            <div
+                className={cn(
+                    "opacity-0",
+                    isReversed ? "lg:col-start-1 lg:row-start-1" : "",
+                    rowView.isVisible && visualAnimation
+                )}
+                style={{ animationDelay: '0.2s' }}
+            >
+                <BenefitVisual benefit={benefit} isVisible={rowView.isVisible} />
             </div>
         </div>
     );
 }
 
-function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
+function BenefitVisual({ benefit, isVisible }: { benefit: typeof benefits[0]; isVisible: boolean }) {
     return (
         <div className="relative">
             {/* Card */}
-            <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]">
+            <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809] transition-all duration-500 hover:border-white/[0.15]">
                 {/* Gradient accent line */}
                 <div
                     className={cn(
@@ -165,10 +290,14 @@ function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
                 <div className="p-8 md:p-10">
                     {/* Large Icon */}
                     <div
-                        className="w-20 h-20 rounded-2xl flex items-center justify-center mb-8"
+                        className={cn(
+                            "w-20 h-20 rounded-2xl flex items-center justify-center mb-8 opacity-0",
+                            isVisible && "animate-scale-in"
+                        )}
                         style={{
                             background: `linear-gradient(135deg, ${benefit.accent}20, ${benefit.accent}05)`,
-                            border: `1px solid ${benefit.accent}30`
+                            border: `1px solid ${benefit.accent}30`,
+                            animationDelay: '0.3s'
                         }}
                     >
                         <benefit.Icon
@@ -180,15 +309,20 @@ function BenefitVisual({ benefit }: { benefit: typeof benefits[0] }) {
 
                     {/* Abstract visualization */}
                     <div className="space-y-4">
-                        {/* Static bars */}
+                        {/* Animated bars */}
                         <div className="flex items-end gap-2 h-20">
                             {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.5].map((height, i) => (
                                 <div
                                     key={i}
-                                    className="flex-1 rounded-full"
+                                    className={cn(
+                                        "flex-1 rounded-full",
+                                        isVisible && "animate-grow-bar"
+                                    )}
                                     style={{
                                         height: `${height * 100}%`,
-                                        backgroundColor: i % 2 === 0 ? benefit.accent : `${benefit.accent}40`
+                                        backgroundColor: i % 2 === 0 ? benefit.accent : `${benefit.accent}40`,
+                                        animationDelay: `${0.4 + i * 0.08}s`,
+                                        transform: isVisible ? undefined : 'scaleY(0)'
                                     }}
                                 />
                             ))}

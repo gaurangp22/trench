@@ -98,7 +98,7 @@ export function Features() {
                         <button
                             onClick={() => setActiveTab('client')}
                             className={cn(
-                                "relative px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
+                                "relative px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer",
                                 activeTab === 'client'
                                     ? "text-white"
                                     : "text-zinc-500 hover:text-zinc-300"
@@ -116,7 +116,7 @@ export function Features() {
                         <button
                             onClick={() => setActiveTab('freelancer')}
                             className={cn(
-                                "relative px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
+                                "relative px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer",
                                 activeTab === 'freelancer'
                                     ? "text-white"
                                     : "text-zinc-500 hover:text-zinc-300"
@@ -297,7 +297,7 @@ function StepVisual({ step }: { step: typeof clientSteps[0] }) {
                 </div>
 
                 {/* Action hint */}
-                <div className="mt-6 flex items-center gap-2 text-sm" style={{ color: step.accent }}>
+                <div className="mt-6 flex items-center gap-2 text-sm cursor-pointer hover:opacity-80 transition-opacity" style={{ color: step.accent }}>
                     <span className="font-medium">Learn more</span>
                     <CaretRight size={16} weight="bold" />
                 </div>

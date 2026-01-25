@@ -73,7 +73,7 @@ export function SmartEscrow() {
                         >
                             <a
                                 href="/how-it-works"
-                                className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors group"
+                                className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors group cursor-pointer"
                             >
                                 <span className="font-medium">Learn how escrow works</span>
                                 <ArrowRight size={16} weight="bold" className="group-hover:translate-x-1 transition-transform" />

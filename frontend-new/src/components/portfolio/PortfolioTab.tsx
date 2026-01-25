@@ -41,7 +41,7 @@ export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: P
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-2 px-4 py-2 bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg text-zinc-300 hover:text-white transition-all group"
+                                    className="flex items-center gap-2 px-4 py-2 bg-zinc-800/50 hover:bg-zinc-700/50 border border-zinc-700 rounded-lg text-zinc-300 hover:text-white transition-all group cursor-pointer"
                                 >
                                     <Icon className="w-4 h-4" />
                                     <span className="text-sm font-medium">
@@ -62,54 +62,64 @@ export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: P
                         My Work
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {tokenWork.map((token) => (
-                            <div
-                                key={token.id}
-                                className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 hover:border-purple-500/50 transition-all group"
-                            >
-                                <div className="flex items-center gap-3 mb-3">
-                                    {token.token_image_url ? (
-                                        <img
-                                            src={token.token_image_url}
-                                            alt={token.token_name || "Token"}
-                                            className="w-12 h-12 rounded-full object-cover ring-2 ring-zinc-700"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).style.display = 'none';
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-                                            {token.token_symbol?.charAt(0) || "?"}
+                        {tokenWork.map((token) => {
+                            const tokenUrl = token.chain === 'solana'
+                                ? `https://dexscreener.com/solana/${token.contract_address}`
+                                : `https://dexscreener.com/${token.chain}/${token.contract_address}`;
+
+                            return (
+                                <a
+                                    key={token.id}
+                                    href={tokenUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-zinc-800/50 border border-zinc-700 rounded-xl p-4 hover:border-purple-500/50 transition-all group cursor-pointer block"
+                                >
+                                    <div className="flex items-center gap-3 mb-3">
+                                        {token.token_image_url ? (
+                                            <img
+                                                src={token.token_image_url}
+                                                alt={token.token_name || "Token"}
+                                                className="w-12 h-12 rounded-full object-cover ring-2 ring-zinc-700"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                }}
+                                            />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                                                {token.token_symbol?.charAt(0) || "?"}
+                                            </div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-white font-medium truncate group-hover:text-purple-400 transition-colors">
+                                                {token.token_name || "Unknown Token"}
+                                            </h4>
+                                            <p className="text-sm text-zinc-400">
+                                                ${token.token_symbol || "???"}
+                                            </p>
                                         </div>
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className="text-white font-medium truncate group-hover:text-purple-400 transition-colors">
-                                            {token.token_name || "Unknown Token"}
-                                        </h4>
-                                        <p className="text-sm text-zinc-400">
-                                            ${token.token_symbol || "???"}
-                                        </p>
+                                        <ExternalLink className="w-4 h-4 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
-                                </div>
 
-                                {/* ATH Badge */}
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-zinc-500 uppercase tracking-wider">
-                                        ATH Market Cap
-                                    </span>
-                                    <span className="px-2 py-1 bg-green-500/10 border border-green-500/20 rounded text-green-400 text-sm font-medium">
-                                        {formatMarketCap(token.ath_market_cap)}
-                                    </span>
-                                </div>
+                                    {/* ATH Badge */}
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-zinc-500 uppercase tracking-wider">
+                                            ATH Market Cap
+                                        </span>
+                                        <span className="px-2 py-1 bg-green-500/10 border border-green-500/20 rounded text-green-400 text-sm font-medium">
+                                            {formatMarketCap(token.ath_market_cap)}
+                                        </span>
+                                    </div>
 
-                                {/* Chain indicator */}
-                                <div className="mt-2 pt-2 border-t border-zinc-700/50">
-                                    <span className="text-xs text-zinc-500">
-                                        {token.chain === 'solana' ? '◎ Solana' : token.chain}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
+                                    {/* Chain indicator */}
+                                    <div className="mt-2 pt-2 border-t border-zinc-700/50">
+                                        <span className="text-xs text-zinc-500">
+                                            {token.chain === 'solana' ? '◎ Solana' : token.chain}
+                                        </span>
+                                    </div>
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
             )}
@@ -127,7 +137,7 @@ export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: P
                                 href={item.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group relative aspect-square bg-zinc-800/50 border border-zinc-700 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all"
+                                className="group relative aspect-square bg-zinc-800/50 border border-zinc-700 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all cursor-pointer"
                             >
                                 {item.image_url ? (
                                     <img

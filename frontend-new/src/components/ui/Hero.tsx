@@ -264,24 +264,46 @@ const Hero: React.FC<HeroProps> = ({
                     {/* Audience Toggle */}
                     {audienceToggle && (
                         <div className="mb-8 animate-[fadeIn_0.6s_ease-out]">
-                            <div className="inline-flex items-center gap-1 p-1 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full">
+                            <style>{`
+                                .toggle-btn-filled .gradient-fill {
+                                    transform: translateX(0) !important;
+                                }
+                            `}</style>
+                            <div className="inline-flex items-center gap-2 p-1.5 bg-white/5 backdrop-blur-sm rounded-full border border-white/10">
+                                {/* Client Button */}
                                 <button
                                     onClick={() => audienceToggle.setAudienceType('client')}
-                                    className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-200 ${audienceToggle.audienceType === 'client'
-                                        ? 'bg-white text-black'
-                                        : 'text-zinc-500 hover:text-white'
-                                        }`}
+                                    className={`group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300 bg-white/10 border border-white/20 hover:border-white/40 hover:shadow-lg cursor-pointer ${
+                                        audienceToggle.audienceType === 'client' ? 'toggle-btn-filled' : ''
+                                    }`}
                                 >
-                                    I'm a Client
+                                    <span
+                                        className={`gradient-fill absolute inset-0 transition-transform duration-500 ease-out ${
+                                            audienceToggle.audienceType === 'client'
+                                                ? 'translate-x-0'
+                                                : '-translate-x-full group-hover:translate-x-0'
+                                        }`}
+                                        style={{ background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }}
+                                    />
+                                    <span className="relative z-10 text-white">I'm a Client</span>
                                 </button>
+
+                                {/* Freelancer Button */}
                                 <button
                                     onClick={() => audienceToggle.setAudienceType('freelancer')}
-                                    className={`px-5 py-2 text-sm font-medium rounded-full transition-all duration-200 ${audienceToggle.audienceType === 'freelancer'
-                                        ? 'bg-white text-black'
-                                        : 'text-zinc-500 hover:text-white'
-                                        }`}
+                                    className={`group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300 bg-white/10 border border-white/20 hover:border-white/40 hover:shadow-lg cursor-pointer ${
+                                        audienceToggle.audienceType === 'freelancer' ? 'toggle-btn-filled' : ''
+                                    }`}
                                 >
-                                    I'm a Freelancer
+                                    <span
+                                        className={`gradient-fill absolute inset-0 transition-transform duration-500 ease-out ${
+                                            audienceToggle.audienceType === 'freelancer'
+                                                ? 'translate-x-0'
+                                                : '-translate-x-full group-hover:translate-x-0'
+                                        }`}
+                                        style={{ background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }}
+                                    />
+                                    <span className="relative z-10 text-white">I'm a Freelancer</span>
                                 </button>
                             </div>
                         </div>
@@ -318,7 +340,7 @@ const Hero: React.FC<HeroProps> = ({
                     <div className="mt-10 flex flex-wrap items-center gap-4 animate-[fadeInUp_0.8s_ease-out_0.5s_both]">
                         <button
                             onClick={primaryCTA.onClick}
-                            className="group relative px-8 py-4 bg-white text-black rounded-full font-heading font-semibold text-base transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:scale-[1.02]"
+                            className="group relative px-8 py-4 bg-white text-black rounded-full font-heading font-semibold text-base transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:scale-[1.02] cursor-pointer"
                         >
                             <span className="flex items-center gap-2">
                                 {primaryCTA.text}
@@ -331,7 +353,7 @@ const Hero: React.FC<HeroProps> = ({
                         {secondaryCTA && (
                             <button
                                 onClick={secondaryCTA.onClick}
-                                className="px-6 py-4 text-zinc-400 hover:text-white font-medium text-base transition-colors duration-300"
+                                className="px-6 py-4 text-zinc-400 hover:text-white font-medium text-base transition-colors duration-300 cursor-pointer"
                             >
                                 {secondaryCTA.text}
                             </button>

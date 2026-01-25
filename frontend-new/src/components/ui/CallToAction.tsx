@@ -48,7 +48,7 @@ export function CallToAction() {
 
                     <button
                         onClick={() => navigate('/jobs')}
-                        className="h-14 px-8 text-base font-medium text-white border border-white/10 hover:bg-white/5 rounded-full transition-all"
+                        className="h-14 px-8 text-base font-medium text-white border border-white/10 hover:bg-white/5 rounded-full transition-all cursor-pointer"
                     >
                         Browse Opportunities
                     </button>

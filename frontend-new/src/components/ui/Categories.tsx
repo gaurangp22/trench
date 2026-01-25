@@ -212,7 +212,7 @@ export function Categories() {
                 >
                     <Link
                         to="/jobs"
-                        className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group"
+                        className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group cursor-pointer"
                     >
                         <span className="text-sm font-medium">View all categories</span>
                         <ArrowUpRight size={16} weight="bold" className=" group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
