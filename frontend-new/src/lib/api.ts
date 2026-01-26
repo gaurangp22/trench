@@ -85,6 +85,11 @@ export interface Profile {
     avatar_url?: string;
     available_for_hire: boolean;
     created_at: string;
+    // Stats fields from backend
+    total_jobs_completed?: number;
+    total_earnings_sol?: number;
+    average_rating?: number;
+    total_reviews?: number;
 }
 
 export interface ProfileResponse {
@@ -150,7 +155,7 @@ export interface Proposal {
 
 export interface CreateProposalRequest {
     cover_letter: string;
-    proposed_rate: number;
+    proposed_rate: number;  // Frontend field - will be mapped to proposed_rate_sol
     estimated_duration: string;
 }
 
@@ -163,7 +168,7 @@ export interface Contract {
     title: string;
     description?: string;
     total_amount: number;
-    status: 'active' | 'completed' | 'cancelled' | 'disputed';
+    status: 'pending' | 'active' | 'completed' | 'cancelled' | 'disputed';
     escrow_address?: string;
     created_at: string;
     milestones?: Milestone[];
@@ -205,13 +210,14 @@ export const AuthAPI = {
         return res.data;
     },
 
-    signup: async (email: string, password: string, username: string, role: 'client' | 'freelancer') => {
+    signup: async (email: string, password: string, username: string, role: 'client' | 'freelancer', walletAddress?: string) => {
         const res = await api.post('/auth/signup', {
             email,
             password,
             username,
             is_client: role === 'client',
-            is_freelancer: role === 'freelancer'
+            is_freelancer: role === 'freelancer',
+            ...(walletAddress && { wallet_address: walletAddress })
         });
         if (res.data.token) {
             localStorage.setItem('token', res.data.token);
@@ -289,22 +295,87 @@ export interface JobSearchParams {
 export const JobAPI = {
     search: async (params?: JobSearchParams): Promise<{ jobs: Job[]; total: number }> => {
         const res = await api.get('/jobs', { params });
-        return res.data;
+        const rawJobs = res.data.jobs || [];
+        // Map backend fields to frontend fields
+        const jobs = rawJobs.map((rawJob: any) => ({
+            id: rawJob.id,
+            title: rawJob.title,
+            description: rawJob.description || '',
+            budget: rawJob.budget_min_sol || rawJob.budget || 0,
+            budget_type: rawJob.payment_type === 'hourly' ? 'hourly' : 'fixed',
+            difficulty: rawJob.complexity || 'intermediate',
+            status: rawJob.status || 'open',
+            created_at: rawJob.created_at,
+            client_id: rawJob.client_id,
+            skills: rawJob.skills || [],
+            category_id: rawJob.category_id,
+            proposal_count: rawJob.proposal_count || 0,
+            escrow_funded: rawJob.escrow_funded || false,
+        }));
+        return { jobs, total: res.data.total || jobs.length };
     },
 
     getById: async (id: string): Promise<Job> => {
         const res = await api.get(`/jobs/${id}`);
-        return res.data;
+        // Backend returns {job: {...}, skills: [...]}
+        const rawJob = res.data.job || res.data;
+        // Map backend fields to frontend fields
+        const job: Job = {
+            id: rawJob.id,
+            title: rawJob.title,
+            description: rawJob.description || '',
+            budget: rawJob.budget_min_sol || rawJob.budget || 0,
+            budget_type: rawJob.payment_type === 'hourly' ? 'hourly' : 'fixed',
+            difficulty: rawJob.complexity || 'intermediate',
+            status: rawJob.status || 'open',
+            created_at: rawJob.created_at,
+            client_id: rawJob.client_id,
+            skills: res.data.skills?.map((s: any) => s.name || s) || rawJob.skills || [],
+            category_id: rawJob.category_id,
+            proposal_count: rawJob.proposal_count || 0,
+            escrow_funded: rawJob.escrow_funded || false,
+            client: rawJob.client,
+        };
+        return job;
     },
 
     getMyJobs: async (): Promise<Job[]> => {
         const res = await api.get('/jobs/mine');
-        return res.data.jobs || res.data;
+        // Ensure we always return an array
+        const rawJobs = Array.isArray(res.data) ? res.data : (res.data?.jobs || []);
+        // Map backend fields to frontend fields
+        return rawJobs.map((rawJob: any) => ({
+            id: rawJob.id,
+            title: rawJob.title,
+            description: rawJob.description || '',
+            budget: rawJob.budget_min_sol || rawJob.budget || 0,
+            budget_type: rawJob.payment_type === 'hourly' ? 'hourly' : 'fixed',
+            difficulty: rawJob.complexity || 'intermediate',
+            status: rawJob.status || 'open',
+            created_at: rawJob.created_at,
+            client_id: rawJob.client_id,
+            skills: rawJob.skills || [],
+            category_id: rawJob.category_id,
+            proposal_count: rawJob.proposal_count || 0,
+            escrow_funded: rawJob.escrow_funded || false,
+        }));
     },
 
     create: async (data: CreateJobRequest): Promise<Job> => {
-        const res = await api.post('/jobs', data);
-        return res.data;
+        // Transform frontend fields to backend fields
+        const backendData = {
+            title: data.title,
+            description: data.description,
+            payment_type: data.budget_type === 'hourly' ? 'hourly' : 'fixed',
+            budget_min_sol: data.budget,
+            budget_max_sol: data.budget,
+            complexity: data.difficulty,
+            visibility: 'public',
+            category_id: data.category_id,
+            skills: data.skills,
+        };
+        const res = await api.post('/jobs', backendData);
+        return res.data?.job || res.data;
     },
 
     update: async (id: string, data: Partial<CreateJobRequest>): Promise<Job> => {
@@ -330,12 +401,28 @@ export const JobAPI = {
     // Proposals for a job
     getProposals: async (jobId: string): Promise<{ proposals: Proposal[]; total: number }> => {
         const res = await api.get(`/jobs/${jobId}/proposals`);
-        return res.data;
+        const rawProposals = res.data.proposals || [];
+        // Map backend fields to frontend fields
+        const proposals = rawProposals.map((p: any) => ({
+            ...p,
+            proposed_rate: p.proposed_rate_sol || p.proposed_rate || 0,
+            estimated_duration: p.estimated_duration || 'Not specified',
+            created_at: p.submitted_at || p.created_at || new Date().toISOString(),
+            status: p.status === 'submitted' ? 'pending' : p.status,
+        }));
+        return { proposals, total: res.data.total || proposals.length };
     },
 
     submitProposal: async (jobId: string, data: CreateProposalRequest): Promise<Proposal> => {
-        const res = await api.post(`/jobs/${jobId}/proposals`, data);
-        return res.data;
+        // Transform frontend fields to backend fields
+        const backendData = {
+            cover_letter: data.cover_letter,
+            proposed_rate_sol: data.proposed_rate,
+            proposed_amount_sol: data.proposed_rate,
+            estimated_duration: data.estimated_duration,
+        };
+        const res = await api.post(`/jobs/${jobId}/proposals`, backendData);
+        return res.data?.proposal || res.data;
     }
 };
 
@@ -346,7 +433,29 @@ export const JobAPI = {
 export const ProposalAPI = {
     getMyProposals: async (): Promise<{ proposals: Proposal[]; total: number }> => {
         const res = await api.get('/proposals/mine');
-        return res.data;
+        const rawProposals = res.data.proposals || [];
+        // Map backend fields to frontend fields
+        const proposals = rawProposals.map((p: any) => ({
+            ...p,
+            proposed_rate: p.proposed_rate_sol || p.proposed_rate || 0,
+            estimated_duration: p.estimated_duration || 'Not specified',
+            created_at: p.submitted_at || p.created_at || new Date().toISOString(),
+            status: p.status === 'submitted' ? 'pending' : p.status,
+            // Map job data from backend
+            job: p.job ? {
+                id: p.job.id,
+                title: p.job.title,
+                status: p.job.status,
+                budget: p.job.budget_min_sol || 0,
+                payment_type: p.job.payment_type,
+                client: p.job.client ? {
+                    id: p.job.client.id,
+                    display_name: p.job.client.display_name || p.job.client.username,
+                    avatar_url: p.job.client.avatar_url,
+                } : undefined
+            } : undefined
+        }));
+        return { proposals, total: res.data.total || proposals.length };
     },
 
     getById: async (id: string): Promise<Proposal> => {
@@ -402,6 +511,11 @@ export const ProfileAPI = {
 
     update: async (data: Partial<Profile>): Promise<Profile> => {
         const res = await api.put('/profile', data);
+        return res.data;
+    },
+
+    create: async (data: Partial<Profile>): Promise<Profile> => {
+        const res = await api.post('/profile', data);
         return res.data;
     },
 
@@ -487,6 +601,22 @@ export const getSkills = async (category?: string, query?: string) => {
 };
 
 // ============================================
+// Skills API
+// ============================================
+
+export const SkillsAPI = {
+    list: async (category?: string, query?: string): Promise<{ skills: { id: number; name: string; category?: string }[] }> => {
+        const res = await api.get('/skills', { params: { category, q: query } });
+        return { skills: res.data.skills || res.data || [] };
+    },
+
+    getById: async (id: string) => {
+        const res = await api.get(`/skills/${id}`);
+        return res.data;
+    }
+};
+
+// ============================================
 // Contracts API
 // ============================================
 
@@ -509,8 +639,9 @@ export const ContractAPI = {
     },
 
     hire: async (proposalId: string, milestones?: CreateMilestoneRequest[]): Promise<Contract> => {
-        const res = await api.post('/contracts', { proposal_id: proposalId, milestones });
-        return res.data;
+        // Backend expects POST /proposals/{id}/hire
+        const res = await api.post(`/proposals/${proposalId}/hire`, { milestones });
+        return res.data?.contract || res.data;
     },
 
     complete: async (id: string) => {
@@ -715,5 +846,24 @@ export const MessageAPI = {
     getUnreadCount: async (): Promise<number> => {
         const res = await api.get('/messages/unread-count');
         return res.data.unread_count;
+    }
+};
+
+// ============================================
+// Upload API
+// ============================================
+
+export const UploadAPI = {
+    // Upload a file (profile picture, portfolio image, etc.)
+    uploadFile: async (file: File): Promise<{ url: string; filename: string }> => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await api.post('/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return res.data;
     }
 };

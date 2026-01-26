@@ -18,6 +18,7 @@ type AuthService struct {
 	userRepo    repository.UserRepository
 	walletRepo  repository.WalletRepository
 	sessionRepo repository.SessionRepository
+	profileRepo repository.ProfileRepository
 	jwtManager  *utils.JWTManager
 }
 
@@ -25,12 +26,14 @@ func NewAuthService(
 	userRepo repository.UserRepository,
 	walletRepo repository.WalletRepository,
 	sessionRepo repository.SessionRepository,
+	profileRepo repository.ProfileRepository,
 	jwtManager *utils.JWTManager,
 ) *AuthService {
 	return &AuthService{
 		userRepo:    userRepo,
 		walletRepo:  walletRepo,
 		sessionRepo: sessionRepo,
+		profileRepo: profileRepo,
 		jwtManager:  jwtManager,
 	}
 }
@@ -125,6 +128,17 @@ func (s *AuthService) Signup(ctx context.Context, req *SignupRequest) (*AuthResp
 
 	if err := s.userRepo.Create(ctx, user); err != nil {
 		return nil, apperrors.NewInternal(err)
+	}
+
+	// Auto-create profile for the new user
+	profile := &domain.Profile{
+		UserID:           user.ID,
+		DisplayName:      &req.Username, // Use username as initial display name
+		AvailableForHire: true,
+	}
+	if err := s.profileRepo.Create(ctx, profile); err != nil {
+		// Log error but don't fail signup - profile can be created later
+		fmt.Printf("failed to create initial profile: %v\n", err)
 	}
 
 	// If wallet address provided, create wallet entry

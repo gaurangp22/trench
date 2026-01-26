@@ -1,20 +1,63 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { Menu, X, Zap, LayoutDashboard, LogOut, User, ChevronRight } from "lucide-react"
+import { Menu, X, Zap, LayoutDashboard, LogOut, User, ChevronRight, Wallet } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { useAuth } from "@/context/AuthContext"
+import { UserDropdown } from "./UserDropdown"
+import { WalletOnboardingModal } from "@/components/auth/WalletOnboardingModal"
 
 export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isConnecting, setIsConnecting] = useState(false)
     const { connected, publicKey, disconnect } = useWallet()
     const { setVisible } = useWalletModal()
     const location = useLocation()
     const navigate = useNavigate()
-    const { isAuthenticated, user, logout } = useAuth()
+    const { isAuthenticated, user, logout, loginWithWallet, signupWithWallet, isLoading, needsOnboarding, setNeedsOnboarding } = useAuth()
+
+    // Auto-login when wallet connects
+    useEffect(() => {
+        const autoLogin = async () => {
+            if (connected && publicKey && !isAuthenticated && !isLoading && !isConnecting && !needsOnboarding) {
+                setIsConnecting(true)
+                try {
+                    await loginWithWallet()
+                } catch (error: any) {
+                    console.error("Auto wallet login failed:", error)
+                    // If it's not a "needs signup" error, disconnect wallet
+                    if (!error.response?.data?.message?.includes('not registered') &&
+                        !error.response?.data?.error?.includes('not registered') &&
+                        error.response?.status !== 404) {
+                        disconnect()
+                    }
+                    // If needs onboarding, the modal will show (handled by AuthContext)
+                } finally {
+                    setIsConnecting(false)
+                }
+            }
+        }
+        autoLogin()
+    }, [connected, publicKey, isAuthenticated, isLoading, needsOnboarding])
+
+    const handleOnboardingComplete = async (data: { username: string; email: string; role: 'client' | 'freelancer' }) => {
+        await signupWithWallet(data.email, data.username, data.role)
+        // Navigate to dashboard after successful signup
+        navigate(data.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard')
+    }
+
+    const handleOnboardingClose = () => {
+        setNeedsOnboarding(false)
+        disconnect() // Disconnect wallet if user closes the modal
+    }
+
+    const handleConnectWallet = () => {
+        setVisible(true)
+        setIsMobileMenuOpen(false)
+    }
 
     const handleLogout = () => {
         logout()
@@ -23,8 +66,6 @@ export function Navbar() {
     }
 
     const dashboardPath = user?.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard'
-
-
 
     // Don't show on dashboard pages
     const isDashboardPage = location.pathname.startsWith('/client') || location.pathname.startsWith('/freelancer')
@@ -93,71 +134,29 @@ export function Navbar() {
 
                         {/* Right Actions */}
                         <div className="hidden md:flex items-center gap-3 shrink-0">
-                            {/* Wallet */}
-                            {connected && publicKey ? (
-                                <button
-                                    onClick={() => disconnect()}
-                                    className="flex items-center gap-2 text-[13px] font-medium text-zinc-400 hover:text-white transition-colors"
-                                >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                    {shortenAddress(publicKey.toString())}
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => setVisible(true)}
-                                    className="text-[13px] font-medium text-zinc-400 hover:text-white transition-colors"
-                                >
-                                    Connect Wallet
-                                </button>
-                            )}
-
-                            <div className="w-px h-4 bg-white/[0.1]" />
-
                             {isAuthenticated ? (
                                 <>
-                                    {/* User Info Pill */}
-                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08]">
-                                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
-                                            <User className="w-3 h-3 text-white" />
-                                        </div>
-                                        <span className="text-[13px] font-medium text-white">
-                                            {user?.display_name || user?.username || 'User'}
-                                        </span>
-                                        <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">
-                                            {user?.role}
-                                        </span>
-                                    </div>
-                                    <Link
-                                        to={dashboardPath}
-                                        className="group flex items-center gap-1.5 h-8 px-4 rounded-full bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.1] hover:border-white/[0.2] text-[13px] font-medium text-white transition-all"
-                                    >
-                                        <LayoutDashboard className="w-3.5 h-3.5" />
-                                        Dashboard
-                                        <ChevronRight className="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="flex items-center gap-1.5 h-8 px-3 rounded-full text-[13px] font-medium text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
-                                    >
-                                        <LogOut className="w-3.5 h-3.5" />
-                                    </button>
+                                    {/* User Dropdown */}
+                                    <UserDropdown />
                                 </>
                             ) : (
                                 <>
+                                    {/* Sign In */}
                                     <Link
-                                        to="/auth"
-                                        className="h-8 px-4 flex items-center text-[13px] font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/[0.05] transition-all"
+                                        to="/auth?mode=login"
+                                        className="h-8 px-4 flex items-center text-[13px] font-medium text-zinc-300 hover:text-white rounded-full hover:bg-white/[0.05] transition-all cursor-pointer"
                                     >
                                         Sign In
                                     </Link>
 
-                                    <Link to="/auth">
+                                    {/* Sign Up */}
+                                    <Link to="/auth?mode=signup">
                                         <GradientSlideButton
-                                            className="h-8 px-5 text-[13px] font-semibold rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-shadow"
+                                            className="h-9 px-5 text-[13px] font-semibold rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-shadow cursor-pointer"
                                             colorFrom="#10B981"
                                             colorTo="#14F195"
                                         >
-                                            Start Free
+                                            Sign Up
                                             <ChevronRight className="w-3.5 h-3.5 ml-1" />
                                         </GradientSlideButton>
                                     </Link>
@@ -167,7 +166,7 @@ export function Navbar() {
 
                         {/* Mobile Toggle */}
                         <button
-                            className="md:hidden p-2 text-zinc-400 hover:text-white"
+                            className="md:hidden p-2 text-zinc-400 hover:text-white cursor-pointer"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -218,29 +217,12 @@ export function Navbar() {
                                 transition={{ delay: 0.3 }}
                                 className="space-y-3"
                             >
-                                {connected && publicKey ? (
-                                    <button
-                                        onClick={() => { disconnect(); setIsMobileMenuOpen(false); }}
-                                        className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-zinc-400 bg-white/[0.03] border border-white/[0.06] rounded-xl"
-                                    >
-                                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                                        {shortenAddress(publicKey.toString())}
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => { setVisible(true); setIsMobileMenuOpen(false); }}
-                                        className="w-full h-12 text-[15px] font-medium text-zinc-300 bg-white/[0.03] border border-white/[0.06] rounded-xl"
-                                    >
-                                        Connect Wallet
-                                    </button>
-                                )}
-
                                 {isAuthenticated ? (
                                     <div className="space-y-3">
                                         {/* User Info Card */}
                                         <div className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
-                                                <User className="w-5 h-5 text-white" />
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
+                                                <User className="w-6 h-6 text-white" />
                                             </div>
                                             <div>
                                                 <div className="text-[15px] font-medium text-white">
@@ -251,16 +233,28 @@ export function Navbar() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* Wallet Address */}
+                                        {connected && publicKey && (
+                                            <div className="flex items-center gap-2 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                                                <Wallet className="w-4 h-4 text-zinc-500" />
+                                                <span className="text-xs font-mono text-zinc-400">
+                                                    {shortenAddress(publicKey.toString())}
+                                                </span>
+                                                <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400" />
+                                            </div>
+                                        )}
+
                                         <div className="grid grid-cols-2 gap-3">
                                             <Link to={dashboardPath} onClick={() => setIsMobileMenuOpen(false)}>
-                                                <button className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-xl hover:border-emerald-500/50 transition-colors">
+                                                <button className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-xl hover:border-emerald-500/50 transition-colors cursor-pointer">
                                                     <LayoutDashboard className="w-4 h-4" />
                                                     Dashboard
                                                 </button>
                                             </Link>
                                             <button
                                                 onClick={handleLogout}
-                                                className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-colors"
+                                                className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl hover:bg-red-500/20 transition-colors cursor-pointer"
                                             >
                                                 <LogOut className="w-4 h-4" />
                                                 Sign Out
@@ -269,18 +263,18 @@ export function Navbar() {
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
-                                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="block">
+                                        <Link to="/auth?mode=signup" onClick={() => setIsMobileMenuOpen(false)} className="block">
                                             <GradientSlideButton
-                                                className="w-full h-14 text-[16px] font-semibold rounded-xl shadow-lg shadow-emerald-500/20"
+                                                className="w-full h-14 text-[16px] font-semibold rounded-xl shadow-lg shadow-emerald-500/20 cursor-pointer"
                                                 colorFrom="#10B981"
                                                 colorTo="#14F195"
                                             >
-                                                Start Free
+                                                Sign Up
                                                 <ChevronRight className="w-4 h-4 ml-2" />
                                             </GradientSlideButton>
                                         </Link>
-                                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                                            <button className="w-full h-12 text-[15px] font-medium text-zinc-300 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-colors">
+                                        <Link to="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)}>
+                                            <button className="w-full h-12 text-[15px] font-medium text-zinc-300 bg-white/[0.03] border border-white/[0.06] rounded-xl hover:bg-white/[0.06] transition-colors cursor-pointer">
                                                 Already have an account? Sign In
                                             </button>
                                         </Link>
@@ -291,6 +285,16 @@ export function Navbar() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Wallet Onboarding Modal */}
+            {publicKey && (
+                <WalletOnboardingModal
+                    isOpen={needsOnboarding}
+                    onClose={handleOnboardingClose}
+                    walletAddress={publicKey.toString()}
+                    onComplete={handleOnboardingComplete}
+                />
+            )}
         </>
     )
 }

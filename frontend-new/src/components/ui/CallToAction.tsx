@@ -2,9 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { GradientSlideButton } from "./GradientSlideButton";
 import { HyperspaceBackground } from "./HyperspaceBackground";
+import { useAuth } from "@/context/AuthContext";
 
 export function CallToAction() {
     const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();
+
+    const handleGetStarted = () => {
+        if (!isAuthenticated) {
+            navigate('/auth?mode=signup');
+        } else {
+            // Navigate to dashboard based on role
+            navigate(user?.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard');
+        }
+    };
 
     return (
         <section className="relative py-32 overflow-hidden bg-black">
@@ -37,13 +48,13 @@ export function CallToAction() {
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <GradientSlideButton
-                        onClick={() => navigate('/auth')}
+                        onClick={handleGetStarted}
                         className="h-14 px-8 text-base font-medium rounded-full"
                         colorFrom="#10B981"
                         colorTo="#14F195"
                     >
-                        Get Started Now
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {isAuthenticated ? "Go to Dashboard" : "Get Started"}
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </GradientSlideButton>
 
                     <button

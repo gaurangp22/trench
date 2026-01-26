@@ -7,16 +7,24 @@ import { CallToAction } from "@/components/ui/CallToAction"
 import { Testimonials } from "@/components/ui/Testimonials"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "@/context/AuthContext"
 
 export function Home() {
     const [audienceType, setAudienceType] = useState<'client' | 'freelancer'>('client')
     const navigate = useNavigate()
+    const { isAuthenticated } = useAuth()
 
     const handlePrimaryCTA = () => {
-        if (audienceType === 'client') {
-            navigate('/client/post-job')
+        if (!isAuthenticated) {
+            // Not logged in - go to auth page
+            navigate('/auth?mode=signup')
         } else {
-            navigate('/jobs')
+            // Logged in - navigate based on audience
+            if (audienceType === 'client') {
+                navigate('/client/post-job')
+            } else {
+                navigate('/jobs')
+            }
         }
     }
 
@@ -31,14 +39,14 @@ export function Home() {
             main: "Build your dream",
             highlight: "launch team.",
             subtitle: "The first professional marketplace powered by on-chain escrow. Post jobs, fund securely, release payment when satisfied.",
-            cta: "Post a Job"
+            cta: isAuthenticated ? "Post a Job" : "Get Started"
         },
         freelancer: {
             eyebrow: "Live on Solana Mainnet",
             main: "Get hired.",
             highlight: "Get paid in SOL.",
             subtitle: "Find real work, get paid instantly in SOL. No banks, no delays—just connect your wallet and start earning.",
-            cta: "Browse Jobs"
+            cta: isAuthenticated ? "Browse Jobs" : "Get Started"
         }
     }
 

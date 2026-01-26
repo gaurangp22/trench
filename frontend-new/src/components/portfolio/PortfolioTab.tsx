@@ -23,17 +23,22 @@ const SOCIAL_LABELS: Record<string, string> = {
     discord: "Discord",
 };
 
-export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: PortfolioTabProps) {
+export function PortfolioTab({ socials, tokenWork, portfolio }: PortfolioTabProps) {
+    // Handle null values from API
+    const safeSocials = socials ?? [];
+    const safeTokenWork = tokenWork ?? [];
+    const safePortfolio = portfolio ?? [];
+
     return (
         <div className="space-y-8">
             {/* Socials Section */}
-            {socials.length > 0 && (
+            {safeSocials.length > 0 && (
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
                     <h3 className="text-lg font-semibold text-white mb-4">
                         Socials
                     </h3>
                     <div className="flex flex-wrap gap-3">
-                        {socials.map((social) => {
+                        {safeSocials.map((social) => {
                             const Icon = SOCIAL_ICONS[social.platform] || Globe;
                             return (
                                 <a
@@ -56,13 +61,13 @@ export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: P
             )}
 
             {/* My Work Section - Token Work */}
-            {tokenWork.length > 0 && (
+            {safeTokenWork.length > 0 && (
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
                     <h3 className="text-lg font-semibold text-white mb-4">
                         My Work
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {tokenWork.map((token) => {
+                        {safeTokenWork.map((token) => {
                             const tokenUrl = token.chain === 'solana'
                                 ? `https://dexscreener.com/solana/${token.contract_address}`
                                 : `https://dexscreener.com/${token.chain}/${token.contract_address}`;
@@ -125,13 +130,13 @@ export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: P
             )}
 
             {/* Gallery Section - Portfolio Items */}
-            {portfolio.length > 0 && (
+            {safePortfolio.length > 0 && (
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
                     <h3 className="text-lg font-semibold text-white mb-4">
                         Gallery
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {portfolio.map((item) => (
+                        {safePortfolio.map((item) => (
                             <a
                                 key={item.id}
                                 href={item.url}
@@ -171,7 +176,7 @@ export function PortfolioTab({ socials = [], tokenWork = [], portfolio = [] }: P
             )}
 
             {/* Empty State */}
-            {socials.length === 0 && tokenWork.length === 0 && portfolio.length === 0 && (
+            {safeSocials.length === 0 && safeTokenWork.length === 0 && safePortfolio.length === 0 && (
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-12 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-800 flex items-center justify-center">
                         <ImageIcon className="w-8 h-8 text-zinc-600" />

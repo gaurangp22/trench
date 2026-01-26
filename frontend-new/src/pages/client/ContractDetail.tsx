@@ -276,7 +276,7 @@ export function ContractDetail() {
                                                 ) : (
                                                     <>
                                                         <CheckCircle className="w-4 h-4 mr-2" />
-                                                        Approve & Release Payment
+                                                        Approve Milestone
                                                     </>
                                                 )}
                                             </GradientSlideButton>

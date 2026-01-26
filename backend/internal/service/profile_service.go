@@ -3,21 +3,25 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/trenchjob/backend/internal/domain"
+	"github.com/trenchjob/backend/internal/pkg/dexscreener"
 	apperrors "github.com/trenchjob/backend/internal/pkg/errors"
 	"github.com/trenchjob/backend/internal/repository"
 )
 
 type ProfileService struct {
-	profileRepo     repository.ProfileRepository
-	skillRepo       repository.SkillRepository
-	portfolioRepo   repository.PortfolioRepository
-	userRepo        repository.UserRepository
-	socialRepo      repository.SocialRepository
-	tokenWorkRepo   repository.TokenWorkRepository
+	profileRepo      repository.ProfileRepository
+	skillRepo        repository.SkillRepository
+	portfolioRepo    repository.PortfolioRepository
+	userRepo         repository.UserRepository
+	socialRepo       repository.SocialRepository
+	tokenWorkRepo    repository.TokenWorkRepository
+	dexScreener      *dexscreener.Client
 }
 
 func NewProfileService(
@@ -29,12 +33,13 @@ func NewProfileService(
 	tokenWorkRepo repository.TokenWorkRepository,
 ) *ProfileService {
 	return &ProfileService{
-		profileRepo:     profileRepo,
-		skillRepo:       skillRepo,
-		portfolioRepo:   portfolioRepo,
-		userRepo:        userRepo,
-		socialRepo:      socialRepo,
-		tokenWorkRepo:   tokenWorkRepo,
+		profileRepo:      profileRepo,
+		skillRepo:        skillRepo,
+		portfolioRepo:    portfolioRepo,
+		userRepo:         userRepo,
+		socialRepo:       socialRepo,
+		tokenWorkRepo:    tokenWorkRepo,
+		dexScreener:      dexscreener.NewClient(),
 	}
 }
 
@@ -480,7 +485,7 @@ func (s *ProfileService) GetTokenWork(ctx context.Context, userID uuid.UUID) ([]
 	return s.tokenWorkRepo.GetByProfileID(ctx, profile.ID)
 }
 
-// AddTokenWork adds a new token work item
+// AddTokenWork adds a new token work item and fetches token info from DexScreener
 func (s *ProfileService) AddTokenWork(ctx context.Context, userID uuid.UUID, item *domain.TokenWorkItem) error {
 	profile, err := s.profileRepo.GetByUserID(ctx, userID)
 	if err != nil {
@@ -488,6 +493,26 @@ func (s *ProfileService) AddTokenWork(ctx context.Context, userID uuid.UUID, ite
 	}
 
 	item.ProfileID = profile.ID
+
+	// Fetch token info from DexScreener
+	tokenInfo, err := s.dexScreener.GetTokenInfo(ctx, item.ContractAddress, item.Chain)
+	if err != nil {
+		// Log the error but don't fail - we can still save with just the contract address
+		fmt.Printf("DexScreener fetch failed for %s: %v\n", item.ContractAddress, err)
+	} else {
+		// Populate token details from DexScreener
+		item.TokenName = &tokenInfo.Name
+		item.TokenSymbol = &tokenInfo.Symbol
+		if tokenInfo.ImageURL != "" {
+			item.TokenImageURL = &tokenInfo.ImageURL
+		}
+		if tokenInfo.ATHMarketCap != nil {
+			item.ATHMarketCap = tokenInfo.ATHMarketCap
+		}
+		now := time.Now()
+		item.LastFetchedAt = &now
+	}
+
 	return s.tokenWorkRepo.Create(ctx, item)
 }
 

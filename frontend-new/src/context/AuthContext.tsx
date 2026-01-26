@@ -17,7 +17,11 @@ interface AuthContextType {
     loginWithEmail: (email: string, password: string) => Promise<void>;
     signupWithEmail: (email: string, password: string, username: string, role: 'client' | 'freelancer') => Promise<void>;
     loginWithWallet: () => Promise<void>;
+    signupWithWallet: (email: string, username: string, role: 'client' | 'freelancer') => Promise<void>;
     logout: () => void;
+    needsOnboarding: boolean;
+    setNeedsOnboarding: (value: boolean) => void;
+    refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,7 +32,11 @@ const AuthContext = createContext<AuthContextType>({
     loginWithEmail: async () => { },
     signupWithEmail: async () => { },
     loginWithWallet: async () => { },
+    signupWithWallet: async () => { },
     logout: () => { },
+    needsOnboarding: false,
+    setNeedsOnboarding: () => { },
+    refreshProfile: async () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -38,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
     // Check for existing token on mount
     useEffect(() => {
@@ -90,19 +99,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 setProfile(null);
             } else if (error.response?.status === 404) {
                 // Profile not found - user is authenticated but has no profile
-                // Try to extract user info from JWT token
-                console.log("Profile not found - extracting user from token");
-                try {
-                    const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-                    const role: 'client' | 'freelancer' = tokenPayload.is_freelancer ? 'freelancer' : 'client';
-                    setUser({
-                        id: tokenPayload.user_id || tokenPayload.sub,
-                        email: tokenPayload.email || '',
-                        role: role,
-                        username: tokenPayload.username
-                    });
-                } catch (decodeErr) {
-                    console.error("Failed to decode token", decodeErr);
+                // Only extract from JWT if we don't already have valid user data
+                // This prevents overwriting good user data set during signup
+                if (!user || !user.role) {
+                    console.log("Profile not found - extracting user from token");
+                    try {
+                        const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                        const role: 'client' | 'freelancer' = tokenPayload.is_freelancer ? 'freelancer' : 'client';
+                        setUser({
+                            id: tokenPayload.user_id || tokenPayload.sub,
+                            email: tokenPayload.email || '',
+                            role: role,
+                            username: tokenPayload.username
+                        });
+                    } catch (decodeErr) {
+                        console.error("Failed to decode token", decodeErr);
+                    }
                 }
             } else {
                 console.error("Auth check failed", error);
@@ -155,8 +167,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 });
             }
 
-            // Fetch full profile (may fail with 404 for new users - that's OK)
-            await checkAuth();
+            // Note: Don't call checkAuth() here - we already have user data from signup response
+            // and profile won't exist yet for new users anyway
         } finally {
             setIsLoading(false);
         }
@@ -186,11 +198,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const { token, user: userData } = loginRes.data;
             localStorage.setItem('token', token);
             setUser(userData);
+            setNeedsOnboarding(false);
 
             // Fetch full profile
             await checkAuth();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Wallet login failed", error);
+            // Check if user needs to sign up (wallet not registered)
+            if (error.response?.status === 404 ||
+                error.response?.data?.message?.includes('not registered') ||
+                error.response?.data?.error?.includes('not registered')) {
+                setNeedsOnboarding(true);
+            }
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const signupWithWallet = async (email: string, username: string, role: 'client' | 'freelancer') => {
+        if (!publicKey || !signMessage) return;
+
+        setIsLoading(true);
+        try {
+            // Generate a secure random password for wallet users
+            const randomPassword = crypto.randomUUID() + crypto.randomUUID();
+
+            // Sign up with wallet address
+            const response = await AuthAPI.signup(email, randomPassword, username, role, publicKey.toBase58());
+
+            if (response.user) {
+                const userRole: 'client' | 'freelancer' = response.user.is_freelancer ? 'freelancer' :
+                    (response.user.is_client ? 'client' : role);
+                setUser({
+                    id: response.user.id,
+                    email: response.user.email,
+                    role: userRole,
+                    username: response.user.username || username
+                });
+            }
+
+            setNeedsOnboarding(false);
+
+            // Note: Don't call checkAuth() here - we already have user data from signup response
+            // and profile won't exist yet for new users anyway
+        } catch (error) {
+            console.error("Wallet signup failed", error);
             throw error;
         } finally {
             setIsLoading(false);
@@ -206,6 +259,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const refreshProfile = async () => {
+        try {
+            const res = await api.get('/profile');
+            const userData = res.data;
+
+            if (userData.profile) {
+                setProfile(userData.profile);
+                // Also update user display info
+                if (user) {
+                    setUser({
+                        ...user,
+                        avatar_url: userData.profile.avatar_url,
+                        display_name: userData.profile.display_name
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Failed to refresh profile:", error);
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -215,7 +289,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             loginWithEmail,
             signupWithEmail,
             loginWithWallet,
-            logout
+            signupWithWallet,
+            logout,
+            needsOnboarding,
+            setNeedsOnboarding,
+            refreshProfile
         }}>
             {children}
         </AuthContext.Provider>

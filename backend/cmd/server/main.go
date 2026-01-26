@@ -58,7 +58,7 @@ func main() {
 	messageRepo := postgres.NewMessageRepository(db.Pool)
 
 	// Initialize services
-	authService := service.NewAuthService(userRepo, walletRepo, sessionRepo, jwtManager)
+	authService := service.NewAuthService(userRepo, walletRepo, sessionRepo, profileRepo, jwtManager)
 	profileService := service.NewProfileService(profileRepo, skillRepo, portfolioRepo, userRepo, socialRepo, tokenWorkRepo)
 	jobService := service.NewJobService(jobRepo, proposalRepo, userRepo)
 	contractService := service.NewContractService(
@@ -77,6 +77,11 @@ func main() {
 	reviewHandler := handler.NewReviewHandler(reviewService)
 	notificationHandler := handler.NewNotificationHandler(notificationService)
 	messageHandler := handler.NewMessageHandler(messageService)
+
+	// Upload handler - stores files in ./uploads directory
+	uploadDir := "./uploads"
+	baseURL := "http://localhost:" + cfg.Server.Port
+	uploadHandler := handler.NewUploadHandler(uploadDir, baseURL)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -107,7 +112,7 @@ func main() {
 
 	// Profile routes (public)
 	mux.HandleFunc("GET /api/v1/profiles", profileHandler.SearchProfiles)
-	mux.HandleFunc("GET /api/v1/profiles/", profileHandler.GetProfile)
+	mux.HandleFunc("GET /api/v1/profiles/{id}", profileHandler.GetProfile)
 	mux.HandleFunc("GET /api/v1/skills", profileHandler.GetAllSkills)
 
 	// Profile routes (protected)
@@ -115,10 +120,10 @@ func main() {
 	mux.Handle("PUT /api/v1/profile", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdateProfile)))
 	mux.Handle("PUT /api/v1/profile/skills", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.SetProfileSkills)))
 	mux.Handle("POST /api/v1/profile/skills", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.AddProfileSkill)))
-	mux.Handle("DELETE /api/v1/profile/skills/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.RemoveProfileSkill)))
+	mux.Handle("DELETE /api/v1/profile/skills/{id}", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.RemoveProfileSkill)))
 	mux.Handle("POST /api/v1/profile/portfolio", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.CreatePortfolioItem)))
-	mux.Handle("PUT /api/v1/profile/portfolio/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdatePortfolioItem)))
-	mux.Handle("DELETE /api/v1/profile/portfolio/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.DeletePortfolioItem)))
+	mux.Handle("PUT /api/v1/profile/portfolio/{id}", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdatePortfolioItem)))
+	mux.Handle("DELETE /api/v1/profile/portfolio/{id}", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.DeletePortfolioItem)))
 
 	// Profile socials routes (protected)
 	mux.Handle("GET /api/v1/profile/socials", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.GetSocials)))
@@ -127,34 +132,34 @@ func main() {
 	// Profile token work routes (protected)
 	mux.Handle("GET /api/v1/profile/token-work", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.GetTokenWork)))
 	mux.Handle("POST /api/v1/profile/token-work", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.CreateTokenWork)))
-	mux.Handle("PUT /api/v1/profile/token-work/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdateTokenWork)))
-	mux.Handle("DELETE /api/v1/profile/token-work/", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.DeleteTokenWork)))
+	mux.Handle("PUT /api/v1/profile/token-work/{id}", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.UpdateTokenWork)))
+	mux.Handle("DELETE /api/v1/profile/token-work/{id}", authMiddleware.Authenticate(http.HandlerFunc(profileHandler.DeleteTokenWork)))
 
-	// Job routes (public)
-	mux.HandleFunc("GET /api/v1/jobs", jobHandler.SearchJobs)
-	mux.HandleFunc("GET /api/v1/jobs/", jobHandler.GetJob)
-
-	// Job routes (protected - client)
-	mux.Handle("POST /api/v1/jobs", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.CreateJob)))
+	// Job routes (protected - client) - Register specific routes FIRST
 	mux.Handle("GET /api/v1/jobs/mine", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.GetMyJobs)))
-	mux.Handle("PUT /api/v1/jobs/", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.UpdateJob)))
-	mux.Handle("DELETE /api/v1/jobs/", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.DeleteJob)))
+	mux.Handle("POST /api/v1/jobs", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.CreateJob)))
+	mux.Handle("PUT /api/v1/jobs/{id}", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.UpdateJob)))
+	mux.Handle("DELETE /api/v1/jobs/{id}", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.DeleteJob)))
+
+	// Job routes (public) - Generic routes AFTER specific ones
+	mux.HandleFunc("GET /api/v1/jobs", jobHandler.SearchJobs)
+	mux.HandleFunc("GET /api/v1/jobs/{id}", jobHandler.GetJob)
 	mux.Handle("POST /api/v1/jobs/{id}/publish", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.PublishJob)))
 	mux.Handle("POST /api/v1/jobs/{id}/close", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.CloseJob)))
 	mux.Handle("GET /api/v1/jobs/{id}/proposals", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.GetJobProposals)))
 
-	// Proposal routes (protected)
-	mux.Handle("POST /api/v1/jobs/{id}/proposals", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.SubmitProposal)))
+	// Proposal routes (protected) - Specific routes FIRST
 	mux.Handle("GET /api/v1/proposals/mine", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.GetMyProposals)))
-	mux.Handle("GET /api/v1/proposals/", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.GetProposal)))
-	mux.Handle("DELETE /api/v1/proposals/", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.WithdrawProposal)))
+	mux.Handle("POST /api/v1/jobs/{id}/proposals", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.SubmitProposal)))
+	mux.Handle("GET /api/v1/proposals/{id}", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.GetProposal)))
+	mux.Handle("DELETE /api/v1/proposals/{id}", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.WithdrawProposal)))
 	mux.Handle("POST /api/v1/proposals/{id}/shortlist", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.ShortlistProposal)))
 	mux.Handle("POST /api/v1/proposals/{id}/reject", authMiddleware.Authenticate(http.HandlerFunc(jobHandler.RejectProposal)))
 	mux.Handle("POST /api/v1/proposals/{id}/hire", authMiddleware.Authenticate(http.HandlerFunc(contractHandler.HireFreelancer)))
 
 	// Contract routes (protected)
 	mux.Handle("GET /api/v1/contracts", authMiddleware.Authenticate(http.HandlerFunc(contractHandler.ListContracts)))
-	mux.Handle("GET /api/v1/contracts/", authMiddleware.Authenticate(http.HandlerFunc(contractHandler.GetContract)))
+	mux.Handle("GET /api/v1/contracts/{id}", authMiddleware.Authenticate(http.HandlerFunc(contractHandler.GetContract)))
 	mux.Handle("POST /api/v1/contracts/{id}/milestones", authMiddleware.Authenticate(http.HandlerFunc(contractHandler.AddMilestone)))
 	mux.Handle("POST /api/v1/contracts/{id}/complete", authMiddleware.Authenticate(http.HandlerFunc(contractHandler.CompleteContract)))
 
@@ -184,6 +189,10 @@ func main() {
 	mux.Handle("POST /api/v1/conversations/{id}/read", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.MarkConversationRead)))
 	mux.Handle("GET /api/v1/messages/unread-count", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetUnreadCount)))
 	mux.Handle("GET /api/v1/contracts/{id}/conversation", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetContractConversation)))
+
+	// Upload routes
+	mux.Handle("POST /api/v1/upload", authMiddleware.Authenticate(http.HandlerFunc(uploadHandler.UploadFile)))
+	mux.HandleFunc("GET /uploads/", uploadHandler.ServeFile)
 
 	// Apply global middleware
 	var handler http.Handler = mux

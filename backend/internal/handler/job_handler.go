@@ -47,17 +47,15 @@ func (h *JobHandler) CreateJob(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetJob handles GET /api/v1/jobs/:id
+// GetJob handles GET /api/v1/jobs/{id}
 func (h *JobHandler) GetJob(w http.ResponseWriter, r *http.Request) {
-	// Extract ID from URL path
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -131,7 +129,7 @@ func (h *JobHandler) SearchJobs(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, result)
 }
 
-// UpdateJob handles PUT /api/v1/jobs/:id
+// UpdateJob handles PUT /api/v1/jobs/{id}
 func (h *JobHandler) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -139,15 +137,13 @@ func (h *JobHandler) UpdateJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract ID from URL path
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	jobID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -172,7 +168,7 @@ func (h *JobHandler) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// DeleteJob handles DELETE /api/v1/jobs/:id
+// DeleteJob handles DELETE /api/v1/jobs/{id}
 func (h *JobHandler) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -180,15 +176,13 @@ func (h *JobHandler) DeleteJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract ID from URL path
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	jobID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -205,7 +199,7 @@ func (h *JobHandler) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// PublishJob handles POST /api/v1/jobs/:id/publish
+// PublishJob handles POST /api/v1/jobs/{id}/publish
 func (h *JobHandler) PublishJob(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -213,15 +207,13 @@ func (h *JobHandler) PublishJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract job ID - URL format: /api/v1/jobs/{id}/publish
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract job ID using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-2] // ID is second to last
 	jobID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -238,7 +230,7 @@ func (h *JobHandler) PublishJob(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// CloseJob handles POST /api/v1/jobs/:id/close
+// CloseJob handles POST /api/v1/jobs/{id}/close
 func (h *JobHandler) CloseJob(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -246,14 +238,13 @@ func (h *JobHandler) CloseJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract job ID using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-2]
 	jobID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -305,7 +296,7 @@ func (h *JobHandler) GetMyJobs(w http.ResponseWriter, r *http.Request) {
 // Proposal Handlers
 // ============================================
 
-// SubmitProposal handles POST /api/v1/jobs/:id/proposals
+// SubmitProposal handles POST /api/v1/jobs/{id}/proposals
 func (h *JobHandler) SubmitProposal(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -313,15 +304,13 @@ func (h *JobHandler) SubmitProposal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract job ID - URL format: /api/v1/jobs/{id}/proposals
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract job ID using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-2]
 	jobID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -346,7 +335,7 @@ func (h *JobHandler) SubmitProposal(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetJobProposals handles GET /api/v1/jobs/:id/proposals
+// GetJobProposals handles GET /api/v1/jobs/{id}/proposals
 func (h *JobHandler) GetJobProposals(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -354,14 +343,13 @@ func (h *JobHandler) GetJobProposals(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid job ID")
+	// Extract job ID using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "job ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-2]
 	jobID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid job ID format")
@@ -432,7 +420,7 @@ func (h *JobHandler) GetMyProposals(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetProposal handles GET /api/v1/proposals/:id
+// GetProposal handles GET /api/v1/proposals/{id}
 func (h *JobHandler) GetProposal(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -440,14 +428,13 @@ func (h *JobHandler) GetProposal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid proposal ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "proposal ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	proposalID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid proposal ID format")
@@ -463,7 +450,7 @@ func (h *JobHandler) GetProposal(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, proposal)
 }
 
-// WithdrawProposal handles DELETE /api/v1/proposals/:id
+// WithdrawProposal handles DELETE /api/v1/proposals/{id}
 func (h *JobHandler) WithdrawProposal(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -471,14 +458,13 @@ func (h *JobHandler) WithdrawProposal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid proposal ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "proposal ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	proposalID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid proposal ID format")
@@ -495,7 +481,7 @@ func (h *JobHandler) WithdrawProposal(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// UpdateProposalStatus handles POST /api/v1/proposals/:id/shortlist or /reject
+// UpdateProposalStatus handles POST /api/v1/proposals/{id}/shortlist or /reject
 func (h *JobHandler) UpdateProposalStatus(w http.ResponseWriter, r *http.Request, status string) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -503,14 +489,13 @@ func (h *JobHandler) UpdateProposalStatus(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid proposal ID")
+	// Extract proposal ID using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "proposal ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-2]
 	proposalID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid proposal ID format")
@@ -527,17 +512,17 @@ func (h *JobHandler) UpdateProposalStatus(w http.ResponseWriter, r *http.Request
 	})
 }
 
-// ShortlistProposal handles POST /api/v1/proposals/:id/shortlist
+// ShortlistProposal handles POST /api/v1/proposals/{id}/shortlist
 func (h *JobHandler) ShortlistProposal(w http.ResponseWriter, r *http.Request) {
 	h.UpdateProposalStatus(w, r, "shortlisted")
 }
 
-// RejectProposal handles POST /api/v1/proposals/:id/reject
+// RejectProposal handles POST /api/v1/proposals/{id}/reject
 func (h *JobHandler) RejectProposal(w http.ResponseWriter, r *http.Request) {
 	h.UpdateProposalStatus(w, r, "rejected")
 }
 
-// HireProposal handles POST /api/v1/proposals/:id/hire
+// HireProposal handles POST /api/v1/proposals/{id}/hire
 func (h *JobHandler) HireProposal(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -545,14 +530,13 @@ func (h *JobHandler) HireProposal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid proposal ID")
+	// Extract proposal ID using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "proposal ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-2]
 	proposalID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid proposal ID format")

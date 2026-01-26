@@ -365,16 +365,26 @@ export function Jobs() {
                 {/* Job Cards */}
                 <div className="space-y-4">
                     {loading ? (
-                        <div className="text-center py-20">
-                            <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4" />
-                            <p className="text-zinc-500">Loading opportunities...</p>
+                        <div className="space-y-4">
+                            {[...Array(4)].map((_, i) => (
+                                <JobCardSkeleton key={i} index={i} />
+                            ))}
                         </div>
                     ) : jobs.length === 0 ? (
-                        <div className="text-center py-20">
-                            <Briefcase className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
-                            <p className="text-zinc-400 mb-2">No jobs match your filters</p>
-                            <button onClick={clearFilters} className="text-emerald-400 hover:text-purple-300 text-sm font-medium">
-                                Clear filters to see all jobs
+                        <div className="text-center py-20 bg-[#0a0a0c] border border-white/[0.06] rounded-2xl">
+                            <div className="w-16 h-16 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-6">
+                                <Briefcase className="w-8 h-8 text-zinc-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-white mb-2">No jobs match your filters</h3>
+                            <p className="text-zinc-500 mb-6 max-w-md mx-auto">
+                                Try adjusting your search criteria or removing some filters to see more opportunities.
+                            </p>
+                            <button
+                                onClick={clearFilters}
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all font-medium"
+                            >
+                                <X className="w-4 h-4" />
+                                Clear all filters
                             </button>
                         </div>
                     ) : (
@@ -390,6 +400,54 @@ export function Jobs() {
                 </div>
             </section>
         </div>
+    )
+}
+
+// Loading skeleton for job cards
+function JobCardSkeleton({ index }: { index: number }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: index * 0.1 }}
+            className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0c] p-6 md:p-8"
+        >
+            <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                <div className="flex-1 min-w-0">
+                    {/* Title skeleton */}
+                    <div className="h-7 w-3/4 bg-white/[0.06] rounded-lg mb-4 animate-pulse" />
+
+                    {/* Company & Meta skeleton */}
+                    <div className="flex flex-wrap items-center gap-4 mb-4">
+                        <div className="h-4 w-32 bg-white/[0.06] rounded animate-pulse" />
+                        <div className="h-4 w-16 bg-white/[0.06] rounded animate-pulse" />
+                        <div className="h-4 w-20 bg-white/[0.06] rounded animate-pulse" />
+                    </div>
+
+                    {/* Budget skeleton */}
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-8 w-24 bg-white/[0.06] rounded-lg animate-pulse" />
+                        <div className="h-6 w-28 bg-white/[0.06] rounded-full animate-pulse" />
+                        <div className="h-6 w-16 bg-white/[0.06] rounded-full animate-pulse" />
+                    </div>
+
+                    {/* Skills skeleton */}
+                    <div className="flex gap-2">
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className="h-8 w-20 bg-white/[0.06] rounded-lg animate-pulse" />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Action skeleton */}
+                <div className="lg:pl-8 lg:border-l border-white/[0.04]">
+                    <div className="h-10 w-32 bg-white/[0.06] rounded-xl animate-pulse" />
+                </div>
+            </div>
+
+            {/* Shimmer effect */}
+            <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
+        </motion.div>
     )
 }
 

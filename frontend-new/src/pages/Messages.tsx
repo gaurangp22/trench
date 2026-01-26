@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react"
-import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare } from "lucide-react"
+import { useSearchParams, Link } from "react-router-dom"
+import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare, ArrowRight, Briefcase, Users } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import { MessageAPI, type Conversation, type Message } from "@/lib/api"
+import { DashboardLayout } from "@/components/layout/DashboardLayout"
 
 export function Messages() {
     const [conversations, setConversations] = useState<Conversation[]>([])
@@ -28,6 +30,8 @@ export function Messages() {
     }
 
     const currentUserId = getCurrentUserId()
+    const [searchParams] = useSearchParams()
+    const conversationIdFromUrl = searchParams.get('conversation')
 
     // Fetch conversations
     useEffect(() => {
@@ -35,9 +39,19 @@ export function Messages() {
             try {
                 setLoading(true)
                 const data = await MessageAPI.getConversations()
-                setConversations(data.conversations || [])
-                if (data.conversations && data.conversations.length > 0) {
-                    setSelectedConversation(data.conversations[0])
+                const convs = data.conversations || []
+                setConversations(convs)
+
+                // If a conversation ID is provided in URL, select it
+                if (conversationIdFromUrl && convs.length > 0) {
+                    const targetConv = convs.find((c: Conversation) => c.id === conversationIdFromUrl)
+                    if (targetConv) {
+                        setSelectedConversation(targetConv)
+                    } else {
+                        setSelectedConversation(convs[0])
+                    }
+                } else if (convs.length > 0) {
+                    setSelectedConversation(convs[0])
                 }
             } catch (error) {
                 console.error("Failed to load conversations:", error)
@@ -47,7 +61,7 @@ export function Messages() {
         }
 
         loadConversations()
-    }, [])
+    }, [conversationIdFromUrl])
 
     // Fetch messages when conversation changes
     useEffect(() => {
@@ -137,31 +151,55 @@ export function Messages() {
     // Empty state
     if (!loading && conversations.length === 0) {
         return (
-            <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-0">
-                <div className="container max-w-6xl mx-auto px-6 h-[calc(100vh-80px)] flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-zinc-800 flex items-center justify-center">
-                            <MessageSquare className="w-8 h-8 text-zinc-500" />
+            <DashboardLayout role="freelancer">
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="text-center max-w-md">
+                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                            <MessageSquare className="w-10 h-10 text-emerald-400" />
                         </div>
-                        <h2 className="text-xl font-semibold text-white mb-2">No messages yet</h2>
-                        <p className="text-zinc-400 max-w-sm mx-auto">
+                        <h2 className="text-2xl font-bold text-white mb-3">No messages yet</h2>
+                        <p className="text-zinc-400 leading-relaxed mb-8">
                             Start a conversation by applying to a job or hiring a freelancer.
-                            Messages will appear here.
+                            Your messages will be securely stored and appear here.
                         </p>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <Link
+                                to="/jobs"
+                                className="inline-flex items-center justify-center h-11 px-6 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors"
+                            >
+                                <Briefcase className="w-4 h-4 mr-2" />
+                                Browse Jobs
+                            </Link>
+                            <Link
+                                to="/talent"
+                                className="inline-flex items-center justify-center h-11 px-6 rounded-xl border border-white/10 text-zinc-300 hover:bg-white/[0.05] transition-all"
+                            >
+                                <Users className="w-4 h-4 mr-2" />
+                                Find Freelancers
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </DashboardLayout>
         )
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] pt-20 pb-0">
-            <div className="container max-w-6xl mx-auto px-6 h-[calc(100vh-80px)]">
-                <div className="flex h-full bg-zinc-900/30 border border-zinc-800 rounded-xl overflow-hidden">
+        <DashboardLayout role="freelancer">
+            <div className="h-[calc(100vh-140px)]">
+                <div className="flex h-full bg-[#0a0a0c] border border-white/5 rounded-2xl overflow-hidden">
                     {/* Conversation List */}
-                    <div className="w-80 border-r border-zinc-800 flex flex-col">
+                    <div className="w-80 border-r border-white/[0.06] flex flex-col">
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b border-white/[0.06]">
+                            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                                <MessageSquare className="w-5 h-5 text-emerald-400" />
+                                Messages
+                            </h2>
+                        </div>
+
                         {/* Search */}
-                        <div className="p-4 border-b border-zinc-800">
+                        <div className="p-4 border-b border-white/[0.06]">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                                 <input
@@ -169,7 +207,7 @@ export function Messages() {
                                     placeholder="Search messages..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                                 />
                             </div>
                         </div>
@@ -177,7 +215,24 @@ export function Messages() {
                         {/* Conversations */}
                         <div className="flex-1 overflow-y-auto">
                             {loading ? (
-                                <div className="p-4 text-center text-zinc-500">Loading...</div>
+                                <div className="p-2">
+                                    {[...Array(5)].map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className="p-4 flex items-start gap-3 animate-pulse"
+                                            style={{ animationDelay: `${i * 0.1}s` }}
+                                        >
+                                            <div className="w-12 h-12 rounded-full bg-white/[0.05]" />
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="h-4 w-24 bg-white/[0.05] rounded" />
+                                                    <div className="h-3 w-12 bg-white/[0.05] rounded" />
+                                                </div>
+                                                <div className="h-3 w-40 bg-white/[0.05] rounded" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             ) : (
                                 filteredConversations.map((conv) => {
                                     const participant = getOtherParticipant(conv)
@@ -186,10 +241,10 @@ export function Messages() {
                                             key={conv.id}
                                             onClick={() => setSelectedConversation(conv)}
                                             className={cn(
-                                                "w-full p-4 flex items-start gap-3 text-left transition-colors",
+                                                "w-full p-4 flex items-start gap-3 text-left transition-all border-b border-white/[0.03]",
                                                 selectedConversation?.id === conv.id
-                                                    ? "bg-zinc-800/50"
-                                                    : "hover:bg-zinc-800/30"
+                                                    ? "bg-emerald-500/10"
+                                                    : "hover:bg-white/[0.03]"
                                             )}
                                         >
                                             <div className="relative">
@@ -200,12 +255,12 @@ export function Messages() {
                                                         className="w-12 h-12 rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
                                                         {participant?.username?.[0]?.toUpperCase() || '?'}
                                                     </div>
                                                 )}
                                                 {participant?.is_online && (
-                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-zinc-900" />
+                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0a0a0c]" />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -231,7 +286,7 @@ export function Messages() {
                                                 )}
                                             </div>
                                             {conv.unread_count > 0 && (
-                                                <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center text-xs text-white">
+                                                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-xs text-white font-bold">
                                                     {conv.unread_count}
                                                 </div>
                                             )}
@@ -243,11 +298,11 @@ export function Messages() {
                     </div>
 
                     {/* Chat Area */}
-                    <div className="flex-1 flex flex-col">
+                    <div className="flex-1 flex flex-col bg-[#070709]">
                         {selectedConversation ? (
                             <>
                                 {/* Chat Header */}
-                                <div className="p-4 border-b border-zinc-800">
+                                <div className="p-4 border-b border-white/[0.06] bg-[#0a0a0c]">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             {(() => {
@@ -261,7 +316,7 @@ export function Messages() {
                                                                 className="w-10 h-10 rounded-full object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
                                                                 {participant?.username?.[0]?.toUpperCase() || '?'}
                                                             </div>
                                                         )}
@@ -270,21 +325,21 @@ export function Messages() {
                                                                 {participant?.username || 'Unknown'}
                                                             </h3>
                                                             {participant?.is_online && (
-                                                                <span className="text-xs text-green-400">Online</span>
+                                                                <span className="text-xs text-emerald-400">Online</span>
                                                             )}
                                                         </div>
                                                     </>
                                                 )
                                             })()}
                                         </div>
-                                        <Button variant="ghost" size="icon" className="text-zinc-400">
+                                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-white/[0.05]">
                                             <MoreVertical className="w-5 h-5" />
                                         </Button>
                                     </div>
 
                                     {/* Pinned Context */}
                                     {selectedConversation.context && (
-                                        <div className="mt-3 p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+                                        <div className="mt-3 p-3 bg-white/[0.02] border border-white/[0.06] rounded-xl">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <Shield className="w-4 h-4 text-emerald-400" />
@@ -298,10 +353,10 @@ export function Messages() {
                                                     )}
                                                     {selectedConversation.context.status && (
                                                         <span className={cn(
-                                                            "px-2 py-0.5 rounded text-xs capitalize",
+                                                            "px-2.5 py-0.5 rounded-lg text-xs font-medium capitalize border",
                                                             selectedConversation.context.status === "funded" || selectedConversation.context.status === "active"
-                                                                ? "bg-emerald-500/10 text-emerald-400"
-                                                                : "bg-blue-500/10 text-blue-400"
+                                                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                                                : "bg-blue-500/10 text-blue-400 border-blue-500/20"
                                                         )}>
                                                             {selectedConversation.context.status.replace('_', ' ')}
                                                         </span>
@@ -315,10 +370,29 @@ export function Messages() {
                                 {/* Messages */}
                                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                                     {messagesLoading ? (
-                                        <div className="text-center text-zinc-500 py-8">Loading messages...</div>
+                                        <div className="space-y-4 py-4">
+                                            {[...Array(4)].map((_, i) => (
+                                                <div
+                                                    key={i}
+                                                    className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} animate-pulse`}
+                                                    style={{ animationDelay: `${i * 0.1}s` }}
+                                                >
+                                                    <div className={`max-w-[70%] p-3 rounded-2xl ${i % 2 === 0 ? 'bg-white/[0.05]' : 'bg-emerald-500/20'}`}>
+                                                        <div className="h-4 w-48 bg-white/10 rounded mb-2" />
+                                                        <div className="h-4 w-32 bg-white/10 rounded" />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     ) : messages.length === 0 ? (
-                                        <div className="text-center text-zinc-500 py-8">
-                                            No messages yet. Start the conversation!
+                                        <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                                                <MessageSquare className="w-8 h-8 text-emerald-400" />
+                                            </div>
+                                            <h3 className="text-lg font-medium text-white mb-1">Start the conversation</h3>
+                                            <p className="text-sm text-zinc-500 max-w-xs">
+                                                Send a message to begin your collaboration.
+                                            </p>
                                         </div>
                                     ) : (
                                         messages.map((msg) => {
@@ -339,8 +413,8 @@ export function Messages() {
                                                         <div className={cn(
                                                             "max-w-[70%] p-3 rounded-2xl",
                                                             isMe
-                                                                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-                                                                : "bg-zinc-800 text-zinc-100"
+                                                                ? "bg-emerald-500 text-white"
+                                                                : "bg-white/[0.06] text-zinc-100"
                                                         )}>
                                                             <p className="text-sm whitespace-pre-wrap">{msg.message_text}</p>
                                                             <span className={cn(
@@ -360,9 +434,9 @@ export function Messages() {
                                 </div>
 
                                 {/* Message Input */}
-                                <div className="p-4 border-t border-zinc-800">
+                                <div className="p-4 border-t border-white/[0.06] bg-[#0a0a0c]">
                                     <div className="flex items-center gap-3">
-                                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white">
+                                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-white/[0.05]">
                                             <Paperclip className="w-5 h-5" />
                                         </Button>
                                         <input
@@ -372,12 +446,12 @@ export function Messages() {
                                             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                                             placeholder="Type a message..."
                                             disabled={sending}
-                                            className="flex-1 px-4 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50"
+                                            className="flex-1 px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all disabled:opacity-50"
                                         />
                                         <Button
                                             onClick={handleSend}
                                             disabled={!newMessage.trim() || sending}
-                                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white disabled:opacity-50"
+                                            className="h-10 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium disabled:opacity-50"
                                         >
                                             <Send className="w-4 h-4" />
                                         </Button>
@@ -386,15 +460,20 @@ export function Messages() {
                             </>
                         ) : (
                             <div className="flex-1 flex items-center justify-center">
-                                <div className="text-center text-zinc-500">
-                                    <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <p>Select a conversation to start messaging</p>
+                                <div className="text-center max-w-xs">
+                                    <div className="w-20 h-20 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-center mx-auto mb-6">
+                                        <MessageSquare className="w-10 h-10 text-zinc-600" />
+                                    </div>
+                                    <h3 className="text-lg font-medium text-white mb-2">Select a conversation</h3>
+                                    <p className="text-sm text-zinc-500 leading-relaxed">
+                                        Choose a conversation from the sidebar to view messages and continue collaborating.
+                                    </p>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-        </div>
+        </DashboardLayout>
     )
 }

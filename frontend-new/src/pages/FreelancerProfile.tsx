@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
     Star, MapPin, Calendar, ShieldCheck, Briefcase,
-    MessageSquare, ChevronLeft, User, FileText, Award, Sparkles, Globe
+    MessageSquare, ChevronLeft, User, FileText, Award, Sparkles, Globe, Loader2
 } from "lucide-react";
 import { GradientSlideButton } from "@/components/ui/GradientSlideButton";
-import { ProfileAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type PortfolioItem } from "@/lib/api";
+import { ProfileAPI, MessageAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type PortfolioItem } from "@/lib/api";
 import { PortfolioTab } from "@/components/portfolio/PortfolioTab";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 type TabType = "profile" | "gigs" | "portfolio" | "reviews";
 
@@ -117,11 +118,40 @@ const MOCK_PROFILE: ProfileResponse = {
 
 export function FreelancerProfile() {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<TabType>("portfolio");
     const [profile, setProfile] = useState<ProfileResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [contactLoading, setContactLoading] = useState(false);
 
+    const handleContact = async () => {
+        if (!user) {
+            navigate('/auth');
+            return;
+        }
+        if (!profile?.user?.id) {
+            console.error("No user ID for this profile");
+            return;
+        }
+
+        setContactLoading(true);
+        try {
+            // Create a new conversation with this freelancer
+            const conversation = await MessageAPI.createConversation({
+                participant_id: profile.user.id
+            });
+            navigate(`/messages?conversation=${conversation.id}`);
+        } catch (err: any) {
+            console.error("Failed to create conversation:", err);
+            // If conversation already exists, the API might return the existing one
+            // Try to navigate to messages anyway
+            navigate('/messages');
+        } finally {
+            setContactLoading(false);
+        }
+    };
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -307,9 +337,15 @@ export function FreelancerProfile() {
                                         className="h-12 rounded-xl font-semibold"
                                         colorFrom="#8B5CF6"
                                         colorTo="#EC4899"
+                                        onClick={handleContact}
+                                        disabled={contactLoading}
                                     >
-                                        <MessageSquare className="w-4 h-4 mr-2" />
-                                        Contact
+                                        {contactLoading ? (
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <MessageSquare className="w-4 h-4 mr-2" />
+                                        )}
+                                        {contactLoading ? "Opening..." : "Contact"}
                                     </GradientSlideButton>
 
                                     {profileData.hourly_rate_sol && (

@@ -20,6 +20,10 @@ type User struct {
 	CreatedAt            time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt            time.Time  `json:"updated_at" db:"updated_at"`
 	LastLoginAt          *time.Time `json:"last_login_at" db:"last_login_at"`
+
+	// Joined/computed fields (not stored in users table)
+	DisplayName string  `json:"display_name,omitempty" db:"-"`
+	AvatarURL   *string `json:"avatar_url,omitempty" db:"-"`
 }
 
 type UserWallet struct {

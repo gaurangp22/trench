@@ -426,9 +426,15 @@ func (r *ProposalRepository) GetByFreelancerID(ctx context.Context, freelancerID
 		SELECT p.id, p.job_id, p.freelancer_id, p.cover_letter, p.proposed_rate_sol,
 			   p.proposed_amount_sol, p.estimated_duration, p.status,
 			   p.submitted_at, p.updated_at,
-			   j.title as job_title
+			   j.id, j.title, j.client_id, j.status as job_status,
+			   j.budget_min_sol, j.payment_type,
+			   u.id as client_user_id, u.username as client_username,
+			   COALESCE(pr.display_name, u.username) as client_display_name,
+			   pr.avatar_url as client_avatar
 		FROM proposals p
 		JOIN jobs j ON p.job_id = j.id
+		JOIN users u ON j.client_id = u.id
+		LEFT JOIN profiles pr ON u.id = pr.user_id
 		WHERE p.freelancer_id = $1
 		ORDER BY p.submitted_at DESC
 		LIMIT $2 OFFSET $3`
@@ -442,15 +448,31 @@ func (r *ProposalRepository) GetByFreelancerID(ctx context.Context, freelancerID
 	var proposals []domain.Proposal
 	for rows.Next() {
 		var proposal domain.Proposal
-		var jobTitle string
+		var job domain.Job
+		var client domain.User
+		var clientDisplayName, clientAvatar *string
 		if err := rows.Scan(
 			&proposal.ID, &proposal.JobID, &proposal.FreelancerID, &proposal.CoverLetter,
 			&proposal.ProposedRateSOL, &proposal.ProposedAmountSOL, &proposal.EstimatedDuration,
 			&proposal.Status, &proposal.SubmittedAt, &proposal.UpdatedAt,
-			&jobTitle,
+			&job.ID, &job.Title, &job.ClientID, &job.Status,
+			&job.BudgetMinSOL, &job.PaymentType,
+			&client.ID, &client.Username,
+			&clientDisplayName, &clientAvatar,
 		); err != nil {
 			return nil, 0, err
 		}
+		// Populate client display name
+		if clientDisplayName != nil {
+			client.DisplayName = *clientDisplayName
+		} else {
+			client.DisplayName = client.Username
+		}
+		if clientAvatar != nil {
+			client.AvatarURL = clientAvatar
+		}
+		job.Client = &client
+		proposal.Job = &job
 		proposals = append(proposals, proposal)
 	}
 

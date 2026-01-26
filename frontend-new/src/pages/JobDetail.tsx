@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
-import { ArrowLeft, Star, Shield, CheckCircle, Clock, MapPin, MessageSquare, Loader2, Briefcase, Users, Zap } from "lucide-react"
+import { ArrowLeft, Star, Shield, CheckCircle, Clock, MapPin, MessageSquare, Loader2, Briefcase, Users, Zap, X } from "lucide-react"
 import { motion, useInView } from "framer-motion"
 import { Button } from "@/components/ui/Button"
 import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import { cn } from "@/lib/utils"
-import { JobAPI, AuthAPI, type Job } from "@/lib/api"
+import { JobAPI, AuthAPI, MessageAPI, type Job } from "@/lib/api"
 
 export function JobDetail() {
     const { id } = useParams<{ id: string }>()
@@ -44,6 +44,9 @@ export function JobDetail() {
         }
     }
 
+    // TEST MODE: Skip wallet requirement for testing
+    const TEST_MODE = true
+
     // Determine CTA state based on auth and wallet
     const getCTAConfig = () => {
         if (!isLoggedIn) {
@@ -54,7 +57,8 @@ export function JobDetail() {
                 showWalletHint: false,
             }
         }
-        if (!connected) {
+        // Skip wallet check in TEST_MODE
+        if (!TEST_MODE && !connected) {
             return {
                 label: "Connect wallet to apply",
                 action: () => { },
@@ -72,12 +76,84 @@ export function JobDetail() {
 
     const ctaConfig = getCTAConfig()
 
+    const handleMessageClient = async () => {
+        if (!isLoggedIn) {
+            navigate('/auth')
+            return
+        }
+        if (!job?.client?.id) return
+        try {
+            const conversation = await MessageAPI.createConversation({
+                participant_id: job.client.id
+            })
+            navigate(`/messages?conversation=${conversation.id}`)
+        } catch (err) {
+            // If conversation already exists, navigate to messages
+            navigate('/messages')
+        }
+    }
+
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#020204] pt-20 pb-20 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
-                    <span className="text-zinc-500 text-sm">Loading opportunity...</span>
+            <div className="min-h-screen bg-[#020204] pt-24 pb-20">
+                {/* Hero Header Skeleton */}
+                <div className="relative overflow-hidden border-b border-white/[0.06]">
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[150px]" />
+                    </div>
+                    <div className="container max-w-6xl mx-auto px-6 py-12 relative z-10">
+                        <div className="h-4 w-24 bg-white/[0.06] rounded mb-8 animate-pulse" />
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                            <div className="flex-1">
+                                <div className="h-6 w-32 bg-emerald-500/10 rounded-full mb-4 animate-pulse" />
+                                <div className="h-12 w-3/4 bg-white/[0.06] rounded-lg mb-4 animate-pulse" />
+                                <div className="flex gap-4">
+                                    <div className="h-8 w-32 bg-white/[0.06] rounded-full animate-pulse" />
+                                    <div className="h-8 w-24 bg-white/[0.06] rounded-full animate-pulse" />
+                                </div>
+                            </div>
+                            <div className="lg:w-72 p-6 rounded-2xl bg-[#0a0a0c] border border-white/[0.08]">
+                                <div className="h-4 w-16 bg-white/[0.06] rounded mb-2 animate-pulse" />
+                                <div className="h-10 w-24 bg-white/[0.06] rounded-lg mb-1 animate-pulse" />
+                                <div className="h-4 w-20 bg-white/[0.06] rounded animate-pulse" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content Skeleton */}
+                <div className="container max-w-6xl mx-auto px-6 py-12">
+                    <div className="grid lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 space-y-8">
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#0a0a0c] p-6">
+                                <div className="h-6 w-40 bg-white/[0.06] rounded mb-6 animate-pulse" />
+                                <div className="space-y-3">
+                                    <div className="h-4 w-full bg-white/[0.06] rounded animate-pulse" />
+                                    <div className="h-4 w-5/6 bg-white/[0.06] rounded animate-pulse" />
+                                    <div className="h-4 w-4/5 bg-white/[0.06] rounded animate-pulse" />
+                                    <div className="h-4 w-3/4 bg-white/[0.06] rounded animate-pulse" />
+                                </div>
+                            </div>
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#0a0a0c] p-6">
+                                <div className="h-6 w-32 bg-white/[0.06] rounded mb-6 animate-pulse" />
+                                <div className="flex gap-2">
+                                    {[...Array(4)].map((_, i) => (
+                                        <div key={i} className="h-10 w-24 bg-white/[0.06] rounded-xl animate-pulse" />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="lg:col-span-1">
+                            <div className="rounded-2xl border border-white/[0.06] bg-[#0a0a0c] p-6">
+                                <div className="h-12 w-full bg-white/[0.06] rounded-xl mb-6 animate-pulse" />
+                                <div className="grid grid-cols-2 gap-3 mb-6">
+                                    <div className="h-20 bg-white/[0.06] rounded-xl animate-pulse" />
+                                    <div className="h-20 bg-white/[0.06] rounded-xl animate-pulse" />
+                                </div>
+                                <div className="h-12 w-full bg-emerald-500/20 rounded-xl animate-pulse" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         )
@@ -85,22 +161,39 @@ export function JobDetail() {
 
     if (error || !job) {
         return (
-            <div className="min-h-screen bg-[#020204] pt-20 pb-20">
-                <div className="container max-w-5xl mx-auto px-6 text-center py-20">
-                    <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
-                        <Briefcase className="w-8 h-8 text-red-400" />
-                    </div>
-                    <h2 className="text-2xl font-heading font-bold text-white mb-4">Job not found</h2>
-                    <p className="text-zinc-400 mb-8 max-w-md mx-auto">{error || "This job may have been removed or doesn't exist."}</p>
-                    <Link to="/jobs">
-                        <GradientSlideButton
-                            className="h-12 px-8 rounded-xl"
-                            colorFrom="#8B5CF6"
-                            colorTo="#EC4899"
-                        >
-                            Browse Jobs
-                        </GradientSlideButton>
-                    </Link>
+            <div className="min-h-screen bg-[#020204] pt-24 pb-20">
+                <div className="container max-w-lg mx-auto px-6 text-center py-20">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4 }}
+                        className="bg-[#0a0a0c] border border-white/[0.06] rounded-3xl p-10"
+                    >
+                        <div className="w-20 h-20 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6">
+                            <Briefcase className="w-10 h-10 text-red-400" />
+                        </div>
+                        <h2 className="text-2xl font-heading font-bold text-white mb-3">Job not found</h2>
+                        <p className="text-zinc-400 mb-8 leading-relaxed">
+                            {error || "This job may have been removed, filled, or the link might be incorrect."}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <Link to="/jobs">
+                                <GradientSlideButton
+                                    className="h-12 px-8 rounded-xl w-full sm:w-auto"
+                                    colorFrom="#10B981"
+                                    colorTo="#14F195"
+                                >
+                                    Browse All Jobs
+                                </GradientSlideButton>
+                            </Link>
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="h-12 px-6 rounded-xl border border-white/10 text-zinc-300 hover:bg-white/[0.03] transition-all"
+                            >
+                                Go Back
+                            </button>
+                        </div>
+                    </motion.div>
                 </div>
             </div>
         )
@@ -199,8 +292,8 @@ export function JobDetail() {
                     {/* Left Column - Details */}
                     <motion.div
                         className="lg:col-span-2 space-y-8"
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                        initial={{ opacity: 1, y: 0 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
                         {/* Description Card */}
@@ -210,7 +303,7 @@ export function JobDetail() {
                             </div>
                             <div className="p-6">
                                 <div className="prose prose-invert prose-sm max-w-none">
-                                    {job.description.split('\n').map((line, i) => (
+                                    {(job.description || 'No description provided').split('\n').map((line, i) => (
                                         <p key={i} className="text-zinc-400 leading-relaxed mb-3">
                                             {line.startsWith('**') ? (
                                                 <strong className="text-white font-medium">
@@ -234,7 +327,7 @@ export function JobDetail() {
                         {job.skills && job.skills.length > 0 && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
-                                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                                animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
                                 className="rounded-2xl border border-white/[0.06] bg-[#0a0a0c] overflow-hidden"
                             >
@@ -247,7 +340,7 @@ export function JobDetail() {
                                             <motion.span
                                                 key={skill}
                                                 initial={{ opacity: 0, scale: 0.8 }}
-                                                animate={isContentInView ? { opacity: 1, scale: 1 } : {}}
+                                                animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
                                                 className="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-300 font-medium hover:bg-emerald-500/20 transition-colors"
                                             >
@@ -262,7 +355,7 @@ export function JobDetail() {
                         {/* Client Info */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
-                            animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                            animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
                             className="rounded-2xl border border-white/[0.06] bg-[#0a0a0c] overflow-hidden"
                         >
@@ -305,9 +398,9 @@ export function JobDetail() {
                     {/* Sidebar - Apply Card */}
                     <motion.div
                         className="lg:col-span-1"
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={isContentInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.5, delay: 0.3 }}
+                        initial={{ opacity: 1, x: 0 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5 }}
                     >
                         <div className="sticky top-24 rounded-2xl border border-white/[0.06] bg-[#0a0a0c] overflow-hidden">
                             {/* Gradient Top Line */}
@@ -382,8 +475,11 @@ export function JobDetail() {
 
                                 {/* Message Option */}
                                 <div className="mt-6 pt-6 border-t border-white/[0.06]">
-                                    <button className="w-full flex items-center justify-center gap-2 py-3 text-sm text-zinc-400 hover:text-white rounded-xl hover:bg-white/[0.02] transition-all">
-                                        <MessageSquare className="w-4 h-4" />
+                                    <button
+                                        onClick={handleMessageClient}
+                                        className="w-full flex items-center justify-center gap-2 py-3 text-sm text-zinc-400 hover:text-white rounded-xl hover:bg-white/[0.02] transition-all group"
+                                    >
+                                        <MessageSquare className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                         Message Client
                                     </button>
                                 </div>
@@ -415,6 +511,7 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
     const [deliveryDays, setDeliveryDays] = useState("30")
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -427,7 +524,10 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
                 proposed_rate: parseFloat(proposedAmount),
                 estimated_duration: `${deliveryDays} days`
             })
-            onSuccess()
+            setSuccess(true)
+            setTimeout(() => {
+                onSuccess()
+            }, 1500)
         } catch (err: any) {
             console.error("Failed to submit proposal:", err)
             setError(err.response?.data?.error || "Failed to submit proposal. Please try again.")
@@ -439,111 +539,170 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <div
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                 onClick={onClose}
             />
 
             {/* Modal */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="relative w-full max-w-lg bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-2xl"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-lg bg-[#0a0a0c] border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/50 overflow-hidden"
             >
-                <h2 className="text-xl font-semibold text-white mb-2">Submit Proposal</h2>
-                <p className="text-sm text-zinc-400 mb-6">for "{job.title}"</p>
-
-                {error && (
-                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
-                        {error}
+                {/* Success State */}
+                {success ? (
+                    <div className="p-10 text-center">
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", damping: 15, stiffness: 300 }}
+                            className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6"
+                        >
+                            <CheckCircle className="w-10 h-10 text-emerald-400" />
+                        </motion.div>
+                        <h3 className="text-2xl font-bold text-white mb-2">Proposal Submitted!</h3>
+                        <p className="text-zinc-400">Your proposal has been sent to the client. You'll be notified when they respond.</p>
                     </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Cover Letter */}
-                    <div>
-                        <label className="block text-sm font-medium text-zinc-300 mb-2">
-                            Cover Letter
-                        </label>
-                        <textarea
-                            value={coverLetter}
-                            onChange={(e) => setCoverLetter(e.target.value)}
-                            placeholder="Introduce yourself and explain why you're the best fit for this job..."
-                            rows={5}
-                            className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 resize-none"
-                            required
-                            disabled={submitting}
-                        />
-                    </div>
-
-                    {/* Proposed Amount */}
-                    <div>
-                        <label className="block text-sm font-medium text-zinc-300 mb-2">
-                            Proposed Amount (SOL)
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">◎</span>
-                            <input
-                                type="number"
-                                value={proposedAmount}
-                                onChange={(e) => setProposedAmount(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                                required
-                                disabled={submitting}
-                                min="0"
-                                step="0.1"
-                            />
+                ) : (
+                    <>
+                        {/* Header */}
+                        <div className="px-6 pt-6 pb-4 border-b border-white/[0.06]">
+                            <div className="flex items-start justify-between">
+                                <div>
+                                    <h2 className="text-xl font-bold text-white mb-1">Submit Proposal</h2>
+                                    <p className="text-sm text-zinc-400 truncate max-w-[280px]">for "{job.title}"</p>
+                                </div>
+                                <button
+                                    onClick={onClose}
+                                    className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all"
+                                >
+                                    <span className="sr-only">Close</span>
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                        <path d="M1 1l12 12M13 1L1 13" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        <p className="text-xs text-zinc-500 mt-1">Client budget: ◎ {job.budget} SOL</p>
-                    </div>
 
-                    {/* Delivery Time */}
-                    <div>
-                        <label className="block text-sm font-medium text-zinc-300 mb-2">
-                            Estimated Delivery (days)
-                        </label>
-                        <input
-                            type="number"
-                            value={deliveryDays}
-                            onChange={(e) => setDeliveryDays(e.target.value)}
-                            className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                            required
-                            disabled={submitting}
-                            min="1"
-                        />
-                    </div>
-
-                    {/* Note */}
-                    <p className="text-xs text-zinc-500">
-                        No wallet signature required at this stage. You'll only sign when the client hires you.
-                    </p>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                            className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800"
-                            disabled={submitting}
-                        >
-                            Cancel
-                        </Button>
-                        <GradientSlideButton
-                            type="submit"
-                            className="flex-1 rounded-lg"
-                            colorFrom="#8B5CF6"
-                            colorTo="#EC4899"
-                            disabled={submitting}
-                        >
-                            {submitting ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                "Submit Proposal"
+                        <div className="p-6">
+                            {error && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-2"
+                                >
+                                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                    {error}
+                                </motion.div>
                             )}
-                        </GradientSlideButton>
-                    </div>
-                </form>
+
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                {/* Cover Letter */}
+                                <div>
+                                    <label className="flex items-center justify-between text-sm font-medium text-zinc-300 mb-2">
+                                        <span>Cover Letter</span>
+                                        <span className="text-xs text-zinc-500">{coverLetter.length}/1000</span>
+                                    </label>
+                                    <textarea
+                                        value={coverLetter}
+                                        onChange={(e) => setCoverLetter(e.target.value.slice(0, 1000))}
+                                        placeholder="Introduce yourself and explain why you're the best fit for this job..."
+                                        rows={5}
+                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 resize-none transition-all"
+                                        required
+                                        disabled={submitting}
+                                    />
+                                </div>
+
+                                {/* Amount and Duration Row */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Proposed Amount */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                                            Your Bid (SOL)
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400 font-medium">◎</span>
+                                            <input
+                                                type="number"
+                                                value={proposedAmount}
+                                                onChange={(e) => setProposedAmount(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                                required
+                                                disabled={submitting}
+                                                min="0"
+                                                step="0.1"
+                                            />
+                                        </div>
+                                        <p className="text-xs text-zinc-500 mt-1.5">Budget: ◎ {job.budget}</p>
+                                    </div>
+
+                                    {/* Delivery Time */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-300 mb-2">
+                                            Delivery (days)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={deliveryDays}
+                                            onChange={(e) => setDeliveryDays(e.target.value)}
+                                            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                            required
+                                            disabled={submitting}
+                                            min="1"
+                                        />
+                                        <p className="text-xs text-zinc-500 mt-1.5">Estimated time</p>
+                                    </div>
+                                </div>
+
+                                {/* Info Note */}
+                                <div className="p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
+                                    <p className="text-xs text-blue-400 flex items-start gap-2">
+                                        <Shield className="w-4 h-4 shrink-0 mt-0.5" />
+                                        <span>No wallet signature required now. You'll only sign when hired and funds are escrowed.</span>
+                                    </p>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex gap-3 pt-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={onClose}
+                                        className="flex-1 h-12 border-white/10 text-zinc-300 hover:bg-white/[0.03] rounded-xl"
+                                        disabled={submitting}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <GradientSlideButton
+                                        type="submit"
+                                        className="flex-1 h-12 rounded-xl font-semibold"
+                                        colorFrom="#10B981"
+                                        colorTo="#14F195"
+                                        disabled={submitting || !coverLetter.trim()}
+                                    >
+                                        {submitting ? (
+                                            <span className="flex items-center gap-2">
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Submitting...
+                                            </span>
+                                        ) : (
+                                            "Submit Proposal"
+                                        )}
+                                    </GradientSlideButton>
+                                </div>
+                            </form>
+                        </div>
+                    </>
+                )}
             </motion.div>
         </div>
     )

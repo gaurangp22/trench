@@ -275,7 +275,7 @@ export function JobProposals() {
                             </div>
 
                             {/* Actions */}
-                            {selectedProposal.status === 'pending' && (
+                            {(selectedProposal.status === 'pending' || selectedProposal.status === 'submitted') && (
                                 <div className="flex items-center gap-3 pt-4 border-t border-white/5">
                                     <GradientSlideButton
                                         onClick={() => openHireModal(selectedProposal)}

@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -44,31 +45,40 @@ func (h *ProfileHandler) GetMyProfile(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, profile)
 }
 
-// GetProfile handles GET /api/v1/profiles/:id
+// GetProfile handles GET /api/v1/profiles/{id}
+// The ID can be either a user_id or a profile_id - we try user_id first
 func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
-	// Extract ID from URL path
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid profile ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "profile ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid profile ID format")
 		return
 	}
 
-	profile, err := h.profileService.GetProfile(r.Context(), id)
+	// Try to get profile by user ID first (most common use case)
+	profile, err := h.profileService.GetProfileByUserID(r.Context(), id)
 	if err != nil {
+		// If not found by user ID, try by profile ID
 		if errors.Is(err, apperrors.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "profile not found")
+			profile, err = h.profileService.GetProfile(r.Context(), id)
+			if err != nil {
+				if errors.Is(err, apperrors.ErrNotFound) {
+					writeError(w, http.StatusNotFound, "profile not found")
+					return
+				}
+				writeError(w, http.StatusInternalServerError, "failed to get profile")
+				return
+			}
+		} else {
+			writeError(w, http.StatusInternalServerError, "failed to get profile")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "failed to get profile")
-		return
 	}
 
 	writeJSON(w, http.StatusOK, profile)
@@ -208,15 +218,14 @@ func (h *ProfileHandler) RemoveProfileSkill(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Extract skill ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid skill ID")
+	// Extract skill ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "skill ID is required")
 		return
 	}
 
-	skillID, err := strconv.Atoi(parts[len(parts)-1])
+	skillID, err := strconv.Atoi(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid skill ID format")
 		return
@@ -313,7 +322,7 @@ func (h *ProfileHandler) CreatePortfolioItem(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-// UpdatePortfolioItem handles PUT /api/v1/profile/portfolio/:id
+// UpdatePortfolioItem handles PUT /api/v1/profile/portfolio/{id}
 func (h *ProfileHandler) UpdatePortfolioItem(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -321,15 +330,14 @@ func (h *ProfileHandler) UpdatePortfolioItem(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Extract item ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid item ID")
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
 		return
 	}
 
-	itemID, err := uuid.Parse(parts[len(parts)-1])
+	itemID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid item ID format")
 		return
@@ -379,7 +387,7 @@ func (h *ProfileHandler) UpdatePortfolioItem(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-// DeletePortfolioItem handles DELETE /api/v1/profile/portfolio/:id
+// DeletePortfolioItem handles DELETE /api/v1/profile/portfolio/{id}
 func (h *ProfileHandler) DeletePortfolioItem(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -387,15 +395,14 @@ func (h *ProfileHandler) DeletePortfolioItem(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Extract item ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid item ID")
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
 		return
 	}
 
-	itemID, err := uuid.Parse(parts[len(parts)-1])
+	itemID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid item ID format")
 		return
@@ -531,7 +538,13 @@ func (h *ProfileHandler) CreateTokenWork(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err := h.profileService.AddTokenWork(r.Context(), claims.UserID, item); err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to create token work item")
+		if errors.Is(err, apperrors.ErrNotFound) {
+			writeError(w, http.StatusBadRequest, "profile not found - please save your profile first")
+			return
+		}
+		// Log the actual error for debugging
+		fmt.Printf("ERROR AddTokenWork: %v\n", err)
+		writeError(w, http.StatusInternalServerError, fmt.Sprintf("failed to create token work item: %v", err))
 		return
 	}
 
@@ -541,7 +554,7 @@ func (h *ProfileHandler) CreateTokenWork(w http.ResponseWriter, r *http.Request)
 	})
 }
 
-// UpdateTokenWork handles PUT /api/v1/profile/token-work/:id
+// UpdateTokenWork handles PUT /api/v1/profile/token-work/{id}
 func (h *ProfileHandler) UpdateTokenWork(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -549,15 +562,14 @@ func (h *ProfileHandler) UpdateTokenWork(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Extract item ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid item ID")
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
 		return
 	}
 
-	itemID, err := uuid.Parse(parts[len(parts)-1])
+	itemID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid item ID format")
 		return
@@ -602,7 +614,7 @@ func (h *ProfileHandler) UpdateTokenWork(w http.ResponseWriter, r *http.Request)
 	})
 }
 
-// DeleteTokenWork handles DELETE /api/v1/profile/token-work/:id
+// DeleteTokenWork handles DELETE /api/v1/profile/token-work/{id}
 func (h *ProfileHandler) DeleteTokenWork(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -610,15 +622,14 @@ func (h *ProfileHandler) DeleteTokenWork(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Extract item ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid item ID")
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
 		return
 	}
 
-	itemID, err := uuid.Parse(parts[len(parts)-1])
+	itemID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid item ID format")
 		return
