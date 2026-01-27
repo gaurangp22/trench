@@ -14,7 +14,7 @@ export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isConnecting, setIsConnecting] = useState(false)
     const { connected, publicKey, disconnect } = useWallet()
-    const { setVisible } = useWalletModal()
+    useWalletModal()
     const location = useLocation()
     const navigate = useNavigate()
     const { isAuthenticated, user, logout, loginWithWallet, signupWithWallet, isLoading, needsOnboarding, setNeedsOnboarding } = useAuth()
@@ -52,11 +52,6 @@ export function Navbar() {
     const handleOnboardingClose = () => {
         setNeedsOnboarding(false)
         disconnect() // Disconnect wallet if user closes the modal
-    }
-
-    const handleConnectWallet = () => {
-        setVisible(true)
-        setIsMobileMenuOpen(false)
     }
 
     const handleLogout = () => {

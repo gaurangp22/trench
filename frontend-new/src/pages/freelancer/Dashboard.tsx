@@ -3,18 +3,19 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-    DollarSign, Briefcase, FileText, TrendingUp,
-    Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet,
-    Loader2, Clock, CheckCircle2, ArrowRight
+    DollarSign, Briefcase, FileText,
+    Star, Shield, ArrowUpRight, MessageSquare,
+    Loader2, CheckCircle2, ArrowRight, Eye, Wallet
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
 import { ContractAPI, ProposalAPI, ProfileAPI, type Contract, type Proposal } from "@/lib/api"
+import { StatCard, EmptyState } from "@/components/shared"
 
 export function FreelancerDashboard() {
     const navigate = useNavigate()
-    const { user, profile } = useAuth()
+    const { profile } = useAuth()
     const [isLoading, setIsLoading] = useState(true)
     const [contracts, setContracts] = useState<Contract[]>([])
     const [proposals, setProposals] = useState<Proposal[]>([])
@@ -50,7 +51,6 @@ export function FreelancerDashboard() {
     const activeContracts = contracts.filter(c => c.status === 'active')
     const escrowBalance = activeContracts.reduce((sum, c) => sum + (c.total_amount || 0), 0)
     const pendingProposals = proposals.filter(p => p.status === 'pending' || p.status === 'shortlisted')
-    const shortlistedProposals = proposals.filter(p => p.status === 'shortlisted')
 
     if (isLoading) {
         return (
@@ -76,10 +76,10 @@ export function FreelancerDashboard() {
                             Welcome back{profile?.display_name ? `, ${profile.display_name}` : ''}
                         </h1>
                         <div className="flex items-center gap-3 text-zinc-400">
-                            {stats.rating > 0 && (
+                            {(stats.rating ?? 0) > 0 && (
                                 <span className="flex items-center gap-1.5">
                                     <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                    <span className="text-white font-medium">{stats.rating.toFixed(1)}</span>
+                                    <span className="text-white font-medium">{stats.rating?.toFixed(1)}</span>
                                     <span className="text-zinc-500">({stats.review_count} reviews)</span>
                                 </span>
                             )}
@@ -96,65 +96,35 @@ export function FreelancerDashboard() {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.05 }}
-                        className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-5 hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
-                    >
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <DollarSign className="w-5 h-5 text-emerald-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-white mb-1 group-hover:text-emerald-400 transition-colors">
-                            {stats.total_earnings?.toFixed(1) || 0} SOL
-                        </div>
-                        <div className="text-sm text-zinc-500">Total Earnings</div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-5 hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
-                    >
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Shield className="w-5 h-5 text-blue-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">
-                            {escrowBalance.toFixed(1)} SOL
-                        </div>
-                        <div className="text-sm text-zinc-500">In Escrow</div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 }}
-                        className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-5 hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
-                    >
-                        <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Briefcase className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-white mb-1 group-hover:text-purple-400 transition-colors">
-                            {activeContracts.length}
-                        </div>
-                        <div className="text-sm text-zinc-500">Active Jobs</div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-5 hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
-                    >
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <FileText className="w-5 h-5 text-amber-400" />
-                        </div>
-                        <div className="text-2xl font-bold text-white mb-1 group-hover:text-amber-400 transition-colors">
-                            {pendingProposals.length}
-                        </div>
-                        <div className="text-sm text-zinc-500">Pending Proposals</div>
-                    </motion.div>
+                    <StatCard
+                        delay={0.05}
+                        icon={DollarSign}
+                        label="Total Earnings"
+                        value={`${stats.total_earnings?.toFixed(1) || 0} SOL`}
+                        color="emerald"
+                    />
+                    <StatCard
+                        delay={0.1}
+                        icon={Shield}
+                        label="In Escrow"
+                        value={`${escrowBalance.toFixed(1)} SOL`}
+                        color="blue"
+                    />
+                    <StatCard
+                        delay={0.15}
+                        icon={Briefcase}
+                        label="Active Jobs"
+                        value={activeContracts.length.toString()}
+                        color="purple"
+                    />
+                    <StatCard
+                        delay={0.2}
+                        icon={FileText}
+                        label="Pending Proposals"
+                        value={pendingProposals.length.toString()}
+                        color="amber"
+                        highlight={pendingProposals.length > 0}
+                    />
                 </div>
 
                 {/* Main Content Grid */}
@@ -177,20 +147,13 @@ export function FreelancerDashboard() {
                         </div>
 
                         {activeContracts.length === 0 ? (
-                            <div className="p-12 text-center">
-                                <div className="w-14 h-14 rounded-2xl bg-white/[0.04] flex items-center justify-center mx-auto mb-4">
-                                    <Briefcase className="w-6 h-6 text-zinc-500" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-white mb-2">No active contracts</h3>
-                                <p className="text-sm text-zinc-500 mb-6 max-w-sm mx-auto">
-                                    Start by browsing available jobs and submitting proposals
-                                </p>
-                                <Link to="/jobs">
-                                    <Button className="h-10 px-5 rounded-xl bg-white text-black hover:bg-zinc-100 font-semibold">
-                                        Browse Jobs
-                                    </Button>
-                                </Link>
-                            </div>
+                            <EmptyState
+                                icon={Briefcase}
+                                title="No active contracts"
+                                description="Start by browsing available jobs and submitting proposals"
+                                actionLabel="Browse Jobs"
+                                actionHref="/jobs"
+                            />
                         ) : (
                             <div className="divide-y divide-white/[0.06]">
                                 {activeContracts.slice(0, 4).map((contract) => {

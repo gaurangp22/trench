@@ -27,8 +27,7 @@ export function ManageJobs() {
     const loadJobs = async () => {
         try {
             const data = await JobAPI.getMyJobs()
-            const jobsArray = Array.isArray(data) ? data : (data?.jobs || [])
-            setJobs(jobsArray)
+            setJobs(data)
         } catch (error) {
             console.error("Failed to load jobs", error)
         } finally {

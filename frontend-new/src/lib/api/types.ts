@@ -98,7 +98,7 @@ export interface Job {
     budget: number
     budget_type: 'fixed' | 'hourly'
     difficulty: string
-    status: 'draft' | 'open' | 'active' | 'completed' | 'cancelled'
+    status: 'draft' | 'open' | 'active' | 'completed' | 'cancelled' | 'closed'
     created_at: string
     client_id: string
     skills: string[]

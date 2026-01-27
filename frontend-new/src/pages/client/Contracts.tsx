@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import { motion } from "framer-motion"
 import {
-    Search, Shield, ChevronRight, Loader2, FileText, User, Clock, CheckCircle
+    Search, ChevronRight, Loader2, FileText, User, CheckCircle
 } from "lucide-react"
 import { ContractAPI, type Contract } from "@/lib/api"
 import { cn } from "@/lib/utils"

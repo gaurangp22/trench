@@ -4,8 +4,8 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import { motion } from "framer-motion"
 import {
-    Loader2, ArrowUpRight, Search, MessageSquare, User, FileText,
-    Clock, Briefcase, Eye, X
+    Loader2, Search, MessageSquare, User, FileText,
+    Clock, Eye, X
 } from "lucide-react"
 import { ProposalAPI, type Proposal } from "@/lib/api"
 import { cn } from "@/lib/utils"

@@ -3,8 +3,8 @@ import { Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import {
-    User, Camera, Save, Loader2, Plus, X, ExternalLink, Globe,
-    MapPin, CheckCircle, MessageCircle,
+    User, Camera, Loader2, Plus, X, ExternalLink, Globe,
+    MapPin, MessageCircle,
     Coins, Building2, Star, ChevronDown, TrendingUp, Briefcase
 } from "lucide-react"
 import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { SOCIAL_PLATFORMS, CHAIN_OPTIONS } from "@/lib/constants"
 import { formatMarketCap, getDexScreenerUrl, validateImageFile, extractApiError } from "@/lib/utils/index"
+import { SaveButton } from "@/components/shared"
 
 export function EditProfile() {
     const { user, profile: authProfile, refreshProfile } = useAuth()
@@ -282,33 +283,12 @@ export function EditProfile() {
                     <p className="text-zinc-400 text-lg">Manage your client profile and showcase your projects.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Button
+                    <SaveButton
                         onClick={handleSave}
-                        disabled={saving}
-                        className={cn(
-                            "h-11 px-6 rounded-xl font-bold transition-all",
-                            saveSuccess
-                                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                                : "bg-white text-black hover:bg-zinc-200"
-                        )}
-                    >
-                        {saving ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Saving...
-                            </>
-                        ) : saveSuccess ? (
-                            <>
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Saved!
-                            </>
-                        ) : (
-                            <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Save Changes
-                            </>
-                        )}
-                    </Button>
+                        saving={saving}
+                        saveSuccess={saveSuccess}
+                        size="md"
+                    />
                 </div>
             </div>
 
@@ -799,33 +779,13 @@ export function EditProfile() {
                             Cancel
                         </Button>
                     </Link>
-                    <Button
+                    <SaveButton
                         onClick={handleSave}
-                        disabled={saving}
-                        className={cn(
-                            "h-12 px-8 rounded-xl font-bold transition-all",
-                            saveSuccess
-                                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                                : "bg-white text-black hover:bg-zinc-200"
-                        )}
-                    >
-                        {saving ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Saving...
-                            </>
-                        ) : saveSuccess ? (
-                            <>
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Saved!
-                            </>
-                        ) : (
-                            <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Save All Changes
-                            </>
-                        )}
-                    </Button>
+                        saving={saving}
+                        saveSuccess={saveSuccess}
+                        size="lg"
+                        saveLabel="Save All Changes"
+                    />
                 </div>
             </div>
         </DashboardLayout>

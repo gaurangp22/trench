@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
-import { ArrowLeft, Star, Shield, CheckCircle, Clock, MapPin, MessageSquare, Loader2, Briefcase, Users, Zap, X } from "lucide-react"
+import { ArrowLeft, Star, Shield, CheckCircle, Clock, MapPin, MessageSquare, Loader2, Briefcase, Users, Zap } from "lucide-react"
 import { motion, useInView } from "framer-motion"
 import { Button } from "@/components/ui/Button"
 import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
@@ -19,7 +19,7 @@ export function JobDetail() {
     const [error, setError] = useState<string | null>(null)
 
     const contentRef = useRef<HTMLDivElement>(null)
-    const isContentInView = useInView(contentRef, { once: true })
+    useInView(contentRef, { once: true })
 
     // Check auth state
     const isLoggedIn = AuthAPI.isAuthenticated()

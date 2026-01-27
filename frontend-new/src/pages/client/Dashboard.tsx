@@ -3,14 +3,15 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-    Briefcase, Users, CheckCircle2, Shield, Eye, MessageSquare,
-    Plus, AlertCircle, ArrowUpRight, ArrowRight, Sparkles,
-    Clock, TrendingUp, Zap
+    Briefcase, Users, CheckCircle2, Shield, MessageSquare,
+    Plus, AlertCircle, ArrowRight, Sparkles,
+    Clock, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
 import { JobAPI, ContractAPI, type Job, type Contract } from "@/lib/api"
+import { StatCard, DashboardSkeleton } from "@/components/shared"
 
 export function ClientDashboard() {
     const navigate = useNavigate()
@@ -29,8 +30,7 @@ export function ClientDashboard() {
                 JobAPI.getMyJobs(),
                 ContractAPI.list({ role: 'client' })
             ])
-            const jobsArray = Array.isArray(jobsData) ? jobsData : (jobsData?.jobs || [])
-            setJobs(jobsArray)
+            setJobs(jobsData)
             setContracts(contractsData?.contracts || [])
         } catch (error) {
             console.error("Failed to load dashboard data:", error)
@@ -50,33 +50,7 @@ export function ClientDashboard() {
     if (isLoading) {
         return (
             <DashboardLayout role="client">
-                <div className="space-y-8">
-                    {/* Header Skeleton */}
-                    <div className="flex items-center justify-between">
-                        <div className="space-y-3">
-                            <div className="h-4 w-24 bg-white/[0.03] rounded animate-pulse" />
-                            <div className="h-10 w-72 bg-white/[0.05] rounded-lg animate-pulse" />
-                        </div>
-                        <div className="h-12 w-36 bg-white/[0.05] rounded-xl animate-pulse" />
-                    </div>
-
-                    {/* Stats Skeleton */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[...Array(4)].map((_, i) => (
-                            <div key={i} className="h-32 bg-white/[0.02] rounded-2xl border border-white/[0.04] animate-pulse" />
-                        ))}
-                    </div>
-
-                    {/* Content Skeleton */}
-                    <div className="grid lg:grid-cols-5 gap-6">
-                        <div className="lg:col-span-3 space-y-4">
-                            {[...Array(3)].map((_, i) => (
-                                <div key={i} className="h-28 bg-white/[0.02] rounded-2xl border border-white/[0.04] animate-pulse" />
-                            ))}
-                        </div>
-                        <div className="lg:col-span-2 h-80 bg-white/[0.02] rounded-2xl border border-white/[0.04] animate-pulse" />
-                    </div>
-                </div>
+                <DashboardSkeleton />
             </DashboardLayout>
         )
     }
@@ -308,63 +282,6 @@ export function ClientDashboard() {
                 </div>
             </div>
         </DashboardLayout>
-    )
-}
-
-// Stat Card Component
-function StatCard({
-    icon: Icon,
-    label,
-    value,
-    trend,
-    color,
-    delay = 0,
-    highlight = false
-}: {
-    icon: any
-    label: string
-    value: string
-    trend: string
-    color: 'emerald' | 'blue' | 'amber' | 'purple'
-    delay?: number
-    highlight?: boolean
-}) {
-    const colors = {
-        emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', glow: 'shadow-emerald-500/20' },
-        blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', glow: 'shadow-blue-500/20' },
-        amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', glow: 'shadow-amber-500/20' },
-        purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20', glow: 'shadow-purple-500/20' },
-    }
-    const c = colors[color]
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay }}
-            className={cn(
-                "relative overflow-hidden rounded-2xl p-5 transition-all duration-300 group",
-                "bg-white/[0.02] border border-white/[0.06]",
-                "hover:bg-white/[0.04] hover:border-white/[0.1]",
-                highlight && `${c.border} ${c.bg}`
-            )}
-        >
-            <div className={cn(
-                "absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity -translate-y-1/2 translate-x-1/2",
-                c.bg
-            )} />
-
-            <div className="relative">
-                <div className="flex items-center gap-3 mb-3">
-                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", c.bg)}>
-                        <Icon className={cn("w-4 h-4", c.text)} />
-                    </div>
-                    <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">{label}</span>
-                </div>
-                <div className="text-2xl font-bold text-white mb-1">{value}</div>
-                <div className="text-xs text-zinc-500">{trend}</div>
-            </div>
-        </motion.div>
     )
 }
 

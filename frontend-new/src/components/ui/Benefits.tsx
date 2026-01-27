@@ -183,7 +183,6 @@ export function Benefits() {
                             key={benefit.title}
                             benefit={benefit}
                             isReversed={index % 2 === 1}
-                            index={index}
                         />
                     ))}
                 </div>
@@ -195,11 +194,9 @@ export function Benefits() {
 function BenefitRow({
     benefit,
     isReversed,
-    index
 }: {
     benefit: typeof benefits[0];
     isReversed: boolean;
-    index: number;
 }) {
     const rowView = useInViewOnce(0.2);
     const contentAnimation = isReversed ? 'animate-fade-in-right' : 'animate-fade-in-left';
