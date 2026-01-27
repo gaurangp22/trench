@@ -1,23 +1,39 @@
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSearchParams, Link } from "react-router-dom"
-import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare, Briefcase, Users } from "lucide-react"
+import { Search, Shield, MoreVertical, MessageSquare, Briefcase, Users, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
-import { MessageAPI, type Conversation, type Message } from "@/lib/api"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
+import { useAuth } from "@/context/AuthContext"
+import { useChat } from "@/context/ChatContext"
+import { MessageInput } from "@/components/chat/MessageInput"
+import { MessageAttachments } from "@/components/chat/MessageAttachment"
 
 export function Messages() {
-    const [conversations, setConversations] = useState<Conversation[]>([])
-    const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
-    const [messages, setMessages] = useState<Message[]>([])
-    const [newMessage, setNewMessage] = useState("")
-    const [loading, setLoading] = useState(true)
-    const [messagesLoading, setMessagesLoading] = useState(false)
-    const [sending, setSending] = useState(false)
+    const { user } = useAuth()
+    const currentRole = user?.role || 'freelancer'
     const [searchQuery, setSearchQuery] = useState("")
-    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const messagesContainerRef = useRef<HTMLDivElement>(null)
+    const [searchParams] = useSearchParams()
+    const conversationIdFromUrl = searchParams.get('conversation')
 
-    // Get current user ID from token (simplified - in real app use auth context)
+    const {
+        isConnected,
+        connecting,
+        conversations,
+        loadingConversations,
+        refreshConversations,
+        selectedConversation,
+        selectConversation,
+        messages,
+        loadingMessages,
+        sendMessage,
+        sendTyping,
+        typingUsers,
+        markAsRead,
+    } = useChat()
+
+    // Get current user ID from token
     const getCurrentUserId = () => {
         const token = localStorage.getItem('token')
         if (!token) return null
@@ -30,91 +46,43 @@ export function Messages() {
     }
 
     const currentUserId = getCurrentUserId()
-    const [searchParams] = useSearchParams()
-    const conversationIdFromUrl = searchParams.get('conversation')
 
-    // Fetch conversations
+    // Load conversations on mount
     useEffect(() => {
-        const loadConversations = async () => {
-            try {
-                setLoading(true)
-                const data = await MessageAPI.getConversations()
-                const convs = data.conversations || []
-                setConversations(convs)
+        if (isConnected) {
+            refreshConversations()
+        }
+    }, [isConnected, refreshConversations])
 
-                // If a conversation ID is provided in URL, select it
-                if (conversationIdFromUrl && convs.length > 0) {
-                    const targetConv = convs.find((c: Conversation) => c.id === conversationIdFromUrl)
-                    if (targetConv) {
-                        setSelectedConversation(targetConv)
-                    } else {
-                        setSelectedConversation(convs[0])
-                    }
-                } else if (convs.length > 0) {
-                    setSelectedConversation(convs[0])
+    // Select conversation from URL or first one
+    useEffect(() => {
+        if (conversations.length > 0 && !selectedConversation) {
+            if (conversationIdFromUrl) {
+                const targetConv = conversations.find(c => c.id === conversationIdFromUrl)
+                if (targetConv) {
+                    selectConversation(targetConv)
+                    return
                 }
-            } catch (error) {
-                console.error("Failed to load conversations:", error)
-            } finally {
-                setLoading(false)
             }
+            selectConversation(conversations[0])
         }
+    }, [conversations, conversationIdFromUrl, selectedConversation, selectConversation])
 
-        loadConversations()
-    }, [conversationIdFromUrl])
-
-    // Fetch messages when conversation changes
+    // Mark as read when selecting conversation
     useEffect(() => {
-        if (!selectedConversation) return
-
-        const loadMessages = async () => {
-            try {
-                setMessagesLoading(true)
-                const data = await MessageAPI.getMessages(selectedConversation.id)
-                // Reverse to show oldest first
-                setMessages((data.messages || []).reverse())
-                // Mark as read
-                MessageAPI.markAsRead(selectedConversation.id)
-            } catch (error) {
-                console.error("Failed to load messages:", error)
-            } finally {
-                setMessagesLoading(false)
-            }
+        if (selectedConversation && selectedConversation.unread_count > 0) {
+            markAsRead(selectedConversation.id)
         }
-
-        loadMessages()
-    }, [selectedConversation?.id])
+    }, [selectedConversation?.id, selectedConversation?.unread_count, markAsRead])
 
     // Scroll to bottom when messages change
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+        }
     }, [messages])
 
-    const handleSend = async () => {
-        if (!newMessage.trim() || !selectedConversation || sending) return
-
-        try {
-            setSending(true)
-            const message = await MessageAPI.sendMessage(selectedConversation.id, {
-                message_text: newMessage.trim()
-            })
-            setMessages(prev => [...prev, message])
-            setNewMessage("")
-
-            // Update conversation's last message in list
-            setConversations(prev => prev.map(conv =>
-                conv.id === selectedConversation.id
-                    ? { ...conv, last_message: message, updated_at: message.created_at }
-                    : conv
-            ))
-        } catch (error) {
-            console.error("Failed to send message:", error)
-        } finally {
-            setSending(false)
-        }
-    }
-
-    const getOtherParticipant = (conv: Conversation) => {
+    const getOtherParticipant = (conv: typeof conversations[0]) => {
         return conv.participants?.find(p => p.user_id !== currentUserId) || conv.participants?.[0]
     }
 
@@ -148,10 +116,40 @@ export function Messages() {
                conv.context?.title?.toLowerCase().includes(searchQuery.toLowerCase())
     })
 
-    // Empty state
-    if (!loading && conversations.length === 0) {
+    // Get typing users for current conversation
+    const currentTypingUsers = typingUsers.filter(
+        u => u.conversation_id === selectedConversation?.id && u.user_id !== currentUserId
+    )
+
+    // Empty state when not connected
+    if (!isConnected && !connecting) {
         return (
-            <DashboardLayout role="freelancer">
+            <DashboardLayout role={currentRole}>
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <div className="text-center max-w-md">
+                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                            <WifiOff className="w-10 h-10 text-red-400" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-white mb-3">Connection Lost</h2>
+                        <p className="text-zinc-400 leading-relaxed mb-8">
+                            Unable to connect to the chat server. Please check your connection and try again.
+                        </p>
+                        <Button
+                            onClick={() => window.location.reload()}
+                            className="bg-white text-black hover:bg-zinc-200"
+                        >
+                            Retry Connection
+                        </Button>
+                    </div>
+                </div>
+            </DashboardLayout>
+        )
+    }
+
+    // Empty state when no conversations
+    if (!loadingConversations && conversations.length === 0) {
+        return (
+            <DashboardLayout role={currentRole}>
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center max-w-md">
                         <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
@@ -185,17 +183,23 @@ export function Messages() {
     }
 
     return (
-        <DashboardLayout role="freelancer">
+        <DashboardLayout role={currentRole}>
             <div className="h-[calc(100vh-140px)]">
                 <div className="flex h-full bg-[#0a0a0c] border border-white/5 rounded-2xl overflow-hidden">
                     {/* Conversation List */}
                     <div className="w-80 border-r border-white/[0.06] flex flex-col">
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-white/[0.06]">
-                            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                                <MessageSquare className="w-5 h-5 text-emerald-400" />
-                                Messages
-                            </h2>
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                                    <MessageSquare className="w-5 h-5 text-emerald-400" />
+                                    Messages
+                                </h2>
+                                <div className={cn(
+                                    "w-2 h-2 rounded-full",
+                                    isConnected ? "bg-emerald-500" : "bg-yellow-500 animate-pulse"
+                                )} title={isConnected ? "Connected" : "Connecting..."} />
+                            </div>
                         </div>
 
                         {/* Search */}
@@ -214,7 +218,7 @@ export function Messages() {
 
                         {/* Conversations */}
                         <div className="flex-1 overflow-y-auto">
-                            {loading ? (
+                            {loadingConversations ? (
                                 <div className="p-2">
                                     {[...Array(5)].map((_, i) => (
                                         <div
@@ -239,7 +243,7 @@ export function Messages() {
                                     return (
                                         <button
                                             key={conv.id}
-                                            onClick={() => setSelectedConversation(conv)}
+                                            onClick={() => selectConversation(conv)}
                                             className={cn(
                                                 "w-full p-4 flex items-start gap-3 text-left transition-all border-b border-white/[0.03]",
                                                 selectedConversation?.id === conv.id
@@ -324,8 +328,10 @@ export function Messages() {
                                                             <h3 className="font-medium text-white">
                                                                 {participant?.username || 'Unknown'}
                                                             </h3>
-                                                            {participant?.is_online && (
+                                                            {participant?.is_online ? (
                                                                 <span className="text-xs text-emerald-400">Online</span>
+                                                            ) : (
+                                                                <span className="text-xs text-zinc-500">Offline</span>
                                                             )}
                                                         </div>
                                                     </>
@@ -368,8 +374,8 @@ export function Messages() {
                                 </div>
 
                                 {/* Messages */}
-                                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                                    {messagesLoading ? (
+                                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+                                    {loadingMessages ? (
                                         <div className="space-y-4 py-4">
                                             {[...Array(4)].map((_, i) => (
                                                 <div
@@ -416,7 +422,15 @@ export function Messages() {
                                                                 ? "bg-emerald-500 text-white"
                                                                 : "bg-white/[0.06] text-zinc-100"
                                                         )}>
-                                                            <p className="text-sm whitespace-pre-wrap">{msg.message_text}</p>
+                                                            {msg.message_text && (
+                                                                <p className="text-sm whitespace-pre-wrap">{msg.message_text}</p>
+                                                            )}
+                                                            {msg.attachments && msg.attachments.length > 0 && (
+                                                                <MessageAttachments
+                                                                    attachments={msg.attachments}
+                                                                    isOwnMessage={isMe}
+                                                                />
+                                                            )}
                                                             <span className={cn(
                                                                 "text-xs mt-1 block",
                                                                 isMe ? "text-white/70" : "text-zinc-500"
@@ -430,33 +444,30 @@ export function Messages() {
                                             )
                                         })
                                     )}
-                                    <div ref={messagesEndRef} />
+
+                                    {/* Typing indicator */}
+                                    {currentTypingUsers.length > 0 && (
+                                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                                            <div className="flex gap-1">
+                                                <span className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                <span className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                <span className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                            </div>
+                                            <span>
+                                                {currentTypingUsers.map(u => u.username).join(', ')} {currentTypingUsers.length === 1 ? 'is' : 'are'} typing...
+                                            </span>
+                                        </div>
+                                    )}
+
                                 </div>
 
                                 {/* Message Input */}
-                                <div className="p-4 border-t border-white/[0.06] bg-[#0a0a0c]">
-                                    <div className="flex items-center gap-3">
-                                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-white/[0.05]">
-                                            <Paperclip className="w-5 h-5" />
-                                        </Button>
-                                        <input
-                                            type="text"
-                                            value={newMessage}
-                                            onChange={(e) => setNewMessage(e.target.value)}
-                                            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                                            placeholder="Type a message..."
-                                            disabled={sending}
-                                            className="flex-1 px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all disabled:opacity-50"
-                                        />
-                                        <Button
-                                            onClick={handleSend}
-                                            disabled={!newMessage.trim() || sending}
-                                            className="h-10 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium disabled:opacity-50"
-                                        >
-                                            <Send className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </div>
+                                <MessageInput
+                                    onSend={sendMessage}
+                                    onTyping={sendTyping}
+                                    disabled={!isConnected}
+                                    placeholder={isConnected ? "Type a message..." : "Connecting..."}
+                                />
                             </>
                         ) : (
                             <div className="flex-1 flex items-center justify-center">

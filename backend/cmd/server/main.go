@@ -16,6 +16,7 @@ import (
 	"github.com/trenchjob/backend/internal/pkg/utils"
 	"github.com/trenchjob/backend/internal/repository/postgres"
 	"github.com/trenchjob/backend/internal/service"
+	"github.com/trenchjob/backend/internal/websocket"
 )
 
 func main() {
@@ -86,6 +87,14 @@ func main() {
 	uploadDir := "./uploads"
 	baseURL := "http://localhost:" + cfg.Server.Port
 	uploadHandler := handler.NewUploadHandler(uploadDir, baseURL)
+
+	// Initialize WebSocket hub
+	wsHub := websocket.NewHub()
+	go wsHub.Run()
+	log.Println("WebSocket hub started")
+
+	// WebSocket handler
+	wsHandler := handler.NewWebSocketHandler(wsHub, messageService, authService)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
@@ -224,6 +233,9 @@ func main() {
 	// Upload routes
 	mux.Handle("POST /api/v1/upload", authMiddleware.Authenticate(http.HandlerFunc(uploadHandler.UploadFile)))
 	mux.HandleFunc("GET /uploads/", uploadHandler.ServeFile)
+
+	// WebSocket route (protected)
+	mux.Handle("GET /api/v1/ws", authMiddleware.Authenticate(http.HandlerFunc(wsHandler.HandleWebSocket)))
 
 	// Apply global middleware
 	var handler http.Handler = mux

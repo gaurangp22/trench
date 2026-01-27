@@ -12,6 +12,7 @@ export interface User {
     username?: string
     avatar_url?: string
     display_name?: string
+    wallet_address?: string
 }
 
 export interface Profile {

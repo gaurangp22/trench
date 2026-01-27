@@ -168,10 +168,13 @@ type MessageRepository interface {
 	Create(ctx context.Context, message *domain.Message) error
 	GetByID(ctx context.Context, id uuid.UUID) (*domain.Message, error)
 	GetByConversationID(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error)
+	GetByConversationIDWithAttachments(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error)
 	Update(ctx context.Context, message *domain.Message) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetLastMessage(ctx context.Context, conversationID uuid.UUID) (*domain.Message, error)
 	GetUnreadCount(ctx context.Context, userID uuid.UUID) (int, error)
+	CreateAttachment(ctx context.Context, attachment *domain.MessageAttachment) error
+	GetAttachmentsByMessageID(ctx context.Context, messageID uuid.UUID) ([]domain.MessageAttachment, error)
 }
 
 // ReviewRepository defines review data access methods

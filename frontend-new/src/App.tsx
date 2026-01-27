@@ -13,6 +13,7 @@ import { HowItWorks } from "@/pages/HowItWorks"
 import { Messages } from "@/pages/Messages"
 import { WalletContextProvider } from "@/context/WalletContextProvider"
 import { AuthProvider } from "@/context/AuthContext"
+import { ChatProvider } from "@/context/ChatContext"
 import { PostJob } from "@/pages/client/PostJob"
 import { ManageJobs } from "@/pages/client/ManageJobs"
 import { ClientDashboard } from "@/pages/client/Dashboard"
@@ -35,6 +36,7 @@ import { ManageOrders } from "@/pages/freelancer/ManageOrders"
 import { OrderDetail as FreelancerOrderDetail } from "@/pages/freelancer/OrderDetail"
 import { MyOrders } from "@/pages/client/MyOrders"
 import { OrderDetail as ClientOrderDetail } from "@/pages/client/OrderDetail"
+import { Settings } from "@/pages/Settings"
 
 function App() {
   console.log("App.tsx: Rendering...");
@@ -42,6 +44,7 @@ function App() {
     <Router>
       <WalletContextProvider>
         <AuthProvider>
+          <ChatProvider>
           <ErrorBoundary>
           <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
             <Routes>
@@ -68,6 +71,11 @@ function App() {
               <Route path="/messages" element={
                 <ProtectedRoute>
                   <><Navbar /><main><Messages /></main><Footer /></>
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <><Navbar /><main><Settings /></main><Footer /></>
                 </ProtectedRoute>
               } />
 
@@ -167,6 +175,7 @@ function App() {
             </Routes>
           </div>
           </ErrorBoundary>
+          </ChatProvider>
         </AuthProvider>
       </WalletContextProvider>
     </Router>
