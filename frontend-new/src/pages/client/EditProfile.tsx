@@ -3,27 +3,16 @@ import { Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import {
-    User, Camera, Save, Loader2, Plus, X, Globe, ExternalLink,
-    Twitter, MessageCircle, MapPin, CheckCircle,
+    User, Camera, Save, Loader2, Plus, X, ExternalLink, Globe,
+    MapPin, CheckCircle, MessageCircle,
     Coins, Building2, Star, ChevronDown, TrendingUp, Briefcase
 } from "lucide-react"
-import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
+import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
 import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
-
-const SOCIAL_PLATFORMS = [
-    { id: 'website', label: 'Website', icon: Globe, placeholder: 'https://yourproject.com' },
-    { id: 'twitter', label: 'Twitter', icon: Twitter, placeholder: 'https://twitter.com/username' },
-    { id: 'telegram', label: 'Telegram', icon: MessageCircle, placeholder: 'https://t.me/username' },
-    { id: 'discord', label: 'Discord', icon: MessageCircle, placeholder: 'username#0000 or server invite' },
-]
-
-const CHAIN_OPTIONS = [
-    { value: 'solana', label: 'Solana' },
-    { value: 'ethereum', label: 'Ethereum' },
-    { value: 'base', label: 'Base' },
-]
+import { SOCIAL_PLATFORMS, CHAIN_OPTIONS } from "@/lib/constants"
+import { formatMarketCap, getDexScreenerUrl, validateImageFile, extractApiError } from "@/lib/utils/index"
 
 export function EditProfile() {
     const { user, profile: authProfile, refreshProfile } = useAuth()
@@ -168,14 +157,9 @@ export function EditProfile() {
         const file = e.target.files?.[0]
         if (!file) return
 
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-        if (!allowedTypes.includes(file.type)) {
-            setError('Please upload a JPG, PNG, GIF, or WebP image')
-            return
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            setError('Image must be less than 5MB')
+        const validation = validateImageFile(file)
+        if (!validation.valid) {
+            setError(validation.error || 'Invalid image file')
             return
         }
 
@@ -184,8 +168,8 @@ export function EditProfile() {
         try {
             const result = await UploadAPI.uploadFile(file)
             setAvatarUrl(result.url)
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to upload image')
+        } catch (err) {
+            setError(extractApiError(err, 'Failed to upload image'))
         } finally {
             setUploadingAvatar(false)
         }
@@ -249,7 +233,7 @@ export function EditProfile() {
 
             const socialsToSave = Object.entries(socials)
                 .filter(([_, url]) => url.trim() !== '')
-                .map(([platform, url]) => ({ platform, url }))
+                .map(([platform, url]) => ({ platform: platform as ProfileSocial['platform'], url }))
 
             if (socialsToSave.length > 0) {
                 await ProfileAPI.setSocials(socialsToSave)
@@ -261,33 +245,11 @@ export function EditProfile() {
 
             setSaveSuccess(true)
             setTimeout(() => setSaveSuccess(false), 3000)
-        } catch (err: any) {
-            console.error("Failed to save profile:", err)
-            console.error("Save error details:", err.response?.data, err.response?.status)
-            const errorMsg = err.response?.data?.message
-                || err.response?.data?.error
-                || err.response?.data?.detail
-                || (err.response?.status === 400 ? "Invalid data. Please check your inputs." : null)
-                || (err.response?.status === 401 ? "Please log in to save your profile." : null)
-                || (err.response?.status === 500 ? "Server error. Please try again later." : null)
-                || "Failed to save profile. Please try again."
-            setError(errorMsg)
+        } catch (err) {
+            setError(extractApiError(err, 'Failed to save profile. Please try again.'))
         } finally {
             setSaving(false)
         }
-    }
-
-    const formatMarketCap = (value: number | string | undefined) => {
-        if (!value) return 'N/A'
-        const num = typeof value === 'string' ? parseFloat(value) : value
-        if (num >= 1e9) return `$${(num / 1e9).toFixed(1)}B`
-        if (num >= 1e6) return `$${(num / 1e6).toFixed(1)}M`
-        if (num >= 1e3) return `$${(num / 1e3).toFixed(1)}K`
-        return `$${num.toFixed(0)}`
-    }
-
-    const getDexScreenerUrl = (chain: string, contractAddress: string) => {
-        return `https://dexscreener.com/${chain}/${contractAddress}`
     }
 
     const formatDate = (dateStr: string) => {
