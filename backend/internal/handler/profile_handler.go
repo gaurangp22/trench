@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -44,31 +45,40 @@ func (h *ProfileHandler) GetMyProfile(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, profile)
 }
 
-// GetProfile handles GET /api/v1/profiles/:id
+// GetProfile handles GET /api/v1/profiles/{id}
+// The ID can be either a user_id or a profile_id - we try user_id first
 func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
-	// Extract ID from URL path
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 4 {
-		writeError(w, http.StatusBadRequest, "invalid profile ID")
+	// Extract ID from URL path using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "profile ID is required")
 		return
 	}
 
-	idStr := parts[len(parts)-1]
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid profile ID format")
 		return
 	}
 
-	profile, err := h.profileService.GetProfile(r.Context(), id)
+	// Try to get profile by user ID first (most common use case)
+	profile, err := h.profileService.GetProfileByUserID(r.Context(), id)
 	if err != nil {
+		// If not found by user ID, try by profile ID
 		if errors.Is(err, apperrors.ErrNotFound) {
-			writeError(w, http.StatusNotFound, "profile not found")
+			profile, err = h.profileService.GetProfile(r.Context(), id)
+			if err != nil {
+				if errors.Is(err, apperrors.ErrNotFound) {
+					writeError(w, http.StatusNotFound, "profile not found")
+					return
+				}
+				writeError(w, http.StatusInternalServerError, "failed to get profile")
+				return
+			}
+		} else {
+			writeError(w, http.StatusInternalServerError, "failed to get profile")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "failed to get profile")
-		return
 	}
 
 	writeJSON(w, http.StatusOK, profile)
@@ -208,15 +218,14 @@ func (h *ProfileHandler) RemoveProfileSkill(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Extract skill ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid skill ID")
+	// Extract skill ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "skill ID is required")
 		return
 	}
 
-	skillID, err := strconv.Atoi(parts[len(parts)-1])
+	skillID, err := strconv.Atoi(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid skill ID format")
 		return
@@ -313,7 +322,7 @@ func (h *ProfileHandler) CreatePortfolioItem(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-// UpdatePortfolioItem handles PUT /api/v1/profile/portfolio/:id
+// UpdatePortfolioItem handles PUT /api/v1/profile/portfolio/{id}
 func (h *ProfileHandler) UpdatePortfolioItem(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -321,15 +330,14 @@ func (h *ProfileHandler) UpdatePortfolioItem(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Extract item ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid item ID")
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
 		return
 	}
 
-	itemID, err := uuid.Parse(parts[len(parts)-1])
+	itemID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid item ID format")
 		return
@@ -379,7 +387,7 @@ func (h *ProfileHandler) UpdatePortfolioItem(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-// DeletePortfolioItem handles DELETE /api/v1/profile/portfolio/:id
+// DeletePortfolioItem handles DELETE /api/v1/profile/portfolio/{id}
 func (h *ProfileHandler) DeletePortfolioItem(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())
 	if claims == nil {
@@ -387,15 +395,14 @@ func (h *ProfileHandler) DeletePortfolioItem(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// Extract item ID from URL
-	path := r.URL.Path
-	parts := strings.Split(path, "/")
-	if len(parts) < 5 {
-		writeError(w, http.StatusBadRequest, "invalid item ID")
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
 		return
 	}
 
-	itemID, err := uuid.Parse(parts[len(parts)-1])
+	itemID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid item ID format")
 		return
@@ -416,5 +423,232 @@ func (h *ProfileHandler) DeletePortfolioItem(w http.ResponseWriter, r *http.Requ
 
 	writeJSON(w, http.StatusOK, map[string]string{
 		"message": "portfolio item deleted",
+	})
+}
+
+// ============================================
+// Social Links Handlers
+// ============================================
+
+// GetSocials handles GET /api/v1/profile/socials
+func (h *ProfileHandler) GetSocials(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	socials, err := h.profileService.GetSocials(r.Context(), claims.UserID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to get socials")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"socials": socials,
+	})
+}
+
+// SetSocials handles PUT /api/v1/profile/socials
+func (h *ProfileHandler) SetSocials(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	var req service.SetSocialsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	if err := h.profileService.SetSocials(r.Context(), claims.UserID, &req); err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to update socials")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "socials updated successfully",
+	})
+}
+
+// ============================================
+// Token Work Handlers
+// ============================================
+
+// GetTokenWork handles GET /api/v1/profile/token-work
+func (h *ProfileHandler) GetTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	items, err := h.profileService.GetTokenWork(r.Context(), claims.UserID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to get token work")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"token_work": items,
+	})
+}
+
+// CreateTokenWork handles POST /api/v1/profile/token-work
+func (h *ProfileHandler) CreateTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	var input struct {
+		ContractAddress string  `json:"contract_address"`
+		Chain           string  `json:"chain"`
+		TokenName       *string `json:"token_name"`
+		TokenSymbol     *string `json:"token_symbol"`
+		TokenImageURL   *string `json:"token_image_url"`
+		ATHMarketCap    *string `json:"ath_market_cap"`
+		SortOrder       int     `json:"sort_order"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	if input.ContractAddress == "" {
+		writeError(w, http.StatusBadRequest, "contract_address is required")
+		return
+	}
+
+	if input.Chain == "" {
+		input.Chain = "solana"
+	}
+
+	item := &domain.TokenWorkItem{
+		ContractAddress: input.ContractAddress,
+		Chain:           input.Chain,
+		TokenName:       input.TokenName,
+		TokenSymbol:     input.TokenSymbol,
+		TokenImageURL:   input.TokenImageURL,
+		SortOrder:       input.SortOrder,
+	}
+
+	if err := h.profileService.AddTokenWork(r.Context(), claims.UserID, item); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			writeError(w, http.StatusBadRequest, "profile not found - please save your profile first")
+			return
+		}
+		// Log the actual error for debugging
+		fmt.Printf("ERROR AddTokenWork: %v\n", err)
+		writeError(w, http.StatusInternalServerError, fmt.Sprintf("failed to create token work item: %v", err))
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, map[string]interface{}{
+		"message": "token work item created",
+		"item":    item,
+	})
+}
+
+// UpdateTokenWork handles PUT /api/v1/profile/token-work/{id}
+func (h *ProfileHandler) UpdateTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
+		return
+	}
+
+	itemID, err := uuid.Parse(idStr)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid item ID format")
+		return
+	}
+
+	var input struct {
+		TokenName     *string `json:"token_name"`
+		TokenSymbol   *string `json:"token_symbol"`
+		TokenImageURL *string `json:"token_image_url"`
+		ATHMarketCap  *string `json:"ath_market_cap"`
+		SortOrder     int     `json:"sort_order"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	item := &domain.TokenWorkItem{
+		ID:            itemID,
+		TokenName:     input.TokenName,
+		TokenSymbol:   input.TokenSymbol,
+		TokenImageURL: input.TokenImageURL,
+		SortOrder:     input.SortOrder,
+	}
+
+	if err := h.profileService.UpdateTokenWork(r.Context(), claims.UserID, item); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			writeError(w, http.StatusNotFound, "token work item not found")
+			return
+		}
+		if errors.Is(err, apperrors.ErrForbidden) {
+			writeError(w, http.StatusForbidden, "not authorized to update this item")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to update token work item")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "token work item updated",
+	})
+}
+
+// DeleteTokenWork handles DELETE /api/v1/profile/token-work/{id}
+func (h *ProfileHandler) DeleteTokenWork(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	// Extract item ID from URL using Go 1.22+ PathValue
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "item ID is required")
+		return
+	}
+
+	itemID, err := uuid.Parse(idStr)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid item ID format")
+		return
+	}
+
+	if err := h.profileService.DeleteTokenWork(r.Context(), claims.UserID, itemID); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			writeError(w, http.StatusNotFound, "token work item not found")
+			return
+		}
+		if errors.Is(err, apperrors.ErrForbidden) {
+			writeError(w, http.StatusForbidden, "not authorized to delete this item")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to delete token work item")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{
+		"message": "token work item deleted",
 	})
 }

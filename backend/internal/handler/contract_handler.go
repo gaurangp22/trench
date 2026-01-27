@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/google/uuid"
 	"github.com/trenchjob/backend/internal/middleware"
@@ -28,11 +27,26 @@ func (h *ContractHandler) HireFreelancer(w http.ResponseWriter, r *http.Request)
 	}
 	userID := claims.UserID
 
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "proposal ID is required")
+		return
+	}
+
+	proposalID, err := uuid.Parse(idStr)
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid proposal ID")
+		return
+	}
+
 	var req service.CreateContractRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil && err.Error() != "EOF" {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+
+	// Set the proposal ID from URL path
+	req.ProposalID = proposalID
 
 	resp, err := h.contractService.HireFreelancer(r.Context(), userID, &req)
 	if err != nil {
@@ -52,9 +66,12 @@ func (h *ContractHandler) GetContract(w http.ResponseWriter, r *http.Request) {
 	}
 	userID := claims.UserID
 
-	// Extract contract ID from path
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/contracts/")
-	contractIDStr := strings.Split(path, "/")[0]
+	// Extract contract ID from path using Go 1.22+ PathValue
+	contractIDStr := r.PathValue("id")
+	if contractIDStr == "" {
+		writeError(w, http.StatusBadRequest, "contract ID is required")
+		return
+	}
 	contractID, err := uuid.Parse(contractIDStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid contract ID")
@@ -122,15 +139,13 @@ func (h *ContractHandler) AddMilestone(w http.ResponseWriter, r *http.Request) {
 	}
 	userID := claims.UserID
 
-	// Extract contract ID from path: /api/v1/contracts/{id}/milestones
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/contracts/")
-	parts := strings.Split(path, "/")
-	if len(parts) < 2 {
-		writeError(w, http.StatusBadRequest, "invalid path")
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "contract ID is required")
 		return
 	}
 
-	contractID, err := uuid.Parse(parts[0])
+	contractID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid contract ID")
 		return
@@ -160,15 +175,13 @@ func (h *ContractHandler) SubmitMilestone(w http.ResponseWriter, r *http.Request
 	}
 	userID := claims.UserID
 
-	// Extract milestone ID from path: /api/v1/milestones/{id}/submit
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/milestones/")
-	parts := strings.Split(path, "/")
-	if len(parts) < 2 {
-		writeError(w, http.StatusBadRequest, "invalid path")
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "milestone ID is required")
 		return
 	}
 
-	milestoneID, err := uuid.Parse(parts[0])
+	milestoneID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid milestone ID")
 		return
@@ -198,15 +211,13 @@ func (h *ContractHandler) ApproveMilestone(w http.ResponseWriter, r *http.Reques
 	}
 	userID := claims.UserID
 
-	// Extract milestone ID from path: /api/v1/milestones/{id}/approve
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/milestones/")
-	parts := strings.Split(path, "/")
-	if len(parts) < 2 {
-		writeError(w, http.StatusBadRequest, "invalid path")
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "milestone ID is required")
 		return
 	}
 
-	milestoneID, err := uuid.Parse(parts[0])
+	milestoneID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid milestone ID")
 		return
@@ -230,15 +241,13 @@ func (h *ContractHandler) RequestRevision(w http.ResponseWriter, r *http.Request
 	}
 	userID := claims.UserID
 
-	// Extract milestone ID from path: /api/v1/milestones/{id}/revision
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/milestones/")
-	parts := strings.Split(path, "/")
-	if len(parts) < 2 {
-		writeError(w, http.StatusBadRequest, "invalid path")
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "milestone ID is required")
 		return
 	}
 
-	milestoneID, err := uuid.Parse(parts[0])
+	milestoneID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid milestone ID")
 		return
@@ -268,15 +277,13 @@ func (h *ContractHandler) CompleteContract(w http.ResponseWriter, r *http.Reques
 	}
 	userID := claims.UserID
 
-	// Extract contract ID from path: /api/v1/contracts/{id}/complete
-	path := strings.TrimPrefix(r.URL.Path, "/api/v1/contracts/")
-	parts := strings.Split(path, "/")
-	if len(parts) < 2 {
-		writeError(w, http.StatusBadRequest, "invalid path")
+	idStr := r.PathValue("id")
+	if idStr == "" {
+		writeError(w, http.StatusBadRequest, "contract ID is required")
 		return
 	}
 
-	contractID, err := uuid.Parse(parts[0])
+	contractID, err := uuid.Parse(idStr)
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid contract ID")
 		return

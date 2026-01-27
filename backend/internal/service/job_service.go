@@ -62,6 +62,10 @@ func (s *JobService) CreateJob(ctx context.Context, clientID uuid.UUID, req *Cre
 		return nil, apperrors.NewForbidden("only clients can post jobs")
 	}
 
+	// Auto-publish jobs immediately (no draft state for now)
+	now := time.Now()
+	expiry := now.Add(30 * 24 * time.Hour)
+
 	job := &domain.Job{
 		ClientID:         clientID,
 		Title:            req.Title,
@@ -73,7 +77,9 @@ func (s *JobService) CreateJob(ctx context.Context, clientID uuid.UUID, req *Cre
 		ExpectedDuration: req.ExpectedDuration,
 		Complexity:       req.Complexity,
 		Visibility:       req.Visibility,
-		Status:           domain.JobStatusDraft,
+		Status:           domain.JobStatusOpen,
+		PostedAt:         &now,
+		ExpiresAt:        &expiry,
 	}
 
 	if job.PaymentType == "" {

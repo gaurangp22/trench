@@ -63,6 +63,24 @@ type PortfolioRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
+// SocialRepository defines social links data access methods
+type SocialRepository interface {
+	GetByProfileID(ctx context.Context, profileID uuid.UUID) ([]domain.ProfileSocial, error)
+	Upsert(ctx context.Context, social *domain.ProfileSocial) error
+	Delete(ctx context.Context, profileID uuid.UUID, platform string) error
+	DeleteAllByProfileID(ctx context.Context, profileID uuid.UUID) error
+}
+
+// TokenWorkRepository defines token work items data access methods
+type TokenWorkRepository interface {
+	Create(ctx context.Context, item *domain.TokenWorkItem) error
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.TokenWorkItem, error)
+	GetByProfileID(ctx context.Context, profileID uuid.UUID) ([]domain.TokenWorkItem, error)
+	Update(ctx context.Context, item *domain.TokenWorkItem) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+
 // SkillRepository defines skill data access methods
 type SkillRepository interface {
 	GetAll(ctx context.Context) ([]domain.Skill, error)
@@ -140,7 +158,9 @@ type ConversationRepository interface {
 	GetByUserID(ctx context.Context, userID uuid.UUID, limit, offset int) ([]domain.Conversation, int, error)
 	GetByContractID(ctx context.Context, contractID uuid.UUID) (*domain.Conversation, error)
 	AddParticipant(ctx context.Context, conversationID, userID uuid.UUID) error
+	GetParticipants(ctx context.Context, conversationID uuid.UUID) ([]domain.ConversationParticipant, error)
 	UpdateLastRead(ctx context.Context, conversationID, userID uuid.UUID) error
+	IsParticipant(ctx context.Context, conversationID, userID uuid.UUID) (bool, error)
 }
 
 // MessageRepository defines message data access methods
@@ -150,6 +170,8 @@ type MessageRepository interface {
 	GetByConversationID(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error)
 	Update(ctx context.Context, message *domain.Message) error
 	Delete(ctx context.Context, id uuid.UUID) error
+	GetLastMessage(ctx context.Context, conversationID uuid.UUID) (*domain.Message, error)
+	GetUnreadCount(ctx context.Context, userID uuid.UUID) (int, error)
 }
 
 // ReviewRepository defines review data access methods
