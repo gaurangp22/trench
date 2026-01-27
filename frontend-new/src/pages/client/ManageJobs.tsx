@@ -38,6 +38,8 @@ export function ManageJobs() {
     const filteredJobs = jobs
         .filter(job => {
             if (filter === 'all') return true
+            if (filter === 'active') return job.status === 'in_progress'
+            if (filter === 'closed') return job.status === 'closed' || job.status === 'completed'
             return job.status === filter
         })
         .filter(job => {
@@ -48,7 +50,7 @@ export function ManageJobs() {
     const getStatusCounts = () => ({
         all: jobs.length,
         open: jobs.filter(j => j.status === 'open').length,
-        active: jobs.filter(j => j.status === 'active').length,
+        active: jobs.filter(j => j.status === 'in_progress').length,
         closed: jobs.filter(j => j.status === 'closed' || j.status === 'completed').length,
     })
 
@@ -173,10 +175,10 @@ export function ManageJobs() {
                                             <span className={cn(
                                                 "px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider",
                                                 job.status === 'open' ? "bg-emerald-500/20 text-emerald-400" :
-                                                job.status === 'active' ? "bg-blue-500/20 text-blue-400" :
+                                                job.status === 'in_progress' ? "bg-blue-500/20 text-blue-400" :
                                                 "bg-zinc-500/20 text-zinc-400"
                                             )}>
-                                                {job.status === 'active' ? 'In Progress' : job.status}
+                                                {job.status === 'in_progress' ? 'In Progress' : job.status}
                                             </span>
                                         </div>
                                         <h3 className="font-semibold text-white truncate group-hover:text-indigo-400 transition-colors">

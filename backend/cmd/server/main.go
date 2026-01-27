@@ -56,6 +56,8 @@ func main() {
 	notificationRepo := postgres.NewNotificationRepository(db.Pool)
 	conversationRepo := postgres.NewConversationRepository(db.Pool)
 	messageRepo := postgres.NewMessageRepository(db.Pool)
+	serviceRepo := postgres.NewServiceRepository(db.Pool)
+	serviceOrderRepo := postgres.NewServiceOrderRepository(db.Pool)
 
 	// Initialize services
 	authService := service.NewAuthService(userRepo, walletRepo, sessionRepo, profileRepo, jwtManager)
@@ -68,6 +70,7 @@ func main() {
 	reviewService := service.NewReviewService(reviewRepo, notificationRepo, contractRepo, userRepo)
 	notificationService := service.NewNotificationService(notificationRepo)
 	messageService := service.NewMessageService(conversationRepo, messageRepo, userRepo, contractRepo, profileRepo)
+	serviceService := service.NewServiceService(serviceRepo, serviceOrderRepo, userRepo)
 
 	// Initialize handlers
 	authHandler := handler.NewAuthHandler(authService)
@@ -77,6 +80,7 @@ func main() {
 	reviewHandler := handler.NewReviewHandler(reviewService)
 	notificationHandler := handler.NewNotificationHandler(notificationService)
 	messageHandler := handler.NewMessageHandler(messageService)
+	serviceHandler := handler.NewServiceHandler(serviceService)
 
 	// Upload handler - stores files in ./uploads directory
 	uploadDir := "./uploads"
@@ -106,6 +110,7 @@ func main() {
 	// Auth routes (protected)
 	mux.Handle("POST /api/v1/auth/logout", authMiddleware.Authenticate(http.HandlerFunc(authHandler.Logout)))
 	mux.Handle("POST /api/v1/auth/refresh", authMiddleware.Authenticate(http.HandlerFunc(authHandler.RefreshToken)))
+	mux.Handle("POST /api/v1/auth/enable-role", authMiddleware.Authenticate(http.HandlerFunc(authHandler.EnableRole)))
 	mux.Handle("POST /api/v1/wallet/connect", authMiddleware.Authenticate(http.HandlerFunc(authHandler.ConnectWallet)))
 	mux.Handle("GET /api/v1/wallet/me", authMiddleware.Authenticate(http.HandlerFunc(authHandler.GetWallets)))
 	mux.Handle("DELETE /api/v1/wallet", authMiddleware.Authenticate(http.HandlerFunc(authHandler.DisconnectWallet)))
@@ -189,6 +194,32 @@ func main() {
 	mux.Handle("POST /api/v1/conversations/{id}/read", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.MarkConversationRead)))
 	mux.Handle("GET /api/v1/messages/unread-count", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetUnreadCount)))
 	mux.Handle("GET /api/v1/contracts/{id}/conversation", authMiddleware.Authenticate(http.HandlerFunc(messageHandler.GetContractConversation)))
+
+	// Service routes (freelancer gigs) - Specific routes FIRST
+	mux.Handle("GET /api/v1/services/mine", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.GetMyServices)))
+	mux.Handle("POST /api/v1/services", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.CreateService)))
+	mux.Handle("PUT /api/v1/services/{id}", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.UpdateService)))
+	mux.Handle("DELETE /api/v1/services/{id}", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.DeleteService)))
+	mux.Handle("POST /api/v1/services/{id}/publish", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.PublishService)))
+	mux.Handle("POST /api/v1/services/{id}/pause", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.PauseService)))
+	mux.Handle("POST /api/v1/services/{id}/order", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.PlaceOrder)))
+
+	// Service routes (public)
+	mux.HandleFunc("GET /api/v1/services", serviceHandler.SearchServices)
+	mux.HandleFunc("GET /api/v1/services/{id}", serviceHandler.GetService)
+	mux.HandleFunc("GET /api/v1/services/{id}/reviews", serviceHandler.GetServiceReviews)
+
+	// Service order routes (protected)
+	mux.Handle("GET /api/v1/orders", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.GetMyOrders)))
+	mux.Handle("GET /api/v1/orders/{id}", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.GetOrder)))
+	mux.Handle("POST /api/v1/orders/{id}/accept", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.AcceptOrder)))
+	mux.Handle("POST /api/v1/orders/{id}/deliver", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.DeliverOrder)))
+	mux.Handle("POST /api/v1/orders/{id}/approve", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.ApproveDelivery)))
+	mux.Handle("POST /api/v1/orders/{id}/revision", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.RequestRevision)))
+	mux.Handle("POST /api/v1/orders/{id}/cancel", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.CancelOrder)))
+	mux.Handle("GET /api/v1/orders/{id}/messages", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.GetOrderMessages)))
+	mux.Handle("POST /api/v1/orders/{id}/messages", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.SendOrderMessage)))
+	mux.Handle("POST /api/v1/orders/{id}/review", authMiddleware.Authenticate(http.HandlerFunc(serviceHandler.CreateReview)))
 
 	// Upload routes
 	mux.Handle("POST /api/v1/upload", authMiddleware.Authenticate(http.HandlerFunc(uploadHandler.UploadFile)))

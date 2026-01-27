@@ -39,7 +39,7 @@ export function ClientDashboard() {
         }
     }
 
-    const activeJobs = jobs.filter(j => j.status === 'open' || j.status === 'active')
+    const activeJobs = jobs.filter(j => j.status === 'open' || j.status === 'in_progress')
     const activeContracts = contracts.filter(c => c.status === 'active')
     const totalProposals = jobs.reduce((sum, job) => sum + (job.proposal_count || 0), 0)
     const escrowBalance = activeContracts.reduce((sum, c) => sum + (c.total_amount || 0), 0)
@@ -303,10 +303,10 @@ function JobCard({ job, delay }: { job: Job; delay: number }) {
                         <span className={cn(
                             "px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider",
                             job.status === 'open' ? "bg-emerald-500/20 text-emerald-400" :
-                            job.status === 'active' ? "bg-blue-500/20 text-blue-400" :
+                            job.status === 'in_progress' ? "bg-blue-500/20 text-blue-400" :
                             "bg-zinc-500/20 text-zinc-400"
                         )}>
-                            {job.status}
+                            {job.status === 'in_progress' ? 'In Progress' : job.status}
                         </span>
                         <span className="text-xs text-zinc-500">
                             <Clock className="w-3 h-3 inline mr-1" />

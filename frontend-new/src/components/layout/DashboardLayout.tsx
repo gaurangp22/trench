@@ -19,7 +19,9 @@ import {
     Check,
     User,
     Shield,
-    Zap
+    Zap,
+    Package,
+    ShoppingBag
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { useAuth } from "@/context/AuthContext"
@@ -36,7 +38,8 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
     const [copied, setCopied] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
-    const { user, logout } = useAuth()
+    const { user, logout, switchRole, enableRole } = useAuth()
+    const [isEnablingRole, setIsEnablingRole] = useState(false)
     const { publicKey, connected } = useWallet()
 
     // Close mobile menu on route change
@@ -48,6 +51,28 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
         logout()
         navigate('/')
     }
+
+    const handleSwitchRole = (newRole: 'client' | 'freelancer') => {
+        switchRole(newRole)
+        navigate(newRole === 'client' ? '/client/dashboard' : '/freelancer/dashboard')
+    }
+
+    const handleEnableRole = async () => {
+        const roleToEnable = user?.is_client ? 'freelancer' : 'client'
+        setIsEnablingRole(true)
+        try {
+            await enableRole(roleToEnable)
+            // Navigate to the newly enabled role's dashboard
+            navigate(roleToEnable === 'client' ? '/client/dashboard' : '/freelancer/dashboard')
+        } catch (error) {
+            console.error('Failed to enable role:', error)
+        } finally {
+            setIsEnablingRole(false)
+        }
+    }
+
+    // Check if user has both roles
+    const hasBothRoles = user?.is_client && user?.is_freelancer
 
     const copyWalletAddress = () => {
         if (publicKey) {
@@ -66,6 +91,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
         { name: "Overview", href: "/client/dashboard", icon: LayoutDashboard, color: "emerald" },
         { name: "Post a Job", href: "/client/post-job", icon: PlusCircle, color: "blue" },
         { name: "My Jobs", href: "/client/jobs", icon: Briefcase, color: "amber" },
+        { name: "My Orders", href: "/client/orders", icon: ShoppingBag, color: "pink" },
         { name: "Contracts", href: "/client/contracts", icon: FileText, color: "purple" },
         { name: "Messages", href: "/messages", icon: MessageSquare, color: "cyan" },
         { name: "Settings", href: "/settings", icon: Settings, color: "zinc" },
@@ -73,6 +99,8 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
 
     const freelancerLinks = [
         { name: "Overview", href: "/freelancer/dashboard", icon: LayoutDashboard, color: "emerald" },
+        { name: "My Services", href: "/freelancer/services", icon: Package, color: "pink" },
+        { name: "Manage Orders", href: "/freelancer/orders", icon: ShoppingBag, color: "amber" },
         { name: "My Proposals", href: "/freelancer/proposals", icon: Briefcase, color: "blue" },
         { name: "Active Contracts", href: "/freelancer/contracts", icon: Wallet, color: "purple" },
         { name: "Messages", href: "/messages", icon: MessageSquare, color: "cyan" },
@@ -161,6 +189,50 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                             </div>
                         )}
                     </div>
+
+                    {/* Role Switcher - Show only if user has both roles */}
+                    {hasBothRoles && isSidebarOpen && (
+                        <div className="mt-3 pt-3 border-t border-white/[0.06]">
+                            <div className="flex items-center gap-2 p-1 bg-white/[0.02] rounded-lg">
+                                <button
+                                    onClick={() => handleSwitchRole('client')}
+                                    className={cn(
+                                        "flex-1 py-1.5 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
+                                        role === 'client'
+                                            ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                                            : "text-zinc-500 hover:text-zinc-300"
+                                    )}
+                                >
+                                    <Briefcase className="w-3 h-3" />
+                                    Client
+                                </button>
+                                <button
+                                    onClick={() => handleSwitchRole('freelancer')}
+                                    className={cn(
+                                        "flex-1 py-1.5 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
+                                        role === 'freelancer'
+                                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                            : "text-zinc-500 hover:text-zinc-300"
+                                    )}
+                                >
+                                    <User className="w-3 h-3" />
+                                    Freelancer
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Enable Other Role - Show only if user has single role */}
+                    {!hasBothRoles && isSidebarOpen && (
+                        <button
+                            onClick={handleEnableRole}
+                            disabled={isEnablingRole}
+                            className="mt-3 w-full py-2 text-xs text-zinc-500 hover:text-zinc-300 border border-dashed border-white/10 rounded-lg hover:border-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                        >
+                            <PlusCircle className="w-3 h-3" />
+                            {isEnablingRole ? 'Enabling...' : `Enable ${user?.is_client ? 'Freelancer' : 'Client'} Mode`}
+                        </button>
+                    )}
                 </div>
             </div>
 

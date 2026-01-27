@@ -6,6 +6,9 @@ export interface User {
     id: string
     email: string
     role: 'client' | 'freelancer'
+    // Backend role flags (for dual-role support)
+    is_client?: boolean
+    is_freelancer?: boolean
     username?: string
     avatar_url?: string
     display_name?: string
@@ -98,7 +101,7 @@ export interface Job {
     budget: number
     budget_type: 'fixed' | 'hourly'
     difficulty: string
-    status: 'draft' | 'open' | 'active' | 'completed' | 'cancelled' | 'closed'
+    status: 'draft' | 'open' | 'in_progress' | 'completed' | 'cancelled' | 'closed'
     created_at: string
     client_id: string
     skills: string[]
@@ -307,4 +310,252 @@ export interface ProfileSearchParams {
     available_only?: boolean
     limit?: number
     offset?: number
+}
+
+// ============================================
+// Service Types (Freelancer Gigs)
+// ============================================
+
+export interface Service {
+    id: string
+    freelancer_id: string
+    title: string
+    description: string
+    category_id?: number
+
+    // Package tiers
+    basic_price_sol?: number
+    basic_description?: string
+    basic_delivery_days?: number
+    basic_revisions?: number
+
+    standard_price_sol?: number
+    standard_description?: string
+    standard_delivery_days?: number
+    standard_revisions?: number
+
+    premium_price_sol?: number
+    premium_description?: string
+    premium_delivery_days?: number
+    premium_revisions?: number
+
+    status: 'draft' | 'active' | 'paused' | 'archived'
+    visibility: 'public' | 'private'
+    thumbnail_url?: string
+    gallery_urls?: string[]
+
+    // Stats
+    views_count: number
+    orders_count: number
+    average_rating: number
+    total_reviews: number
+
+    created_at: string
+    updated_at: string
+
+    // Joined data
+    skills?: { id: number; name: string }[]
+    freelancer?: {
+        id: string
+        username: string
+        display_name: string
+        avatar_url?: string
+    }
+    profile?: {
+        display_name?: string
+        professional_title?: string
+        avatar_url?: string
+        average_rating?: number
+        total_reviews?: number
+    }
+    category?: {
+        id: number
+        name: string
+        slug: string
+    }
+    faqs?: ServiceFAQ[]
+}
+
+export interface ServiceFAQ {
+    id: string
+    service_id: string
+    question: string
+    answer: string
+    sort_order: number
+    created_at: string
+}
+
+export interface CreateServiceRequest {
+    title: string
+    description: string
+    category_id?: number
+    thumbnail_url?: string
+    gallery_urls?: string[]
+    skills?: number[]
+
+    // Package tiers
+    basic_price_sol?: number
+    basic_description?: string
+    basic_delivery_days?: number
+    basic_revisions?: number
+
+    standard_price_sol?: number
+    standard_description?: string
+    standard_delivery_days?: number
+    standard_revisions?: number
+
+    premium_price_sol?: number
+    premium_description?: string
+    premium_delivery_days?: number
+    premium_revisions?: number
+}
+
+export interface UpdateServiceRequest extends Partial<CreateServiceRequest> {
+    visibility?: 'public' | 'private'
+}
+
+export interface ServiceSearchParams {
+    q?: string
+    category_id?: number
+    skills?: number[]
+    limit?: number
+    offset?: number
+}
+
+export interface ServiceSearchResponse {
+    services: Service[]
+    total: number
+    limit: number
+    offset: number
+}
+
+export interface ServiceDetailResponse {
+    service: Service
+    skills: { id: number; name: string }[]
+    faqs: ServiceFAQ[]
+    reviews: ServiceReview[]
+}
+
+// ============================================
+// Service Order Types
+// ============================================
+
+export type PackageTier = 'basic' | 'standard' | 'premium'
+
+export type ServiceOrderStatus =
+    | 'pending'
+    | 'active'
+    | 'delivered'
+    | 'revision_requested'
+    | 'completed'
+    | 'cancelled'
+    | 'disputed'
+
+export interface ServiceOrder {
+    id: string
+    service_id: string
+    client_id: string
+    freelancer_id: string
+
+    package_tier: PackageTier
+    price_sol: number
+    delivery_days: number
+    revisions_allowed: number
+    revisions_used: number
+
+    requirements?: string
+    status: ServiceOrderStatus
+
+    started_at?: string
+    expected_delivery_at?: string
+    delivered_at?: string
+    completed_at?: string
+
+    escrow_account_address?: string
+    escrow_funded: boolean
+
+    created_at: string
+    updated_at: string
+
+    // Joined data
+    service?: Service
+    client?: {
+        id: string
+        username: string
+        display_name: string
+        avatar_url?: string
+    }
+    freelancer?: {
+        id: string
+        username: string
+        display_name: string
+        avatar_url?: string
+    }
+}
+
+export interface CreateOrderRequest {
+    package_tier: PackageTier
+    requirements?: string
+}
+
+export interface OrderListResponse {
+    orders: ServiceOrder[]
+    total: number
+    limit: number
+    offset: number
+}
+
+export interface ServiceOrderMessage {
+    id: string
+    order_id: string
+    sender_id: string
+    message_text: string
+    attachment_urls?: string[]
+    message_type: 'text' | 'delivery' | 'revision_request' | 'system'
+    created_at: string
+    sender?: {
+        id: string
+        username: string
+        display_name: string
+        avatar_url?: string
+    }
+}
+
+export interface SendOrderMessageRequest {
+    message: string
+    attachment_urls?: string[]
+}
+
+export interface DeliverOrderRequest {
+    message: string
+    attachment_urls?: string[]
+}
+
+export interface RequestRevisionRequest {
+    message: string
+}
+
+// ============================================
+// Service Review Types
+// ============================================
+
+export interface ServiceReview {
+    id: string
+    order_id: string
+    service_id: string
+    reviewer_id: string
+    rating: number
+    review_text?: string
+    created_at: string
+    reviewer?: {
+        id: string
+        username: string
+        display_name: string
+        avatar_url?: string
+    }
+}
+
+export interface CreateServiceReviewRequest {
+    rating: number
+    review_text?: string
 }

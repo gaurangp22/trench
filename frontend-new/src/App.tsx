@@ -27,6 +27,14 @@ import { EditProfile } from "@/pages/freelancer/EditProfile"
 import { EditProfile as ClientEditProfile } from "@/pages/client/EditProfile"
 import { FreelancerProfile } from "@/pages/FreelancerProfile"
 import { Onboarding } from "@/pages/Onboarding"
+import { Services } from "@/pages/Services"
+import { ServiceDetail } from "@/pages/ServiceDetail"
+import { MyServices } from "@/pages/freelancer/MyServices"
+import { CreateService } from "@/pages/freelancer/CreateService"
+import { ManageOrders } from "@/pages/freelancer/ManageOrders"
+import { OrderDetail as FreelancerOrderDetail } from "@/pages/freelancer/OrderDetail"
+import { MyOrders } from "@/pages/client/MyOrders"
+import { OrderDetail as ClientOrderDetail } from "@/pages/client/OrderDetail"
 
 function App() {
   console.log("App.tsx: Rendering...");
@@ -47,6 +55,8 @@ function App() {
               <Route path="/profile/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/how-it-works" element={<><Navbar /><main><HowItWorks /></main><Footer /></>} />
               <Route path="/escrow" element={<><Navbar /><main><Escrow /></main><Footer /></>} />
+              <Route path="/services" element={<><Navbar /><main><Services /></main><Footer /></>} />
+              <Route path="/services/:serviceId" element={<><Navbar /><main><ServiceDetail /></main><Footer /></>} />
               <Route path="/auth/*" element={<Auth />} />
               <Route path="/onboarding" element={
                 <ProtectedRoute>
@@ -97,6 +107,16 @@ function App() {
                   <ClientEditProfile />
                 </ProtectedRoute>
               } />
+              <Route path="/client/orders" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <MyOrders />
+                </ProtectedRoute>
+              } />
+              <Route path="/client/orders/:orderId" element={
+                <ProtectedRoute allowedRoles={['client']}>
+                  <ClientOrderDetail />
+                </ProtectedRoute>
+              } />
 
               {/* Freelancer Dashboard Routes - Freelancer only */}
               <Route path="/freelancer/dashboard" element={
@@ -122,6 +142,26 @@ function App() {
               <Route path="/freelancer/profile" element={
                 <ProtectedRoute allowedRoles={['freelancer']}>
                   <EditProfile />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/services" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <MyServices />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/services/new" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <CreateService />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/orders" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <ManageOrders />
+                </ProtectedRoute>
+              } />
+              <Route path="/freelancer/orders/:orderId" element={
+                <ProtectedRoute allowedRoles={['freelancer']}>
+                  <FreelancerOrderDetail />
                 </ProtectedRoute>
               } />
             </Routes>

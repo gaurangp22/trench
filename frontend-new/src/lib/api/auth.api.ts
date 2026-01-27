@@ -32,7 +32,7 @@ export const AuthAPI = {
     },
 
     getNonce: async (walletAddress: string) => {
-        const res = await api.get(`/auth/nonce?wallet_address=${walletAddress}`)
+        const res = await api.get(`/wallet/nonce?wallet_address=${walletAddress}`)
         return res.data
     },
 
@@ -56,12 +56,20 @@ export const AuthAPI = {
     },
 
     getWallets: async () => {
-        const res = await api.get('/wallet')
+        const res = await api.get('/wallet/me')
         return res.data.wallets
     },
 
     logout: () => {
         localStorage.removeItem('token')
+    },
+
+    enableRole: async (role: 'client' | 'freelancer') => {
+        const res = await api.post('/auth/enable-role', { role })
+        if (res.data.token) {
+            localStorage.setItem('token', res.data.token)
+        }
+        return res.data
     },
 
     isAuthenticated: () => {
@@ -74,11 +82,16 @@ export const AuthAPI = {
         try {
             const res = await api.get('/profile')
             // Map profile response to user + profile
+            const isClient = res.data.user?.is_client ?? false
+            const isFreelancer = res.data.user?.is_freelancer ?? false
+            const role: 'client' | 'freelancer' = isFreelancer ? 'freelancer' : 'client'
             return {
                 user: {
                     id: res.data.user?.id || res.data.profile?.user_id,
                     email: res.data.user?.email || '',
-                    role: res.data.profile?.professional_title ? 'freelancer' : 'client'
+                    role,
+                    is_client: isClient,
+                    is_freelancer: isFreelancer
                 },
                 profile: res.data.profile
             }

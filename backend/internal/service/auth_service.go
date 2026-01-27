@@ -420,6 +420,57 @@ func (s *AuthService) DisconnectWallet(ctx context.Context, userID uuid.UUID, wa
 	return nil
 }
 
+// EnableRole enables an additional role for a user
+func (s *AuthService) EnableRole(ctx context.Context, userID uuid.UUID, role string) (*AuthResponse, error) {
+	// Validate role
+	if role != "client" && role != "freelancer" {
+		return nil, apperrors.NewBadRequest("role must be 'client' or 'freelancer'")
+	}
+
+	// Get current user
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return nil, apperrors.NewUnauthorized("user not found")
+		}
+		return nil, apperrors.NewInternal(err)
+	}
+
+	// Check if role is already enabled
+	if role == "client" && user.IsClient {
+		return nil, apperrors.NewBadRequest("client role is already enabled")
+	}
+	if role == "freelancer" && user.IsFreelancer {
+		return nil, apperrors.NewBadRequest("freelancer role is already enabled")
+	}
+
+	// Enable the role
+	if role == "client" {
+		user.IsClient = true
+	} else {
+		user.IsFreelancer = true
+	}
+
+	// Update user in database
+	if err := s.userRepo.Update(ctx, user); err != nil {
+		return nil, apperrors.NewInternal(err)
+	}
+
+	// Generate new JWT token with updated claims
+	token, expiresAt, err := s.jwtManager.GenerateToken(
+		user.ID, user.Email, user.Username, user.IsClient, user.IsFreelancer,
+	)
+	if err != nil {
+		return nil, apperrors.NewInternal(err)
+	}
+
+	return &AuthResponse{
+		User:      user,
+		Token:     token,
+		ExpiresAt: expiresAt,
+	}, nil
+}
+
 // RefreshToken generates a new token from an existing valid token
 func (s *AuthService) RefreshToken(ctx context.Context, claims *utils.JWTClaims) (*AuthResponse, error) {
 	// Get fresh user data
