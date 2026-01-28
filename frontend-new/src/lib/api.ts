@@ -80,16 +80,23 @@ export interface Profile {
     display_name: string;
     professional_title?: string;
     bio?: string;
+    overview?: string;
     hourly_rate_sol?: number;
     country?: string;
     avatar_url?: string;
     available_for_hire: boolean;
+    availability_status?: 'available' | 'busy' | 'unavailable';
     created_at: string;
     // Stats fields from backend
     total_jobs_completed?: number;
     total_earnings_sol?: number;
     average_rating?: number;
     total_reviews?: number;
+    // Related data (populated in some responses)
+    skills?: { id: string; name: string }[];
+    socials?: ProfileSocial[];
+    portfolio?: PortfolioItem[];
+    token_work?: TokenWorkItem[];
 }
 
 export interface ProfileResponse {
@@ -116,7 +123,10 @@ export interface PortfolioItem {
     title: string;
     description: string;
     url?: string;
+    project_url?: string;
     image_url?: string;
+    image_urls?: string[];
+    sort_order?: number;
     created_at: string;
 }
 
@@ -855,7 +865,7 @@ export const MessageAPI = {
 
 export const UploadAPI = {
     // Upload a file (profile picture, portfolio image, etc.)
-    uploadFile: async (file: File): Promise<{ url: string; filename: string }> => {
+    uploadFile: async (file: File): Promise<{ url: string; filename: string; original_name?: string; file_type?: string; file_size?: number }> => {
         const formData = new FormData();
         formData.append('file', file);
 
@@ -865,5 +875,282 @@ export const UploadAPI = {
             },
         });
         return res.data;
+    }
+};
+
+// ============================================
+// Services (Gigs) API
+// ============================================
+
+export type PackageTier = 'basic' | 'standard' | 'premium';
+
+export interface ServiceFAQ {
+    id?: string;
+    question: string;
+    answer: string;
+}
+
+export interface ServiceReview {
+    id: string;
+    service_id: string;
+    reviewer_id: string;
+    rating: number;
+    comment?: string;
+    created_at: string;
+    reviewer?: {
+        id: string;
+        display_name: string;
+        avatar_url?: string;
+    };
+}
+
+export interface Service {
+    id: string;
+    freelancer_id: string;
+    title: string;
+    description: string;
+    category?: { id: number; name: string; slug: string };
+    thumbnail_url?: string;
+    gallery_urls?: string[];
+    basic_price_sol?: number;
+    standard_price_sol?: number;
+    premium_price_sol?: number;
+    basic_delivery_days?: number;
+    standard_delivery_days?: number;
+    premium_delivery_days?: number;
+    basic_description?: string;
+    standard_description?: string;
+    premium_description?: string;
+    basic_revisions?: number;
+    standard_revisions?: number;
+    premium_revisions?: number;
+    tags?: string[];
+    skills?: { id: number; name: string }[];
+    status: 'draft' | 'active' | 'paused' | 'deleted';
+    average_rating?: number;
+    total_reviews?: number;
+    total_orders?: number;
+    created_at: string;
+    updated_at?: string;
+    profile?: {
+        id: string;
+        display_name: string;
+        avatar_url?: string;
+        professional_title?: string;
+    };
+    faqs?: ServiceFAQ[];
+    reviews?: ServiceReview[];
+}
+
+export interface CreateServiceRequest {
+    title: string;
+    description: string;
+    category_id?: number;
+    thumbnail_url?: string;
+    gallery_urls?: string[];
+    basic_price_sol?: number;
+    standard_price_sol?: number;
+    premium_price_sol?: number;
+    basic_delivery_days?: number;
+    standard_delivery_days?: number;
+    premium_delivery_days?: number;
+    basic_description?: string;
+    standard_description?: string;
+    premium_description?: string;
+    basic_revisions?: number;
+    standard_revisions?: number;
+    premium_revisions?: number;
+    tags?: string[];
+    skills?: number[];
+    faqs?: ServiceFAQ[];
+}
+
+export interface ServiceOrder {
+    id: string;
+    service_id: string;
+    client_id: string;
+    freelancer_id: string;
+    package_tier: PackageTier;
+    price_sol: number;
+    status: 'pending' | 'active' | 'delivered' | 'revision' | 'completed' | 'cancelled' | 'disputed';
+    requirements?: string;
+    delivery_deadline?: string;
+    created_at: string;
+    updated_at?: string;
+    service?: Service;
+    client?: Profile;
+    freelancer?: Profile;
+}
+
+export interface ServiceOrderMessage {
+    id: string;
+    order_id: string;
+    sender_id: string;
+    message: string;
+    attachments?: string[];
+    created_at: string;
+    sender?: {
+        id: string;
+        display_name: string;
+        avatar_url?: string;
+    };
+}
+
+export interface Skill {
+    id: number;
+    name: string;
+    category?: string;
+}
+
+export const ServiceAPI = {
+    // List services with filters
+    list: async (params?: {
+        category?: string;
+        q?: string;
+        min_price?: number;
+        max_price?: number;
+        sort_by?: string;
+        limit?: number;
+        offset?: number;
+    }): Promise<{ services: Service[]; total: number }> => {
+        const res = await api.get('/services', { params });
+        return { services: res.data.services || [], total: res.data.total || 0 };
+    },
+
+    // Get a single service by ID
+    getById: async (id: string): Promise<Service> => {
+        const res = await api.get(`/services/${id}`);
+        return res.data.service || res.data;
+    },
+
+    // Get services by freelancer
+    getByFreelancer: async (freelancerId: string): Promise<{ services: Service[] }> => {
+        const res = await api.get(`/profiles/${freelancerId}/services`);
+        return { services: res.data.services || [] };
+    },
+
+    // Get my services (current user)
+    getMyServices: async (): Promise<{ services: Service[] }> => {
+        const res = await api.get('/services/mine');
+        return { services: res.data.services || [] };
+    },
+
+    // Create a new service
+    create: async (data: CreateServiceRequest): Promise<Service> => {
+        const res = await api.post('/services', data);
+        return res.data.service || res.data;
+    },
+
+    // Update a service
+    update: async (id: string, data: Partial<CreateServiceRequest>): Promise<Service> => {
+        const res = await api.put(`/services/${id}`, data);
+        return res.data.service || res.data;
+    },
+
+    // Delete a service
+    delete: async (id: string): Promise<void> => {
+        await api.delete(`/services/${id}`);
+    },
+
+    // Publish a service
+    publish: async (id: string): Promise<Service> => {
+        const res = await api.post(`/services/${id}/publish`);
+        return res.data.service || res.data;
+    },
+
+    // Pause a service
+    pause: async (id: string): Promise<Service> => {
+        const res = await api.post(`/services/${id}/pause`);
+        return res.data.service || res.data;
+    },
+
+    // Get reviews for a service
+    getReviews: async (serviceId: string, limit = 20, offset = 0): Promise<{ reviews: ServiceReview[]; total: number }> => {
+        const res = await api.get(`/services/${serviceId}/reviews`, { params: { limit, offset } });
+        return { reviews: res.data.reviews || [], total: res.data.total || 0 };
+    },
+
+    // Featured services
+    getFeatured: async (category?: string, limit = 8): Promise<{ services: Service[] }> => {
+        const res = await api.get('/services/featured', { params: { category, limit } });
+        return { services: res.data.services || [] };
+    }
+};
+
+export const ServiceOrderAPI = {
+    // Create a new order
+    create: async (data: {
+        service_id: string;
+        package_tier: PackageTier;
+        requirements?: string;
+    }): Promise<ServiceOrder> => {
+        const res = await api.post('/service-orders', data);
+        return res.data.order || res.data;
+    },
+
+    // Get order by ID
+    getById: async (id: string): Promise<ServiceOrder> => {
+        const res = await api.get(`/service-orders/${id}`);
+        return res.data.order || res.data;
+    },
+
+    // Get my orders (as client)
+    getMyOrders: async (status?: string): Promise<{ orders: ServiceOrder[]; total: number }> => {
+        const res = await api.get('/service-orders/mine', { params: { status } });
+        return { orders: res.data.orders || [], total: res.data.total || 0 };
+    },
+
+    // Get orders for my services (as freelancer)
+    getReceivedOrders: async (status?: string): Promise<{ orders: ServiceOrder[]; total: number }> => {
+        const res = await api.get('/service-orders/received', { params: { status } });
+        return { orders: res.data.orders || [], total: res.data.total || 0 };
+    },
+
+    // Accept an order (freelancer)
+    accept: async (id: string): Promise<ServiceOrder> => {
+        const res = await api.post(`/service-orders/${id}/accept`);
+        return res.data.order || res.data;
+    },
+
+    // Deliver an order (freelancer)
+    deliver: async (id: string, data: { message?: string; attachments?: string[] }): Promise<ServiceOrder> => {
+        const res = await api.post(`/service-orders/${id}/deliver`, data);
+        return res.data.order || res.data;
+    },
+
+    // Request revision (client)
+    requestRevision: async (id: string, feedback: string): Promise<ServiceOrder> => {
+        const res = await api.post(`/service-orders/${id}/revision`, { feedback });
+        return res.data.order || res.data;
+    },
+
+    // Complete/approve an order (client)
+    complete: async (id: string): Promise<ServiceOrder> => {
+        const res = await api.post(`/service-orders/${id}/complete`);
+        return res.data.order || res.data;
+    },
+
+    // Cancel an order
+    cancel: async (id: string, reason?: string): Promise<ServiceOrder> => {
+        const res = await api.post(`/service-orders/${id}/cancel`, { reason });
+        return res.data.order || res.data;
+    },
+
+    // Get messages for an order
+    getMessages: async (orderId: string, limit = 50, offset = 0): Promise<{ messages: ServiceOrderMessage[]; total: number }> => {
+        const res = await api.get(`/service-orders/${orderId}/messages`, { params: { limit, offset } });
+        return { messages: res.data.messages || [], total: res.data.total || 0 };
+    },
+
+    // Send a message in an order
+    sendMessage: async (orderId: string, data: { message: string; attachments?: string[] }): Promise<ServiceOrderMessage> => {
+        const res = await api.post(`/service-orders/${orderId}/messages`, data);
+        return res.data.message || res.data;
+    },
+
+    // Leave a review for a completed order
+    leaveReview: async (orderId: string, data: { rating: number; comment?: string }): Promise<ServiceReview> => {
+        const res = await api.post(`/service-orders/${orderId}/review`, data);
+        return res.data.review || res.data;
     }
 };

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/Button"
 import {
     User, Camera, Save, Loader2, Plus, X, Globe, ExternalLink,
     Twitter, MessageCircle, Sparkles, MapPin, Clock, CheckCircle,
-    Coins, Image, Trash2, Edit3, Link2, GripVertical, ChevronDown
+    Coins, Image, Trash2, Edit3, Link2, ChevronDown
 } from "lucide-react"
-import { ProfileAPI, UploadAPI, SkillsAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type PortfolioItem } from "@/lib/api"
+import { ProfileAPI, UploadAPI, SkillsAPI, type ProfileSocial, type TokenWorkItem, type PortfolioItem } from "@/lib/api"
 import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
@@ -38,7 +38,7 @@ export function EditProfile() {
     const [saveSuccess, setSaveSuccess] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [uploadingAvatar, setUploadingAvatar] = useState(false)
-    const [activeSection, setActiveSection] = useState<string | null>(null)
+    const [_activeSection, _setActiveSection] = useState<string | null>(null)
     const [profileExists, setProfileExists] = useState(false)
 
     // Profile data
@@ -384,7 +384,7 @@ export function EditProfile() {
 
             const socialsToSave = Object.entries(socials)
                 .filter(([_, url]) => url.trim() !== '')
-                .map(([platform, url]) => ({ platform, url }))
+                .map(([platform, url]) => ({ platform: platform as 'website' | 'twitter' | 'telegram' | 'discord', url }))
 
             if (socialsToSave.length > 0) {
                 await ProfileAPI.setSocials(socialsToSave)

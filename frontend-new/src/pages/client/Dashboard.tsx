@@ -3,9 +3,9 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-    Briefcase, Users, CheckCircle2, Shield, Eye, MessageSquare,
-    Plus, AlertCircle, ArrowUpRight, ArrowRight, Sparkles,
-    Clock, TrendingUp, Zap
+    Briefcase, Users, CheckCircle2, Shield, MessageSquare,
+    Plus, AlertCircle, ArrowRight, Sparkles,
+    Clock, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
@@ -29,7 +29,7 @@ export function ClientDashboard() {
                 JobAPI.getMyJobs(),
                 ContractAPI.list({ role: 'client' })
             ])
-            const jobsArray = Array.isArray(jobsData) ? jobsData : (jobsData?.jobs || [])
+            const jobsArray = Array.isArray(jobsData) ? jobsData : ((jobsData as any)?.jobs || [])
             setJobs(jobsArray)
             setContracts(contractsData?.contracts || [])
         } catch (error) {

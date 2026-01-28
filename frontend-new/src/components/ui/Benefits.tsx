@@ -195,7 +195,7 @@ export function Benefits() {
 function BenefitRow({
     benefit,
     isReversed,
-    index
+    index: _index
 }: {
     benefit: typeof benefits[0];
     isReversed: boolean;

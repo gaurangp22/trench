@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext"
 import { ProfileAPI, UploadAPI } from "@/lib/api"
 import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import {
-    User, Briefcase, MapPin, DollarSign, FileText, Link as LinkIcon,
+    User, Briefcase, MapPin, DollarSign, Link as LinkIcon,
     ArrowRight, ArrowLeft, Check, Camera, Plus, X, Loader2, Upload
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -138,7 +138,7 @@ export function Onboarding() {
         ))
     }
 
-    const removeSocial = (platform: string) => {
+    const _removeSocial = (platform: string) => {
         updateData('socials', data.socials.filter(s => s.platform !== platform))
     }
 

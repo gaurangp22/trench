@@ -758,7 +758,7 @@ export function Services() {
             filtered = filtered.filter(s =>
                 s.title.toLowerCase().includes(query) ||
                 s.description?.toLowerCase().includes(query) ||
-                s.skills?.some(sk => sk.name.toLowerCase().includes(query))
+                s.skills?.some((sk: { id: number; name: string }) => sk.name.toLowerCase().includes(query))
             )
         }
 
@@ -1099,7 +1099,7 @@ export function Services() {
                             {services.map((service, i) => {
                                 const lowestPrice = getLowestPrice(service)
                                 const fastestDelivery = getDeliveryDays(service)
-                                const tags = service.skills?.map(s => s.name) || []
+                                const tags = service.skills?.map((s: { id: number; name: string }) => s.name) || []
 
                                 return (
                                     <motion.div

@@ -28,7 +28,7 @@ export function Auth() {
 
     const navigate = useNavigate()
     const location = useLocation()
-    const { loginWithEmail, signupWithEmail, loginWithWallet, signupWithWallet, isAuthenticated, isLoading, user, needsOnboarding, setNeedsOnboarding } = useAuth()
+    const { loginWithEmail, signupWithEmail, loginWithWallet, signupWithWallet, isAuthenticated, isLoading, user, needsOnboarding, setNeedsOnboarding: _setNeedsOnboarding } = useAuth()
     const { connected, publicKey, disconnect } = useWallet()
     const { setVisible } = useWalletModal()
 

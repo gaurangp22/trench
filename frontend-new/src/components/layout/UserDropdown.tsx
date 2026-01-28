@@ -29,9 +29,9 @@ export function UserDropdown({ onClose }: UserDropdownProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const { user, profile, logout } = useAuth();
-    const { publicKey, disconnect } = useWallet();
+    const { publicKey, disconnect: _disconnect } = useWallet();
 
-    const dashboardPath = user?.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard';
+    const _dashboardPath = user?.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard';
     const profilePath = user?.role === 'freelancer' ? '/freelancer/profile' : '/client/profile';
 
     // Close dropdown when clicking outside

@@ -3,9 +3,9 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-    DollarSign, Briefcase, FileText, TrendingUp,
+    DollarSign, Briefcase, FileText,
     Star, Shield, ArrowUpRight, Eye, MessageSquare, Wallet,
-    Loader2, Clock, CheckCircle2, ArrowRight
+    Loader2, CheckCircle2, ArrowRight
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
@@ -14,7 +14,7 @@ import { ContractAPI, ProposalAPI, ProfileAPI, type Contract, type Proposal } fr
 
 export function FreelancerDashboard() {
     const navigate = useNavigate()
-    const { user, profile } = useAuth()
+    const { user: _user, profile } = useAuth()
     const [isLoading, setIsLoading] = useState(true)
     const [contracts, setContracts] = useState<Contract[]>([])
     const [proposals, setProposals] = useState<Proposal[]>([])
@@ -50,7 +50,7 @@ export function FreelancerDashboard() {
     const activeContracts = contracts.filter(c => c.status === 'active')
     const escrowBalance = activeContracts.reduce((sum, c) => sum + (c.total_amount || 0), 0)
     const pendingProposals = proposals.filter(p => p.status === 'pending' || p.status === 'shortlisted')
-    const shortlistedProposals = proposals.filter(p => p.status === 'shortlisted')
+    const _shortlistedProposals = proposals.filter(p => p.status === 'shortlisted')
 
     if (isLoading) {
         return (
@@ -76,10 +76,10 @@ export function FreelancerDashboard() {
                             Welcome back{profile?.display_name ? `, ${profile.display_name}` : ''}
                         </h1>
                         <div className="flex items-center gap-3 text-zinc-400">
-                            {stats.rating > 0 && (
+                            {(stats.rating ?? 0) > 0 && (
                                 <span className="flex items-center gap-1.5">
                                     <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                                    <span className="text-white font-medium">{stats.rating.toFixed(1)}</span>
+                                    <span className="text-white font-medium">{(stats.rating ?? 0).toFixed(1)}</span>
                                     <span className="text-zinc-500">({stats.review_count} reviews)</span>
                                 </span>
                             )}

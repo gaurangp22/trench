@@ -27,7 +27,7 @@ export function ManageJobs() {
     const loadJobs = async () => {
         try {
             const data = await JobAPI.getMyJobs()
-            const jobsArray = Array.isArray(data) ? data : (data?.jobs || [])
+            const jobsArray = Array.isArray(data) ? data : ((data as any)?.jobs || [])
             setJobs(jobsArray)
         } catch (error) {
             console.error("Failed to load jobs", error)
@@ -50,7 +50,7 @@ export function ManageJobs() {
         all: jobs.length,
         open: jobs.filter(j => j.status === 'open').length,
         active: jobs.filter(j => j.status === 'active').length,
-        closed: jobs.filter(j => j.status === 'closed' || j.status === 'completed').length,
+        closed: jobs.filter(j => j.status === 'cancelled' || j.status === 'completed').length,
     })
 
     const counts = getStatusCounts()

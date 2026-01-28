@@ -123,10 +123,10 @@ export function CreateService() {
     }
 
     const toggleSkill = (skillId: number) => {
-        setFormData(prev => ({
+        setFormData((prev: CreateServiceRequest) => ({
             ...prev,
             skills: prev.skills?.includes(skillId)
-                ? prev.skills.filter(id => id !== skillId)
+                ? prev.skills.filter((id: number) => id !== skillId)
                 : [...(prev.skills || []), skillId]
         }))
     }
@@ -286,7 +286,7 @@ export function CreateService() {
                                 <input
                                     type="text"
                                     value={formData.title}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                    onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, title: e.target.value }))}
                                     placeholder="I will create a professional Solana dApp..."
                                     className="w-full h-12 bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                 />
@@ -300,7 +300,7 @@ export function CreateService() {
                                     {CATEGORIES.map((cat) => (
                                         <button
                                             key={cat.id}
-                                            onClick={() => setFormData(prev => ({ ...prev, category_id: cat.id }))}
+                                            onClick={() => setFormData((prev: CreateServiceRequest) => ({ ...prev, category_id: cat.id }))}
                                             className={cn(
                                                 "p-3 rounded-xl border text-sm font-medium transition-all text-left",
                                                 formData.category_id === cat.id
@@ -320,7 +320,7 @@ export function CreateService() {
                                 </label>
                                 <textarea
                                     value={formData.description}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                    onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, description: e.target.value }))}
                                     placeholder="Describe what you offer, your process, and what clients can expect..."
                                     rows={6}
                                     className="w-full bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
@@ -384,7 +384,7 @@ export function CreateService() {
                                             type="number"
                                             step="0.01"
                                             value={formData.basic_price_sol || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, basic_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, basic_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                             placeholder="0.5"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -394,7 +394,7 @@ export function CreateService() {
                                         <input
                                             type="number"
                                             value={formData.basic_delivery_days || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, basic_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, basic_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="3"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -404,7 +404,7 @@ export function CreateService() {
                                         <input
                                             type="number"
                                             value={formData.basic_revisions || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, basic_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, basic_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="1"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -413,7 +413,7 @@ export function CreateService() {
                                 <input
                                     type="text"
                                     value={formData.basic_description || ''}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, basic_description: e.target.value || undefined }))}
+                                    onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, basic_description: e.target.value || undefined }))}
                                     placeholder="What's included in the basic package?"
                                     className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
@@ -432,7 +432,7 @@ export function CreateService() {
                                             type="number"
                                             step="0.01"
                                             value={formData.standard_price_sol || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, standard_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, standard_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                             placeholder="1.5"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -442,7 +442,7 @@ export function CreateService() {
                                         <input
                                             type="number"
                                             value={formData.standard_delivery_days || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, standard_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, standard_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="5"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -452,7 +452,7 @@ export function CreateService() {
                                         <input
                                             type="number"
                                             value={formData.standard_revisions || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, standard_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, standard_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="2"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -461,7 +461,7 @@ export function CreateService() {
                                 <input
                                     type="text"
                                     value={formData.standard_description || ''}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, standard_description: e.target.value || undefined }))}
+                                    onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, standard_description: e.target.value || undefined }))}
                                     placeholder="What's included in the standard package?"
                                     className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
@@ -480,7 +480,7 @@ export function CreateService() {
                                             type="number"
                                             step="0.01"
                                             value={formData.premium_price_sol || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, premium_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, premium_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                             placeholder="5.0"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -490,7 +490,7 @@ export function CreateService() {
                                         <input
                                             type="number"
                                             value={formData.premium_delivery_days || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, premium_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, premium_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="7"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -500,7 +500,7 @@ export function CreateService() {
                                         <input
                                             type="number"
                                             value={formData.premium_revisions || ''}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, premium_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                            onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, premium_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="3"
                                             className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
@@ -509,7 +509,7 @@ export function CreateService() {
                                 <input
                                     type="text"
                                     value={formData.premium_description || ''}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, premium_description: e.target.value || undefined }))}
+                                    onChange={(e) => setFormData((prev: CreateServiceRequest) => ({ ...prev, premium_description: e.target.value || undefined }))}
                                     placeholder="What's included in the premium package?"
                                     className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />

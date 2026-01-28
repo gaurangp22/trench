@@ -54,7 +54,7 @@ export function Navbar() {
         disconnect() // Disconnect wallet if user closes the modal
     }
 
-    const handleConnectWallet = () => {
+    const _handleConnectWallet = () => {
         setVisible(true)
         setIsMobileMenuOpen(false)
     }

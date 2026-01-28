@@ -7,6 +7,7 @@ interface AuthUser extends User {
     username?: string;
     avatar_url?: string;
     display_name?: string;
+    wallet_address?: string;
 }
 
 interface AuthContextType {

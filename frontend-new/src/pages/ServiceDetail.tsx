@@ -643,7 +643,7 @@ export function ServiceDetail() {
                                 {/* Thumbnail Strip */}
                                 {allImages.length > 1 && (
                                     <div className="flex gap-2 mt-3 overflow-x-auto pb-2">
-                                        {allImages.map((img, i) => (
+                                        {allImages.map((img: string, i: number) => (
                                             <button
                                                 key={i}
                                                 onClick={() => setActiveImage(i)}
@@ -849,7 +849,7 @@ export function ServiceDetail() {
                                 <div className="space-y-3">
                                     {packages.map((pkg) => {
                                         const isSelected = selectedPackage === pkg.tier
-                                        const tierColors = {
+                                        const tierColors: Record<PackageTier, { border: string; bg: string; text: string; badge: string }> = {
                                             basic: { border: 'border-zinc-500/30', bg: 'bg-zinc-500/10', text: 'text-zinc-400', badge: 'bg-zinc-500/20 text-zinc-300' },
                                             standard: { border: 'border-indigo-500/30', bg: 'bg-indigo-500/10', text: 'text-indigo-400', badge: 'bg-indigo-500/20 text-indigo-300' },
                                             premium: { border: 'border-violet-500/30', bg: 'bg-violet-500/10', text: 'text-violet-400', badge: 'bg-violet-500/20 text-violet-300' }

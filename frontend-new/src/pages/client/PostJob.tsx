@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    ArrowLeft, ArrowRight, AlertCircle, Loader2, CheckCircle2,
+    ArrowLeft, ArrowRight, Loader2, CheckCircle2,
     Clock, Wallet, Code, Palette, Megaphone, Shield, FileSearch,
     Server, Sparkles
 } from "lucide-react"

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams, Link } from "react-router-dom"
-import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare, ArrowRight, Briefcase, Users } from "lucide-react"
+import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare, Briefcase, Users } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import { MessageAPI, type Conversation, type Message } from "@/lib/api"

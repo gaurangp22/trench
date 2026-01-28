@@ -7,7 +7,7 @@ import {
     Twitter, MessageCircle, MapPin, CheckCircle,
     Coins, Building2, Star, ChevronDown, TrendingUp, Briefcase
 } from "lucide-react"
-import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
+import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
 import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
@@ -249,7 +249,7 @@ export function EditProfile() {
 
             const socialsToSave = Object.entries(socials)
                 .filter(([_, url]) => url.trim() !== '')
-                .map(([platform, url]) => ({ platform, url }))
+                .map(([platform, url]) => ({ platform: platform as 'website' | 'twitter' | 'telegram' | 'discord', url }))
 
             if (socialsToSave.length > 0) {
                 await ProfileAPI.setSocials(socialsToSave)
