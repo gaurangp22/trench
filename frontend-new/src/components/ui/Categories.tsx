@@ -9,7 +9,7 @@ const categories = [
         filter: "Blockchain",
         Icon: Code,
         description: "Smart contracts, DeFi protocols, NFT infrastructure",
-        jobs: "2.4k+ jobs",
+        offers: "2.4k+ offers",
         gradient: "from-violet-600 via-purple-600 to-indigo-600",
         accentColor: "violet",
     },
@@ -18,7 +18,7 @@ const categories = [
         filter: "Development",
         Icon: Desktop,
         description: "Full-stack applications, APIs, system architecture",
-        jobs: "1.8k+ jobs",
+        offers: "1.8k+ offers",
         gradient: "from-cyan-500 via-blue-500 to-indigo-500",
         accentColor: "cyan",
     },
@@ -27,7 +27,7 @@ const categories = [
         filter: "Design",
         Icon: PaintBrush,
         description: "Brand identity, UI/UX, motion graphics",
-        jobs: "900+ jobs",
+        offers: "900+ offers",
         gradient: "from-orange-500 via-amber-500 to-yellow-500",
         accentColor: "amber",
     },
@@ -36,7 +36,7 @@ const categories = [
         filter: "Data",
         Icon: Brain,
         description: "Model training, data pipelines, AI integration",
-        jobs: "650+ jobs",
+        offers: "650+ offers",
         gradient: "from-emerald-500 via-teal-500 to-cyan-500",
         accentColor: "emerald",
     },
@@ -45,7 +45,7 @@ const categories = [
         filter: "Marketing",
         Icon: Megaphone,
         description: "Community building, SEO, social campaigns",
-        jobs: "500+ jobs",
+        offers: "500+ offers",
         gradient: "from-rose-500 via-pink-500 to-fuchsia-500",
         accentColor: "rose",
     },
@@ -54,7 +54,7 @@ const categories = [
         filter: "Writing",
         Icon: PencilLine,
         description: "Technical docs, copywriting, whitepapers",
-        jobs: "400+ jobs",
+        offers: "400+ offers",
         gradient: "from-slate-400 via-zinc-400 to-neutral-400",
         accentColor: "slate",
     },
@@ -99,7 +99,7 @@ export function Categories() {
                     className="mb-6"
                 >
                     <Link
-                        to={`/jobs?filter=${categories[0].filter}`}
+                        to={`/offers?filter=${categories[0].filter}`}
                         className="group relative block overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#0c0c10] to-[#0a0a0c]"
                     >
                         {/* Large gradient background on hover */}
@@ -120,7 +120,7 @@ export function Categories() {
                                         <Code size={32} weight="duotone" className="text-violet-400" />
                                     </div>
                                     <div className="px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20">
-                                        <span className="text-violet-400 text-sm font-medium">{categories[0].jobs}</span>
+                                        <span className="text-violet-400 text-sm font-medium">{categories[0].offers}</span>
                                     </div>
                                 </div>
 
@@ -153,7 +153,7 @@ export function Categories() {
                             transition={{ duration: 0.5, delay: i * 0.1 }}
                         >
                             <Link
-                                to={`/jobs?filter=${category.filter}`}
+                                to={`/offers?filter=${category.filter}`}
                                 className="group relative block h-full overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0c] hover:border-white/15 transition-all duration-500"
                             >
                                 {/* Subtle hover gradient */}
@@ -193,7 +193,7 @@ export function Categories() {
 
                                     <div className="pt-4 border-t border-white/[0.04]">
                                         <span className="text-xs font-medium text-zinc-600 group-hover:text-zinc-400 transition-colors">
-                                            {category.jobs}
+                                            {category.offers}
                                         </span>
                                     </div>
                                 </div>
@@ -211,7 +211,7 @@ export function Categories() {
                     className="mt-12 text-center"
                 >
                     <Link
-                        to="/jobs"
+                        to="/offers"
                         className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group cursor-pointer"
                     >
                         <span className="text-sm font-medium">View all categories</span>

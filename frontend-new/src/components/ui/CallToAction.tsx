@@ -58,10 +58,10 @@ export function CallToAction() {
                     </GradientSlideButton>
 
                     <button
-                        onClick={() => navigate('/jobs')}
+                        onClick={() => navigate('/offers')}
                         className="h-14 px-8 text-base font-medium text-white border border-white/10 hover:bg-white/5 rounded-full transition-all cursor-pointer"
                     >
-                        Browse Opportunities
+                        Browse Offers
                     </button>
                 </div>
 

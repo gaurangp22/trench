@@ -72,8 +72,8 @@ export function Navbar() {
     if (isDashboardPage) return null
 
     const navLinks = [
-        { to: "/jobs", label: "Find Work" },
-        { to: "/talent", label: "Find Talent" },
+        { to: "/offers", label: "Offers" },
+        { to: "/gigs", label: "Gigs" },
         { to: "/how-it-works", label: "How It Works" },
     ]
 

@@ -56,7 +56,10 @@ type ProfileResponse struct {
 type ProfileUserInfo struct {
 	ID            uuid.UUID `json:"id"`
 	Username      string    `json:"username"`
+	Email         string    `json:"email"`
 	WalletAddress *string   `json:"wallet_address,omitempty"`
+	IsClient      bool      `json:"is_client"`
+	IsFreelancer  bool      `json:"is_freelancer"`
 }
 
 type ProfileSkillInfo struct {
@@ -140,7 +143,10 @@ func (s *ProfileService) buildProfileResponse(ctx context.Context, profile *doma
 		User: &ProfileUserInfo{
 			ID:            user.ID,
 			Username:      user.Username,
+			Email:         user.Email,
 			WalletAddress: user.PrimaryWalletAddress,
+			IsClient:      user.IsClient,
+			IsFreelancer:  user.IsFreelancer,
 		},
 		Skills:    skillInfos,
 		Portfolio: portfolio,

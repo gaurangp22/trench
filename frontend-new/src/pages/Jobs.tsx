@@ -244,17 +244,17 @@ export function Jobs() {
                         className="max-w-2xl"
                     >
                         <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
-                            {jobs.length} Opportunities
+                            {jobs.length} Open Offers
                         </span>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
-                            Find your next
+                            Browse
                             <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
-                                crypto gig.
+                                open offers.
                             </span>
                         </h1>
                         <p className="text-lg text-zinc-400 leading-relaxed">
-                            Curated opportunities from top Web3 teams. Paid in crypto, secured by smart contracts.
+                            Real clients, real budgets. Find offers that match your skills and get paid in SOL.
                         </p>
                     </motion.div>
 
@@ -351,7 +351,7 @@ export function Jobs() {
 
                     {/* Results Count */}
                     <div className="ml-auto text-sm text-zinc-500">
-                        {loading ? "Loading..." : `${jobs.length} jobs`}
+                        {loading ? "Loading..." : `${jobs.length} offers`}
                     </div>
                 </div>
 
@@ -476,7 +476,10 @@ function JobCard({ job, index, onClick }: { job: any; index: number; onClick: ()
                         {/* Header Row */}
                         <div className="flex items-start gap-3 mb-4">
                             <h3 className="text-xl font-semibold text-white group-hover:text-emerald-400 transition-colors">
-                                {job.title}
+                                <span className="text-zinc-400">I need a</span>{" "}
+                                <span className="text-white">{job.title}</span>{" "}
+                                <span className="text-zinc-400">for</span>{" "}
+                                <span className="text-emerald-400/90">{job.description?.slice(0, 60) || "this project"}...</span>
                             </h3>
                             {job.featured && (
                                 <span className="shrink-0 px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 uppercase tracking-wider border border-emerald-500/20">

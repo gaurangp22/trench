@@ -454,3 +454,71 @@ func (r *MessageRepository) GetLastMessage(ctx context.Context, conversationID u
 	}
 	return message, err
 }
+
+// CreateAttachment creates a new message attachment
+func (r *MessageRepository) CreateAttachment(ctx context.Context, attachment *domain.MessageAttachment) error {
+	query := `
+		INSERT INTO message_attachments (
+			id, message_id, file_name, file_url, file_type, file_size_bytes, created_at
+		) VALUES (
+			$1, $2, $3, $4, $5, $6, $7
+		)`
+
+	attachment.ID = uuid.New()
+	attachment.CreatedAt = time.Now()
+
+	_, err := r.db.Exec(ctx, query,
+		attachment.ID, attachment.MessageID, attachment.FileName, attachment.FileURL,
+		attachment.FileType, attachment.FileSizeBytes, attachment.CreatedAt,
+	)
+
+	return err
+}
+
+// GetAttachmentsByMessageID retrieves all attachments for a message
+func (r *MessageRepository) GetAttachmentsByMessageID(ctx context.Context, messageID uuid.UUID) ([]domain.MessageAttachment, error) {
+	query := `
+		SELECT id, message_id, file_name, file_url, file_type, file_size_bytes, created_at
+		FROM message_attachments
+		WHERE message_id = $1
+		ORDER BY created_at ASC`
+
+	rows, err := r.db.Query(ctx, query, messageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var attachments []domain.MessageAttachment
+	for rows.Next() {
+		var att domain.MessageAttachment
+		if err := rows.Scan(
+			&att.ID, &att.MessageID, &att.FileName, &att.FileURL,
+			&att.FileType, &att.FileSizeBytes, &att.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		attachments = append(attachments, att)
+	}
+
+	return attachments, rows.Err()
+}
+
+// GetMessagesWithAttachments retrieves messages with their attachments
+func (r *MessageRepository) GetByConversationIDWithAttachments(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error) {
+	messages, total, err := r.GetByConversationID(ctx, conversationID, limit, offset)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Fetch attachments for each message
+	for i := range messages {
+		attachments, err := r.GetAttachmentsByMessageID(ctx, messages[i].ID)
+		if err != nil {
+			return nil, 0, err
+		}
+		messages[i].Attachments = attachments
+	}
+
+	return messages, total, nil
+}

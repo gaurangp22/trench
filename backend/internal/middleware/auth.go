@@ -25,21 +25,27 @@ func NewAuthMiddleware(jwtManager *utils.JWTManager) *AuthMiddleware {
 // Authenticate validates the JWT token and adds user claims to context
 func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var tokenString string
+
 		// Get token from Authorization header
 		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			http.Error(w, `{"error": "authorization header required"}`, http.StatusUnauthorized)
-			return
+		if authHeader != "" {
+			// Check Bearer prefix
+			parts := strings.Split(authHeader, " ")
+			if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" {
+				tokenString = parts[1]
+			}
 		}
 
-		// Check Bearer prefix
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-			http.Error(w, `{"error": "invalid authorization header format"}`, http.StatusUnauthorized)
-			return
+		// Fallback: Check query parameter (for WebSocket connections)
+		if tokenString == "" {
+			tokenString = r.URL.Query().Get("token")
 		}
 
-		tokenString := parts[1]
+		if tokenString == "" {
+			http.Error(w, `{"error": "authorization required"}`, http.StatusUnauthorized)
+			return
+		}
 
 		// Validate token
 		claims, err := m.jwtManager.ValidateToken(tokenString)

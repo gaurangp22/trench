@@ -160,6 +160,31 @@ func (h *AuthHandler) DisconnectWallet(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, map[string]string{"message": "wallet disconnected successfully"})
 }
 
+// EnableRole enables an additional role for the authenticated user
+func (h *AuthHandler) EnableRole(w http.ResponseWriter, r *http.Request) {
+	claims := middleware.GetUserFromContext(r.Context())
+	if claims == nil {
+		respondError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	var req struct {
+		Role string `json:"role"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		respondError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	resp, err := h.authService.EnableRole(r.Context(), claims.UserID, req.Role)
+	if err != nil {
+		handleAppError(w, err)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, resp)
+}
+
 // RefreshToken generates a new token
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetUserFromContext(r.Context())

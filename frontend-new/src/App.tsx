@@ -40,8 +40,11 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<><Navbar /><main><Home /></main><Footer /></>} />
               <Route path="/jobs" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
+              <Route path="/offers" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
               <Route path="/jobs/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
+              <Route path="/offers/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
               <Route path="/talent" element={<><Navbar /><main><Talent /></main><Footer /></>} />
+              <Route path="/gigs" element={<><Navbar /><main><Talent /></main><Footer /></>} />
               <Route path="/talent/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/freelancer/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/profile/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
