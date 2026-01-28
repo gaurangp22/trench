@@ -74,8 +74,8 @@ const benefits = [
             { value: "100%", label: "On-Chain" },
             { value: "Immutable", label: "History" }
         ],
-        accent: "#10B981",
-        gradient: "from-emerald-500 to-teal-600"
+        accent: "#6366f1",
+        gradient: "from-indigo-500 to-violet-600"
     }
 ];
 
@@ -161,13 +161,13 @@ export function Benefits() {
                         headerView.isVisible && "animate-fade-in-up"
                     )}
                 >
-                    <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
+                    <span className="text-sm font-mono text-indigo-400 tracking-wider uppercase mb-4 block">
                         Why TrenchJobs
                     </span>
                     <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
                         Built for how
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400">
                             work should work.
                         </span>
                     </h2>

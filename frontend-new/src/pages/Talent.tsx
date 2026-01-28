@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams, Link } from "react-router-dom"
-import { Search, MapPin, Star, ShieldCheck, Users, Sparkles } from "lucide-react"
+import { Search, MapPin, Star, ShieldCheck, Users } from "lucide-react"
 import { motion, useInView } from "framer-motion"
-import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { fetchTalent, type ProfileResponse } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
@@ -172,8 +171,8 @@ export function Talent() {
             <section ref={heroRef} className="relative pt-24 pb-12 overflow-hidden border-b border-white/[0.06]">
                 {/* Background Effects */}
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-emerald-600/15 rounded-full blur-[150px]" />
-                    <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-teal-600/10 rounded-full blur-[120px]" />
+                    <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[150px]" />
+                    <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px]" />
                 </div>
 
                 <div className="container max-w-6xl mx-auto px-6 relative z-10">
@@ -185,13 +184,13 @@ export function Talent() {
                     >
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] mb-6">
-                            <Users className="w-4 h-4 text-emerald-400" />
+                            <Users className="w-4 h-4 text-indigo-400" />
                             <span className="text-sm font-medium text-zinc-300">Verified Talent Pool</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-tight">
                             Discover{" "}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
                                 World-Class
                             </span>
                             {" "}Talent
@@ -217,7 +216,7 @@ export function Talent() {
                                 placeholder="Search by role, name, or skill..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full h-14 pl-14 pr-6 bg-[#0a0a0c] border border-white/[0.08] rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all text-base"
+                                className="w-full h-14 pl-14 pr-6 bg-[#0a0a0c] border border-white/[0.08] rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-base"
                             />
                         </div>
                     </motion.div>
@@ -259,7 +258,7 @@ export function Talent() {
                 {/* Content */}
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-20">
-                        <div className="w-12 h-12 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin mb-4" />
+                        <div className="w-12 h-12 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin mb-4" />
                         <p className="text-zinc-500 text-sm">Searching the blockchain...</p>
                     </div>
                 ) : (
@@ -307,83 +306,78 @@ function TalentCard({ profile, index }: { profile: any; index: number }) {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4, delay: index * 0.05 }}
         >
-            <div className="group relative h-full rounded-2xl border border-white/[0.06] bg-[#0a0a0c] p-6 hover:border-white/15 transition-all duration-300">
-                {/* Available Badge */}
-                {profile.available && (
-                    <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-xs font-medium text-emerald-400">Available</span>
+            <Link to={`/talent/${profile.id}`}>
+                <div className="group relative h-full rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden hover:border-indigo-500/30 hover:bg-white/[0.04] transition-all duration-300">
+                    {/* Skills Banner - Work Focused at Top */}
+                    <div className="p-4 bg-gradient-to-br from-indigo-500/10 to-violet-500/10 border-b border-white/[0.06]">
+                        <div className="flex flex-wrap gap-1.5">
+                            {profile.skills.slice(0, 4).map((skill: string, i: number) => (
+                                <span
+                                    key={i}
+                                    className="px-2.5 py-1 bg-black/40 backdrop-blur-sm border border-white/10 text-zinc-300 text-xs rounded-lg font-medium"
+                                >
+                                    {skill}
+                                </span>
+                            ))}
+                            {profile.skills.length > 4 && (
+                                <span className="px-2.5 py-1 text-zinc-500 text-xs">
+                                    +{profile.skills.length - 4}
+                                </span>
+                            )}
+                        </div>
                     </div>
-                )}
 
-                {/* Avatar & Info */}
-                <div className="flex items-start gap-4 mb-5">
-                    <div className="relative flex-shrink-0">
-                        <img
-                            src={profile.avatar}
-                            alt={profile.name}
-                            className="w-14 h-14 rounded-2xl object-cover ring-2 ring-white/10"
-                        />
-                        {profile.verified && (
-                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center ring-2 ring-[#0a0a0c]">
-                                <ShieldCheck className="w-3 h-3 text-white" />
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-white truncate group-hover:text-emerald-400 transition-colors">
-                            {profile.name}
+                    <div className="p-5">
+                        {/* Title - Prominent */}
+                        <h3 className="font-semibold text-white text-lg mb-1 group-hover:text-indigo-400 transition-colors">
+                            {profile.title}
                         </h3>
-                        <p className="text-sm text-zinc-400 truncate">{profile.title}</p>
+
+                        {/* Stats Row */}
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="flex items-center gap-1">
+                                <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                                <span className="text-sm font-medium text-white">{profile.rating}</span>
+                            </div>
+                            <span className="text-indigo-400 font-semibold text-sm">◎ {profile.rate}</span>
+                            {profile.available && (
+                                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                                    <span className="text-[10px] font-medium text-indigo-400">Available</span>
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Location */}
+                        <div className="flex items-center gap-1.5 text-xs text-zinc-500 mb-4">
+                            <MapPin className="w-3 h-3" />
+                            {profile.location}
+                        </div>
+
+                        {/* Minimal Creator Info - At Bottom, Small */}
+                        <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <img
+                                        src={profile.avatar}
+                                        alt={profile.name}
+                                        className="w-7 h-7 rounded-full object-cover ring-1 ring-white/10"
+                                    />
+                                    {profile.verified && (
+                                        <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-indigo-500 flex items-center justify-center ring-1 ring-[#0a0a0c]">
+                                            <ShieldCheck className="w-2 h-2 text-white" />
+                                        </div>
+                                    )}
+                                </div>
+                                <span className="text-xs text-zinc-500">{profile.name}</span>
+                            </div>
+                            <span className="text-xs text-indigo-400 font-medium group-hover:text-indigo-300">
+                                View Profile →
+                            </span>
+                        </div>
                     </div>
                 </div>
-
-                {/* Rating & Rate */}
-                <div className="flex items-center gap-4 mb-5 text-sm">
-                    <div className="flex items-center gap-1.5">
-                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                        <span className="font-medium text-white">{profile.rating}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-zinc-400">
-                        <Sparkles className="w-4 h-4" />
-                        <span>◎ {profile.rate}</span>
-                    </div>
-                </div>
-
-                {/* Location */}
-                <div className="flex items-center gap-1.5 text-xs text-zinc-500 mb-5">
-                    <MapPin className="w-3.5 h-3.5" />
-                    {profile.location}
-                </div>
-
-                {/* Skills */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                    {profile.skills.slice(0, 3).map((skill: string, i: number) => (
-                        <span
-                            key={i}
-                            className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] text-zinc-400 text-xs rounded-lg"
-                        >
-                            {skill}
-                        </span>
-                    ))}
-                    {profile.skills.length > 3 && (
-                        <span className="px-3 py-1.5 text-zinc-500 text-xs">
-                            +{profile.skills.length - 3}
-                        </span>
-                    )}
-                </div>
-
-                {/* CTA */}
-                <Link to={`/talent/${profile.id}`}>
-                    <GradientSlideButton
-                        className="w-full h-11 rounded-xl font-medium"
-                        colorFrom="#10B981"
-                        colorTo="#14F195"
-                    >
-                        View Profile
-                    </GradientSlideButton>
-                </Link>
-            </div>
+            </Link>
         </motion.div>
     )
 }

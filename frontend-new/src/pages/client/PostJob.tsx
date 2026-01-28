@@ -101,9 +101,9 @@ export function PostJob() {
                     className="max-w-lg mx-auto text-center pt-16"
                 >
                     <div className="relative w-20 h-20 mx-auto mb-6">
-                        <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl animate-pulse" />
-                        <div className="relative w-full h-full bg-emerald-500/10 rounded-full border border-emerald-500/30 flex items-center justify-center">
-                            <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+                        <div className="absolute inset-0 bg-indigo-500/30 rounded-full blur-xl animate-pulse" />
+                        <div className="relative w-full h-full bg-indigo-500/10 rounded-full border border-indigo-500/30 flex items-center justify-center">
+                            <CheckCircle2 className="w-10 h-10 text-indigo-400" />
                         </div>
                     </div>
 
@@ -175,7 +175,7 @@ export function PostJob() {
                                 <div className="flex items-center gap-3">
                                     <div className={cn(
                                         "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all",
-                                        isComplete ? "bg-emerald-500 text-white" :
+                                        isComplete ? "bg-indigo-500 text-white" :
                                         isActive ? "bg-white text-black" :
                                         "bg-white/[0.06] text-zinc-500"
                                     )}>
@@ -191,7 +191,7 @@ export function PostJob() {
                                 {i < STEPS.length - 1 && (
                                     <div className={cn(
                                         "w-12 sm:w-24 h-px mx-4",
-                                        step > stepNum ? "bg-emerald-500" : "bg-white/[0.08]"
+                                        step > stepNum ? "bg-indigo-500" : "bg-white/[0.08]"
                                     )} />
                                 )}
                             </div>
@@ -263,7 +263,7 @@ export function PostJob() {
 
                                                     {isSelected && (
                                                         <div className="absolute top-2 right-2">
-                                                            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                                                            <div className="w-2 h-2 rounded-full bg-indigo-400" />
                                                         </div>
                                                     )}
                                                 </button>

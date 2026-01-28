@@ -266,7 +266,7 @@ export function Onboarding() {
     if (authLoading) {
         return (
             <div className="min-h-screen bg-[#020204] flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
             </div>
         )
     }
@@ -298,9 +298,9 @@ export function Onboarding() {
                                 className={cn(
                                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all",
                                     index < currentStep
-                                        ? "bg-emerald-500 text-white"
+                                        ? "bg-indigo-500 text-white"
                                         : index === currentStep
-                                            ? "bg-emerald-500/20 border-2 border-emerald-500 text-emerald-400"
+                                            ? "bg-indigo-500/20 border-2 border-indigo-500 text-indigo-400"
                                             : "bg-zinc-800 text-zinc-500"
                                 )}
                             >
@@ -309,7 +309,7 @@ export function Onboarding() {
                             {index < steps.length - 1 && (
                                 <div className={cn(
                                     "w-12 h-0.5 mx-2",
-                                    index < currentStep ? "bg-emerald-500" : "bg-zinc-800"
+                                    index < currentStep ? "bg-indigo-500" : "bg-zinc-800"
                                 )} />
                             )}
                         </div>
@@ -336,10 +336,10 @@ export function Onboarding() {
                                         <img
                                             src={data.avatar_url}
                                             alt="Profile"
-                                            className="w-20 h-20 rounded-full object-cover ring-4 ring-emerald-500/20"
+                                            className="w-20 h-20 rounded-full object-cover ring-4 ring-indigo-500/20"
                                         />
                                     ) : (
-                                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white text-2xl font-bold">
+                                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-2xl font-bold">
                                             {data.display_name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || '?'}
                                         </div>
                                     )}
@@ -371,7 +371,7 @@ export function Onboarding() {
                                             type="button"
                                             onClick={() => avatarInputRef.current?.click()}
                                             disabled={uploadingAvatar}
-                                            className="flex items-center gap-2 px-4 py-2 bg-white/[0.02] border border-white/[0.08] rounded-lg text-sm text-zinc-400 hover:text-white hover:border-emerald-500/30 transition-colors"
+                                            className="flex items-center gap-2 px-4 py-2 bg-white/[0.02] border border-white/[0.08] rounded-lg text-sm text-zinc-400 hover:text-white hover:border-indigo-500/30 transition-colors"
                                         >
                                             {uploadingAvatar ? (
                                                 <>
@@ -392,7 +392,7 @@ export function Onboarding() {
                                                 placeholder="Paste image URL"
                                                 value={data.avatar_url || ''}
                                                 onChange={(e) => updateData('avatar_url', e.target.value)}
-                                                className="flex-1 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-lg text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                                className="flex-1 px-3 py-1.5 bg-white/[0.02] border border-white/[0.08] rounded-lg text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                             />
                                         </div>
                                     </div>
@@ -412,7 +412,7 @@ export function Onboarding() {
                                         required
                                         value={data.display_name}
                                         onChange={(e) => updateData('display_name', e.target.value)}
-                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         placeholder="John Doe"
                                     />
                                 </div>
@@ -430,7 +430,7 @@ export function Onboarding() {
                                         required
                                         value={data.professional_title}
                                         onChange={(e) => updateData('professional_title', e.target.value)}
-                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         placeholder={isFreelancer ? "Senior Rust Developer" : "Founder & CEO"}
                                     />
                                 </div>
@@ -447,7 +447,7 @@ export function Onboarding() {
                                     value={data.bio}
                                     onChange={(e) => updateData('bio', e.target.value)}
                                     rows={4}
-                                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 resize-none"
+                                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 resize-none"
                                     placeholder={isFreelancer
                                         ? "Tell clients about your experience, what you specialize in, and what makes you unique..."
                                         : "Tell freelancers about your company, the projects you work on, and what you're looking for..."}
@@ -468,7 +468,7 @@ export function Onboarding() {
                                         type="text"
                                         value={data.country || ''}
                                         onChange={(e) => updateData('country', e.target.value)}
-                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         placeholder="United States"
                                     />
                                 </div>
@@ -492,7 +492,7 @@ export function Onboarding() {
                                         {data.skills.map(skill => (
                                             <span
                                                 key={skill}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm"
                                             >
                                                 {skill}
                                                 <button onClick={() => removeSkill(skill)} className="hover:text-white">
@@ -511,7 +511,7 @@ export function Onboarding() {
                                             key={skill}
                                             type="button"
                                             onClick={() => addSkill(skill)}
-                                            className="px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 text-sm hover:border-emerald-500/30 hover:text-white transition-colors"
+                                            className="px-3 py-1.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400 text-sm hover:border-indigo-500/30 hover:text-white transition-colors"
                                         >
                                             + {skill}
                                         </button>
@@ -533,7 +533,7 @@ export function Onboarding() {
                                         step="0.1"
                                         value={data.hourly_rate_sol || ''}
                                         onChange={(e) => updateData('hourly_rate_sol', parseFloat(e.target.value) || undefined)}
-                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         placeholder="25"
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500">SOL/hr</span>
@@ -568,7 +568,7 @@ export function Onboarding() {
                                             }
                                             updateSocial('website', e.target.value)
                                         }}
-                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         placeholder="https://yourcompany.com"
                                     />
                                 </div>
@@ -588,7 +588,7 @@ export function Onboarding() {
                                         }
                                         updateSocial('twitter', e.target.value)
                                     }}
-                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                     placeholder="https://twitter.com/yourcompany"
                                 />
                             </div>
@@ -620,7 +620,7 @@ export function Onboarding() {
                                         placeholder="Project Title"
                                         value={item.title}
                                         onChange={(e) => updatePortfolioItem(index, 'title', e.target.value)}
-                                        className="w-full h-10 px-4 bg-white/[0.02] border border-white/[0.08] rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-10 px-4 bg-white/[0.02] border border-white/[0.08] rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                     />
 
                                     <textarea
@@ -628,7 +628,7 @@ export function Onboarding() {
                                         value={item.description}
                                         onChange={(e) => updatePortfolioItem(index, 'description', e.target.value)}
                                         rows={2}
-                                        className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.08] rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 resize-none"
+                                        className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.08] rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 resize-none"
                                     />
 
                                     <input
@@ -636,7 +636,7 @@ export function Onboarding() {
                                         placeholder="Project URL (optional)"
                                         value={item.url || ''}
                                         onChange={(e) => updatePortfolioItem(index, 'url', e.target.value)}
-                                        className="w-full h-10 px-4 bg-white/[0.02] border border-white/[0.08] rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                        className="w-full h-10 px-4 bg-white/[0.02] border border-white/[0.08] rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                     />
                                 </div>
                             ))}
@@ -644,7 +644,7 @@ export function Onboarding() {
                             <button
                                 type="button"
                                 onClick={addPortfolioItem}
-                                className="w-full py-3 border-2 border-dashed border-zinc-700 rounded-xl text-zinc-400 hover:border-emerald-500/30 hover:text-emerald-400 transition-colors flex items-center justify-center gap-2"
+                                className="w-full py-3 border-2 border-dashed border-zinc-700 rounded-xl text-zinc-400 hover:border-indigo-500/30 hover:text-indigo-400 transition-colors flex items-center justify-center gap-2"
                             >
                                 <Plus className="w-4 h-4" />
                                 Add Project
@@ -674,7 +674,7 @@ export function Onboarding() {
                                         if (!data.socials.find(s => s.platform === 'website')) addSocial('website')
                                         updateSocial('website', e.target.value)
                                     }}
-                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
 
@@ -689,7 +689,7 @@ export function Onboarding() {
                                         if (!data.socials.find(s => s.platform === 'twitter')) addSocial('twitter')
                                         updateSocial('twitter', e.target.value)
                                     }}
-                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
 
@@ -704,7 +704,7 @@ export function Onboarding() {
                                         if (!data.socials.find(s => s.platform === 'telegram')) addSocial('telegram')
                                         updateSocial('telegram', e.target.value)
                                     }}
-                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
 
@@ -719,7 +719,7 @@ export function Onboarding() {
                                         if (!data.socials.find(s => s.platform === 'discord')) addSocial('discord')
                                         updateSocial('discord', e.target.value)
                                     }}
-                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50"
+                                    className="w-full h-12 px-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
 
@@ -757,8 +757,8 @@ export function Onboarding() {
                             onClick={handleNext}
                             disabled={isSubmitting}
                             className="px-8 py-3 rounded-xl"
-                            colorFrom="#10B981"
-                            colorTo="#14F195"
+                            colorFrom="#6366f1"
+                            colorTo="#8b5cf6"
                         >
                             {isSubmitting ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />

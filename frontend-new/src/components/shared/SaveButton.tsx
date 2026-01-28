@@ -35,10 +35,10 @@ export function SaveButton({
 
     const variantClasses = {
         primary: saveSuccess
-            ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+            ? "bg-indigo-500 hover:bg-indigo-600 text-white"
             : "bg-white text-black hover:bg-zinc-200",
         secondary: saveSuccess
-            ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400"
+            ? "bg-indigo-500/20 border-indigo-500/30 text-indigo-400"
             : "bg-white/[0.03] border-white/10 text-zinc-300 hover:bg-white/[0.06]"
     }
 

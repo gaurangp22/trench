@@ -82,13 +82,13 @@ export function MessageAttachment({ attachment, isOwnMessage }: MessageAttachmen
             className={cn(
                 "mt-2 flex items-center gap-3 p-3 rounded-lg transition-colors max-w-xs",
                 isOwnMessage
-                    ? "bg-emerald-600/30 hover:bg-emerald-600/40"
+                    ? "bg-indigo-600/30 hover:bg-indigo-600/40"
                     : "bg-white/[0.08] hover:bg-white/[0.12]"
             )}
         >
             <div className={cn(
                 "w-10 h-10 rounded-lg flex items-center justify-center",
-                isOwnMessage ? "bg-emerald-500/30" : "bg-white/10"
+                isOwnMessage ? "bg-indigo-500/30" : "bg-white/10"
             )}>
                 <FileTypeIcon type={attachment.file_type} />
             </div>

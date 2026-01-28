@@ -23,7 +23,7 @@ export function CallToAction() {
             <HyperspaceBackground
                 starSpeed={1.03}
                 starTrailOpacity={0.7}
-                starColor="#10B981"
+                starColor="#6366f1"
                 starSize={0.8}
                 starCount={120}
             />
@@ -50,18 +50,18 @@ export function CallToAction() {
                     <GradientSlideButton
                         onClick={handleGetStarted}
                         className="h-14 px-8 text-base font-medium rounded-full"
-                        colorFrom="#10B981"
-                        colorTo="#14F195"
+                        colorFrom="#6366f1"
+                        colorTo="#8b5cf6"
                     >
                         {isAuthenticated ? "Go to Dashboard" : "Get Started"}
                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </GradientSlideButton>
 
                     <button
-                        onClick={() => navigate('/jobs')}
+                        onClick={() => navigate('/offers')}
                         className="h-14 px-8 text-base font-medium text-white border border-white/10 hover:bg-white/5 rounded-full transition-all cursor-pointer"
                     >
-                        Browse Opportunities
+                        Browse Offers
                     </button>
                 </div>
 

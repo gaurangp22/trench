@@ -381,7 +381,7 @@ export function EditProfile() {
             <DashboardLayout role="freelancer">
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center">
-                        <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mx-auto mb-4" />
+                        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto mb-4" />
                         <p className="text-zinc-400">Loading your profile...</p>
                     </div>
                 </div>
@@ -435,14 +435,14 @@ export function EditProfile() {
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-300 text-sm flex items-center gap-3"
+                    className="mb-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-300 text-sm flex items-center gap-3"
                 >
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-emerald-400" />
+                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-indigo-400" />
                     </div>
                     <div>
                         <strong>Create Your Profile</strong>
-                        <p className="text-emerald-400/70 mt-0.5">Fill out the form below and click "Save Changes" to create your profile.</p>
+                        <p className="text-indigo-400/70 mt-0.5">Fill out the form below and click "Save Changes" to create your profile.</p>
                     </div>
                 </motion.div>
             )}
@@ -452,7 +452,7 @@ export function EditProfile() {
                 <div className="bg-[#0a0a0c] border border-white/5 rounded-2xl">
                     <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                            <User className="w-5 h-5 text-emerald-400" />
+                            <User className="w-5 h-5 text-indigo-400" />
                             Basic Information
                         </h2>
                     </div>
@@ -470,7 +470,7 @@ export function EditProfile() {
                                                 className="w-32 h-32 rounded-2xl object-cover ring-4 ring-white/10"
                                             />
                                         ) : (
-                                            <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center ring-4 ring-white/10">
+                                            <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center ring-4 ring-white/10">
                                                 <User className="w-14 h-14 text-white" />
                                             </div>
                                         )}
@@ -500,7 +500,7 @@ export function EditProfile() {
                                         value={displayName}
                                         onChange={(e) => setDisplayName(e.target.value)}
                                         placeholder="Your name or alias"
-                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                     />
                                 </div>
 
@@ -512,7 +512,7 @@ export function EditProfile() {
                                         value={professionalTitle}
                                         onChange={(e) => setProfessionalTitle(e.target.value)}
                                         placeholder="e.g., Senior Solana Developer"
-                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                     />
                                 </div>
                             </div>
@@ -530,7 +530,7 @@ export function EditProfile() {
                                         onChange={(e) => setBio(e.target.value.slice(0, 1000))}
                                         placeholder="Tell clients about your experience, skills, and what makes you unique..."
                                         rows={6}
-                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 resize-none transition-all"
+                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 resize-none transition-all"
                                     />
                                 </div>
 
@@ -546,7 +546,7 @@ export function EditProfile() {
                                             value={country}
                                             onChange={(e) => setCountry(e.target.value)}
                                             placeholder="e.g., United States, Remote"
-                                            className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                            className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                         />
                                     </div>
 
@@ -557,7 +557,7 @@ export function EditProfile() {
                                             Hourly Rate (SOL)
                                         </label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400 font-medium">◎</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 font-medium">◎</span>
                                             <input
                                                 type="number"
                                                 value={hourlyRate}
@@ -565,7 +565,7 @@ export function EditProfile() {
                                                 placeholder="0"
                                                 min="0"
                                                 step="0.1"
-                                                className="w-full h-12 pl-10 pr-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                                className="w-full h-12 pl-10 pr-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                             />
                                         </div>
                                     </div>
@@ -588,12 +588,12 @@ export function EditProfile() {
                             {skills.map((skill) => (
                                 <span
                                     key={skill.id}
-                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-300 text-sm group"
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-300 text-sm group"
                                 >
                                     {skill.name}
                                     <button
                                         onClick={() => handleRemoveSkill(skill.id)}
-                                        className="w-4 h-4 rounded-full bg-emerald-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors opacity-50 group-hover:opacity-100"
+                                        className="w-4 h-4 rounded-full bg-indigo-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors opacity-50 group-hover:opacity-100"
                                     >
                                         <X className="w-3 h-3" />
                                     </button>
@@ -615,7 +615,7 @@ export function EditProfile() {
                                 onFocus={() => setShowSkillDropdown(true)}
                                 onBlur={() => setTimeout(() => setShowSkillDropdown(false), 200)}
                                 placeholder="Search and add skills..."
-                                className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                             />
                             {showSkillDropdown && filteredSkills.length > 0 && (
                                 <div className="absolute top-full left-0 right-0 mt-2 bg-[#121214] border border-white/10 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50">
@@ -623,7 +623,7 @@ export function EditProfile() {
                                         <button
                                             key={skill.id}
                                             onClick={() => handleAddSkill(skill)}
-                                            className="w-full px-4 py-2.5 text-left text-sm text-zinc-300 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                                            className="w-full px-4 py-2.5 text-left text-sm text-zinc-300 hover:bg-indigo-500/20 hover:text-indigo-300 transition-colors first:rounded-t-xl last:rounded-b-xl"
                                         >
                                             {skill.name}
                                         </button>
@@ -797,7 +797,7 @@ export function EditProfile() {
                                                 {token.ath_market_cap && (
                                                     <div className="mt-3 pt-3 border-t border-white/[0.06] flex justify-between text-xs">
                                                         <span className="text-zinc-500">ATH Market Cap</span>
-                                                        <span className="text-emerald-400 font-medium">{formatMarketCap(token.ath_market_cap)}</span>
+                                                        <span className="text-indigo-400 font-medium">{formatMarketCap(token.ath_market_cap)}</span>
                                                     </div>
                                                 )}
                                                 <div className="mt-2 text-[10px] text-zinc-600 truncate font-mono">
@@ -1053,7 +1053,7 @@ export function EditProfile() {
                                     className={cn(
                                         "flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all",
                                         availabilityStatus === option.value
-                                            ? "bg-emerald-500/10 border-emerald-500/30"
+                                            ? "bg-indigo-500/10 border-indigo-500/30"
                                             : "bg-white/[0.02] border-white/[0.06] hover:border-white/15"
                                     )}
                                 >
@@ -1067,10 +1067,10 @@ export function EditProfile() {
                                     />
                                     <div className={cn(
                                         "w-4 h-4 rounded-full border-2 flex items-center justify-center",
-                                        availabilityStatus === option.value ? "border-emerald-400" : "border-zinc-600"
+                                        availabilityStatus === option.value ? "border-indigo-400" : "border-zinc-600"
                                     )}>
                                         {availabilityStatus === option.value && (
-                                            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                                            <div className="w-2 h-2 rounded-full bg-indigo-400" />
                                         )}
                                     </div>
                                     <div>
@@ -1088,7 +1088,7 @@ export function EditProfile() {
                             </div>
                             <div className={cn(
                                 "w-12 h-7 rounded-full p-1 transition-colors",
-                                availableForHire ? "bg-emerald-500" : "bg-zinc-700"
+                                availableForHire ? "bg-indigo-500" : "bg-zinc-700"
                             )}>
                                 <div className={cn(
                                     "w-5 h-5 rounded-full bg-white transition-transform",

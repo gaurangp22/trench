@@ -87,7 +87,7 @@ export function ClientDashboard() {
                         label="In Escrow"
                         value={`${escrowBalance.toFixed(1)} SOL`}
                         trend="Secured funds"
-                        color="emerald"
+                        color="indigo"
                     />
                     <StatCard
                         delay={0.05}
@@ -145,7 +145,7 @@ export function ClientDashboard() {
                                             className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 text-sm text-white transition-all"
                                         >
                                             <span className="truncate max-w-[200px]">{milestone.title}</span>
-                                            <span className="text-emerald-400 font-medium">◎{milestone.amount}</span>
+                                            <span className="text-indigo-400 font-medium">◎{milestone.amount}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -228,7 +228,7 @@ export function ClientDashboard() {
                                 <QuickAction href="/client/post-job" icon={Plus} label="Post a New Job" color="indigo" />
                                 <QuickAction href="/client/jobs" icon={Briefcase} label="Manage Jobs" color="blue" />
                                 <QuickAction href="/client/contracts" icon={CheckCircle2} label="View Contracts" color="purple" />
-                                <QuickAction href="/messages" icon={MessageSquare} label="Messages" color="emerald" />
+                                <QuickAction href="/messages" icon={MessageSquare} label="Messages" color="indigo" />
                                 <QuickAction href="/talent" icon={Users} label="Browse Talent" color="amber" />
                             </div>
                         </motion.div>
@@ -272,7 +272,7 @@ export function ClientDashboard() {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm text-zinc-400">Total spent</span>
-                                    <span className="text-sm font-medium text-emerald-400">
+                                    <span className="text-sm font-medium text-indigo-400">
                                         ◎{contracts.filter(c => c.status === 'completed').reduce((sum, c) => sum + (c.total_amount || 0), 0).toFixed(1)}
                                     </span>
                                 </div>
@@ -302,7 +302,7 @@ function JobCard({ job, delay }: { job: Job; delay: number }) {
                     <div className="flex items-center gap-2 mb-2">
                         <span className={cn(
                             "px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider",
-                            job.status === 'open' ? "bg-emerald-500/20 text-emerald-400" :
+                            job.status === 'open' ? "bg-indigo-500/20 text-indigo-400" :
                             job.status === 'in_progress' ? "bg-blue-500/20 text-blue-400" :
                             "bg-zinc-500/20 text-zinc-400"
                         )}>
@@ -318,7 +318,7 @@ function JobCard({ job, delay }: { job: Job; delay: number }) {
                     </h3>
                     <div className="flex items-center gap-3 text-sm">
                         <span className="text-zinc-400">{job.budget_type === 'fixed' ? 'Fixed' : 'Hourly'}</span>
-                        <span className="text-emerald-400 font-medium">◎{job.budget}</span>
+                        <span className="text-indigo-400 font-medium">◎{job.budget}</span>
                     </div>
                 </div>
                 <div className="text-right shrink-0">
@@ -356,7 +356,7 @@ function ContractCard({ contract, delay }: { contract: Contract; delay: number }
                     </h3>
                     <span className="text-sm text-zinc-400">{contract.freelancer?.display_name}</span>
                 </div>
-                <span className="text-sm font-semibold text-emerald-400">◎{contract.total_amount}</span>
+                <span className="text-sm font-semibold text-indigo-400">◎{contract.total_amount}</span>
             </div>
 
             <div className="space-y-2">
@@ -381,8 +381,8 @@ function QuickAction({ href, icon: Icon, label, color }: { href: string; icon: a
         indigo: 'group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-500',
         blue: 'group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500',
         purple: 'group-hover:bg-purple-500 group-hover:text-white group-hover:border-purple-500',
-        emerald: 'group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500',
         amber: 'group-hover:bg-amber-500 group-hover:text-white group-hover:border-amber-500',
+        cyan: 'group-hover:bg-cyan-500 group-hover:text-white group-hover:border-cyan-500',
     }
 
     return (

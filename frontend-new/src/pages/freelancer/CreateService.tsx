@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import { motion } from "framer-motion"
-import { Loader2, ArrowLeft, Package, Check } from "lucide-react"
+import { Loader2, ArrowLeft, Package, Check, Upload, X, Plus } from "lucide-react"
 import { ServiceAPI, SkillsAPI, type CreateServiceRequest, type Skill } from "@/lib/api"
 import { cn } from "@/lib/utils"
 import { useEffect } from "react"
@@ -24,6 +24,14 @@ export function CreateService() {
     const [step, setStep] = useState<Step>(1)
     const [loading, setLoading] = useState(false)
     const [allSkills, setAllSkills] = useState<Skill[]>([])
+
+    // Gallery state
+    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
+    const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
+    const [galleryFiles, setGalleryFiles] = useState<File[]>([])
+    const [galleryPreviews, setGalleryPreviews] = useState<string[]>([])
+    const thumbnailInputRef = useRef<HTMLInputElement>(null)
+    const galleryInputRef = useRef<HTMLInputElement>(null)
 
     // Form state
     const [formData, setFormData] = useState<CreateServiceRequest>({
@@ -57,6 +65,50 @@ export function CreateService() {
         loadSkills()
     }, [])
 
+    const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            setThumbnailFile(file)
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setThumbnailPreview(reader.result as string)
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || [])
+        if (files.length + galleryFiles.length > 5) {
+            alert('Maximum 5 gallery images allowed')
+            return
+        }
+
+        const newFiles = [...galleryFiles, ...files].slice(0, 5)
+        setGalleryFiles(newFiles)
+
+        // Generate previews
+        newFiles.forEach((file, idx) => {
+            if (idx >= galleryPreviews.length) {
+                const reader = new FileReader()
+                reader.onloadend = () => {
+                    setGalleryPreviews(prev => [...prev, reader.result as string].slice(0, 5))
+                }
+                reader.readAsDataURL(file)
+            }
+        })
+    }
+
+    const removeGalleryImage = (index: number) => {
+        setGalleryFiles(prev => prev.filter((_, i) => i !== index))
+        setGalleryPreviews(prev => prev.filter((_, i) => i !== index))
+    }
+
+    const removeThumbnail = () => {
+        setThumbnailFile(null)
+        setThumbnailPreview(null)
+    }
+
     const handleSubmit = async () => {
         setLoading(true)
         try {
@@ -79,7 +131,7 @@ export function CreateService() {
         }))
     }
 
-    const canProceedStep1 = formData.title && formData.description && formData.category_id
+    const canProceedStep1 = formData.title && formData.description && formData.category_id && thumbnailFile
     const canProceedStep2 = formData.basic_price_sol || formData.standard_price_sol || formData.premium_price_sol
 
     return (
@@ -115,36 +167,134 @@ export function CreateService() {
                             key={s}
                             className={cn(
                                 "flex-1 h-1.5 rounded-full transition-colors",
-                                s <= step ? "bg-purple-500" : "bg-white/10"
+                                s <= step ? "bg-indigo-500" : "bg-white/10"
                             )}
                         />
                     ))}
                 </motion.div>
 
-                {/* Step 1: Basic Info */}
+                {/* Step 1: Basic Info & Gallery */}
                 {step === 1 && (
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="space-y-6"
                     >
+                        {/* Gallery Upload Section - Work Maximized */}
+                        <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-6 space-y-6">
+                            <div>
+                                <h3 className="text-lg font-semibold text-white mb-2">Showcase Your Work</h3>
+                                <p className="text-sm text-zinc-500">Your gallery is the first thing clients see. Make it count!</p>
+                            </div>
+
+                            {/* Thumbnail Upload */}
+                            <div>
+                                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                                    Cover Image <span className="text-red-400">*</span>
+                                </label>
+                                <input
+                                    ref={thumbnailInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleThumbnailChange}
+                                    className="hidden"
+                                />
+                                {thumbnailPreview ? (
+                                    <div className="relative aspect-video rounded-xl overflow-hidden border border-white/[0.1] bg-white/[0.02]">
+                                        <img
+                                            src={thumbnailPreview}
+                                            alt="Thumbnail preview"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            onClick={removeThumbnail}
+                                            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                        <div className="absolute bottom-3 left-3 px-2 py-1 text-xs bg-black/60 backdrop-blur-sm text-white rounded-lg">
+                                            Cover Image
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => thumbnailInputRef.current?.click()}
+                                        className="w-full aspect-video rounded-xl border-2 border-dashed border-white/[0.1] bg-white/[0.01] hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all flex flex-col items-center justify-center gap-3"
+                                    >
+                                        <div className="w-16 h-16 rounded-2xl bg-white/[0.05] flex items-center justify-center">
+                                            <Upload className="w-8 h-8 text-zinc-500" />
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-sm font-medium text-zinc-300">Upload Cover Image</p>
+                                            <p className="text-xs text-zinc-500 mt-1">This is the main image clients will see</p>
+                                        </div>
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Gallery Upload */}
+                            <div>
+                                <label className="block text-sm font-medium text-zinc-300 mb-2">
+                                    Gallery Images <span className="text-zinc-500">(up to 5)</span>
+                                </label>
+                                <input
+                                    ref={galleryInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleGalleryChange}
+                                    className="hidden"
+                                />
+                                <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                                    {galleryPreviews.map((preview, idx) => (
+                                        <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-white/[0.1] bg-white/[0.02]">
+                                            <img
+                                                src={preview}
+                                                alt={`Gallery ${idx + 1}`}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            <button
+                                                onClick={() => removeGalleryImage(idx)}
+                                                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+                                            >
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    {galleryPreviews.length < 5 && (
+                                        <button
+                                            onClick={() => galleryInputRef.current?.click()}
+                                            className="aspect-square rounded-xl border-2 border-dashed border-white/[0.1] bg-white/[0.01] hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all flex flex-col items-center justify-center gap-2"
+                                        >
+                                            <Plus className="w-6 h-6 text-zinc-500" />
+                                            <span className="text-xs text-zinc-500">Add</span>
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-xs text-zinc-500 mt-2">
+                                    Add more images to showcase different aspects of your work
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Basic Info */}
                         <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-6 space-y-6">
                             <div>
                                 <label className="block text-sm font-medium text-zinc-300 mb-2">
-                                    Service Title
+                                    Gig Title <span className="text-red-400">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.title}
                                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                                     placeholder="I will create a professional Solana dApp..."
-                                    className="w-full h-12 bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50 transition-colors"
+                                    className="w-full h-12 bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-zinc-300 mb-2">
-                                    Category
+                                    Category <span className="text-red-400">*</span>
                                 </label>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                     {CATEGORIES.map((cat) => (
@@ -154,7 +304,7 @@ export function CreateService() {
                                             className={cn(
                                                 "p-3 rounded-xl border text-sm font-medium transition-all text-left",
                                                 formData.category_id === cat.id
-                                                    ? "bg-purple-500/10 border-purple-500/50 text-purple-400"
+                                                    ? "bg-indigo-500/10 border-indigo-500/50 text-indigo-400"
                                                     : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.04]"
                                             )}
                                         >
@@ -166,20 +316,20 @@ export function CreateService() {
 
                             <div>
                                 <label className="block text-sm font-medium text-zinc-300 mb-2">
-                                    Description
+                                    Description <span className="text-red-400">*</span>
                                 </label>
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                     placeholder="Describe what you offer, your process, and what clients can expect..."
                                     rows={6}
-                                    className="w-full bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50 transition-colors resize-none"
+                                    className="w-full bg-white/[0.02] border border-white/[0.06] rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none"
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-sm font-medium text-zinc-300 mb-2">
-                                    Skills (select relevant skills)
+                                    Tags / Skills
                                 </label>
                                 <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
                                     {allSkills.map((skill) => (
@@ -189,7 +339,7 @@ export function CreateService() {
                                             className={cn(
                                                 "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
                                                 formData.skills?.includes(Number(skill.id))
-                                                    ? "bg-purple-500/20 text-purple-400 border border-purple-500/50"
+                                                    ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/50"
                                                     : "bg-white/[0.02] text-zinc-400 border border-white/[0.06] hover:text-white"
                                             )}
                                         >
@@ -236,7 +386,7 @@ export function CreateService() {
                                             value={formData.basic_price_sol || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, basic_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                             placeholder="0.5"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                     <div>
@@ -246,7 +396,7 @@ export function CreateService() {
                                             value={formData.basic_delivery_days || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, basic_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="3"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                     <div>
@@ -256,7 +406,7 @@ export function CreateService() {
                                             value={formData.basic_revisions || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, basic_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="1"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                 </div>
@@ -265,15 +415,15 @@ export function CreateService() {
                                     value={formData.basic_description || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, basic_description: e.target.value || undefined }))}
                                     placeholder="What's included in the basic package?"
-                                    className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                    className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
 
                             {/* Standard Package */}
-                            <div className="p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 space-y-4">
+                            <div className="p-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5 space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h4 className="font-medium text-white">Standard</h4>
-                                    <span className="text-xs text-purple-400">Recommended</span>
+                                    <span className="text-xs text-indigo-400">Recommended</span>
                                 </div>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div>
@@ -284,7 +434,7 @@ export function CreateService() {
                                             value={formData.standard_price_sol || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, standard_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                             placeholder="1.5"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                     <div>
@@ -294,7 +444,7 @@ export function CreateService() {
                                             value={formData.standard_delivery_days || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, standard_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="5"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                     <div>
@@ -304,7 +454,7 @@ export function CreateService() {
                                             value={formData.standard_revisions || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, standard_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="2"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                 </div>
@@ -313,7 +463,7 @@ export function CreateService() {
                                     value={formData.standard_description || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, standard_description: e.target.value || undefined }))}
                                     placeholder="What's included in the standard package?"
-                                    className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                    className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
 
@@ -332,7 +482,7 @@ export function CreateService() {
                                             value={formData.premium_price_sol || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, premium_price_sol: e.target.value ? parseFloat(e.target.value) : undefined }))}
                                             placeholder="5.0"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                     <div>
@@ -342,7 +492,7 @@ export function CreateService() {
                                             value={formData.premium_delivery_days || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, premium_delivery_days: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="7"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                     <div>
@@ -352,7 +502,7 @@ export function CreateService() {
                                             value={formData.premium_revisions || ''}
                                             onChange={(e) => setFormData(prev => ({ ...prev, premium_revisions: e.target.value ? parseInt(e.target.value) : undefined }))}
                                             placeholder="3"
-                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                            className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                         />
                                     </div>
                                 </div>
@@ -361,7 +511,7 @@ export function CreateService() {
                                     value={formData.premium_description || ''}
                                     onChange={(e) => setFormData(prev => ({ ...prev, premium_description: e.target.value || undefined }))}
                                     placeholder="What's included in the premium package?"
-                                    className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-purple-500/50"
+                                    className="w-full h-10 bg-white/[0.02] border border-white/[0.06] rounded-lg px-3 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50"
                                 />
                             </div>
                         </div>
@@ -410,21 +560,21 @@ export function CreateService() {
                                         {formData.basic_price_sol && (
                                             <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.06]">
                                                 <span className="text-xs text-zinc-500">Basic</span>
-                                                <p className="text-emerald-400 font-semibold">{formData.basic_price_sol} SOL</p>
+                                                <p className="text-indigo-400 font-semibold">{formData.basic_price_sol} SOL</p>
                                                 <p className="text-xs text-zinc-500">{formData.basic_delivery_days} days</p>
                                             </div>
                                         )}
                                         {formData.standard_price_sol && (
-                                            <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
-                                                <span className="text-xs text-purple-400">Standard</span>
-                                                <p className="text-emerald-400 font-semibold">{formData.standard_price_sol} SOL</p>
+                                            <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30">
+                                                <span className="text-xs text-indigo-400">Standard</span>
+                                                <p className="text-indigo-400 font-semibold">{formData.standard_price_sol} SOL</p>
                                                 <p className="text-xs text-zinc-500">{formData.standard_delivery_days} days</p>
                                             </div>
                                         )}
                                         {formData.premium_price_sol && (
                                             <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
                                                 <span className="text-xs text-amber-400">Premium</span>
-                                                <p className="text-emerald-400 font-semibold">{formData.premium_price_sol} SOL</p>
+                                                <p className="text-indigo-400 font-semibold">{formData.premium_price_sol} SOL</p>
                                                 <p className="text-xs text-zinc-500">{formData.premium_delivery_days} days</p>
                                             </div>
                                         )}
@@ -433,15 +583,15 @@ export function CreateService() {
                             </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30">
+                        <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
                             <div className="flex items-start gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                                    <Package className="w-4 h-4 text-purple-400" />
+                                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                                    <Package className="w-4 h-4 text-indigo-400" />
                                 </div>
                                 <div>
-                                    <h4 className="font-medium text-white text-sm">Service will be created as a draft</h4>
+                                    <h4 className="font-medium text-white text-sm">Gig will be created as a draft</h4>
                                     <p className="text-xs text-zinc-400 mt-1">
-                                        You can publish it anytime from your services dashboard.
+                                        You can publish it anytime from your gigs dashboard.
                                     </p>
                                 </div>
                             </div>

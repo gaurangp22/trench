@@ -21,7 +21,7 @@ export function SmartEscrow() {
                         transition={{ duration: 0.7 }}
                         className="order-2 lg:order-1"
                     >
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-8">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-8">
                             <ShieldCheck size={14} weight="duotone" />
                             <span>On-Chain Security</span>
                         </div>
@@ -29,7 +29,7 @@ export function SmartEscrow() {
                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-[1.1] tracking-tight">
                             Your funds are
                             <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
                                 protected
                             </span>
                             {" "}until
@@ -73,7 +73,7 @@ export function SmartEscrow() {
                         >
                             <a
                                 href="/how-it-works"
-                                className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 transition-colors group cursor-pointer"
+                                className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors group cursor-pointer"
                             >
                                 <span className="font-medium">Learn how escrow works</span>
                                 <ArrowRight size={16} weight="bold" className="group-hover:translate-x-1 transition-transform" />
@@ -93,32 +93,32 @@ export function SmartEscrow() {
                             {/* Main Card */}
                             <div className="relative bg-[#0a0a0c] border border-white/[0.08] rounded-[2rem] overflow-hidden">
                                 {/* Top gradient line */}
-                                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
+                                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
 
                                 <div className="p-8 md:p-10">
                                     {/* Header */}
                                     <div className="flex items-center justify-between mb-10">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                                <LockKey size={28} weight="duotone" className="text-emerald-400" />
+                                            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-violet-500/10 border border-indigo-500/20 flex items-center justify-center">
+                                                <LockKey size={28} weight="duotone" className="text-indigo-400" />
                                             </div>
                                             <div>
                                                 <div className="text-white font-semibold text-lg">Escrow Contract</div>
                                                 <div className="text-zinc-500 text-sm flex items-center gap-2">
-                                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
                                                     Active on Solana
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                            <span className="text-emerald-400 text-xs font-semibold">Secured</span>
+                                        <div className="px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
+                                            <span className="text-indigo-400 text-xs font-semibold">Secured</span>
                                         </div>
                                     </div>
 
                                     {/* Main Value Display */}
                                     <div className="relative bg-gradient-to-br from-black/60 to-black/40 rounded-2xl p-8 border border-white/[0.04] mb-8">
                                         {/* Subtle gradient overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-emerald-500/5 to-transparent" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/5 to-transparent" />
 
                                         <div className="relative text-center">
                                             <div className="text-zinc-500 text-sm font-medium uppercase tracking-widest mb-3">
@@ -161,7 +161,7 @@ export function SmartEscrow() {
                                             TX: 8x4f...29f4
                                         </div>
                                         <div className="text-xs text-zinc-500 flex items-center gap-1.5">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                                             Powered by Smart Contract
                                         </div>
                                     </div>
@@ -177,8 +177,8 @@ export function SmartEscrow() {
                             >
                                 <div className="bg-[#111113] border border-white/[0.08] p-4 rounded-xl shadow-2xl">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                            <CheckCircle size={16} weight="duotone" className="text-emerald-400" />
+                                        <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                            <CheckCircle size={16} weight="duotone" className="text-indigo-400" />
                                         </div>
                                         <div>
                                             <div className="text-sm font-medium text-white">Milestone Approved</div>
@@ -210,9 +210,9 @@ function EscrowStep({
 }) {
     const colors = {
         complete: {
-            bg: "bg-emerald-500/20",
-            border: "border-emerald-500/30",
-            icon: "text-emerald-400",
+            bg: "bg-indigo-500/20",
+            border: "border-indigo-500/30",
+            icon: "text-indigo-400",
             text: "text-white"
         },
         active: {
@@ -240,7 +240,7 @@ function EscrowStep({
             <div className="flex items-center gap-3">
                 <div className={cn(
                     "w-9 h-9 rounded-full flex items-center justify-center",
-                    status === 'complete' ? "bg-emerald-500/30" : "bg-white/5"
+                    status === 'complete' ? "bg-indigo-500/30" : "bg-white/5"
                 )}>
                     <Icon size={16} weight="duotone" className={style.icon} />
                 </div>
@@ -254,7 +254,7 @@ function EscrowStep({
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
                             transition={{ duration: 1, delay: 0.5 }}
-                            className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                            className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full"
                         />
                     </div>
                     <span className="text-sm font-mono text-zinc-400">{progress}%</span>

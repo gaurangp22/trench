@@ -266,13 +266,13 @@ export function MessageInput({ onSend, onTyping, disabled, placeholder = "Type a
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
                     disabled={isDisabled}
-                    className="flex-1 px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all disabled:opacity-50"
+                    className="flex-1 px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-50"
                 />
 
                 <Button
                     onClick={handleSend}
                     disabled={isDisabled || (!text.trim() && pendingFiles.filter(p => p.uploaded).length === 0)}
-                    className="h-10 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium disabled:opacity-50"
+                    className="h-10 px-4 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-medium disabled:opacity-50"
                 >
                     {sending ? (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

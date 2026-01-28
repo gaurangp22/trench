@@ -15,7 +15,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
     active: { label: "In Progress", color: "text-blue-400", bg: "bg-blue-500/10" },
     delivered: { label: "Delivered", color: "text-purple-400", bg: "bg-purple-500/10" },
     revision_requested: { label: "Revision Requested", color: "text-orange-400", bg: "bg-orange-500/10" },
-    completed: { label: "Completed", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    completed: { label: "Completed", color: "text-indigo-400", bg: "bg-indigo-500/10" },
     cancelled: { label: "Cancelled", color: "text-red-400", bg: "bg-red-500/10" },
     disputed: { label: "Disputed", color: "text-red-400", bg: "bg-red-500/10" },
 }
@@ -307,13 +307,13 @@ export function OrderDetail() {
                                                 <div className={cn(
                                                     "max-w-[70%] rounded-2xl p-3",
                                                     isDeliveryMsg
-                                                        ? "bg-emerald-500/10 border border-emerald-500/30"
+                                                        ? "bg-indigo-500/10 border border-indigo-500/30"
                                                         : isOwnMessage
                                                             ? "bg-purple-500/10"
                                                             : "bg-white/[0.04]"
                                                 )}>
                                                     {isDeliveryMsg && (
-                                                        <div className="flex items-center gap-2 text-emerald-400 text-xs font-medium mb-2">
+                                                        <div className="flex items-center gap-2 text-indigo-400 text-xs font-medium mb-2">
                                                             <Package className="w-3 h-3" />
                                                             Delivery
                                                         </div>
@@ -502,7 +502,7 @@ export function OrderDetail() {
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-zinc-500">Price</span>
-                                    <span className="text-emerald-400 font-medium">{order.price_sol} SOL</span>
+                                    <span className="text-indigo-400 font-medium">{order.price_sol} SOL</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-zinc-500">Delivery</span>
@@ -565,7 +565,7 @@ export function OrderDetail() {
                                 <>
                                     <Button
                                         onClick={handleApprove}
-                                        className="w-full h-10 rounded-xl bg-emerald-500 text-white hover:bg-emerald-600"
+                                        className="w-full h-10 rounded-xl bg-indigo-500 text-white hover:bg-indigo-600"
                                     >
                                         <CheckCircle className="w-4 h-4 mr-2" />
                                         Approve & Complete
@@ -603,7 +603,7 @@ export function OrderDetail() {
                             )}
                             {isCompleted && (
                                 <div className="text-center py-2">
-                                    <CheckCircle className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+                                    <CheckCircle className="w-8 h-8 text-indigo-400 mx-auto mb-2" />
                                     <p className="text-sm text-zinc-400">Order completed successfully!</p>
                                 </div>
                             )}

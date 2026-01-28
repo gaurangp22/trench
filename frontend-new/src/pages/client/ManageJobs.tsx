@@ -174,7 +174,7 @@ export function ManageJobs() {
                                         <div className="flex items-center gap-3 mb-1">
                                             <span className={cn(
                                                 "px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider",
-                                                job.status === 'open' ? "bg-emerald-500/20 text-emerald-400" :
+                                                job.status === 'open' ? "bg-indigo-500/20 text-indigo-400" :
                                                 job.status === 'in_progress' ? "bg-blue-500/20 text-blue-400" :
                                                 "bg-zinc-500/20 text-zinc-400"
                                             )}>
@@ -186,7 +186,7 @@ export function ManageJobs() {
                                         </h3>
                                         <div className="flex items-center gap-3 text-sm text-zinc-500 mt-1">
                                             <span>{job.budget_type === 'fixed' ? 'Fixed Price' : 'Hourly'}</span>
-                                            <span className="text-emerald-400 font-medium">◎ {job.budget}</span>
+                                            <span className="text-indigo-400 font-medium">◎ {job.budget}</span>
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-3 h-3" />
                                                 {new Date(job.created_at).toLocaleDateString()}

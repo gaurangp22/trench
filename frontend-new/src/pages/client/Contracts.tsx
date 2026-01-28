@@ -14,7 +14,7 @@ type FilterType = 'all' | 'pending' | 'active' | 'completed' | 'cancelled'
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
     pending: { label: "Pending", color: "text-amber-400", bg: "bg-amber-500/10" },
     active: { label: "Active", color: "text-blue-400", bg: "bg-blue-500/10" },
-    completed: { label: "Completed", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    completed: { label: "Completed", color: "text-indigo-400", bg: "bg-indigo-500/10" },
     cancelled: { label: "Cancelled", color: "text-red-400", bg: "bg-red-500/10" },
     disputed: { label: "Disputed", color: "text-purple-400", bg: "bg-purple-500/10" },
 }
@@ -212,7 +212,7 @@ export function Contracts() {
                                                             <CheckCircle className="w-3.5 h-3.5" />
                                                             {completedMilestones}/{totalMilestones} milestones
                                                         </span>
-                                                        <span className="text-emerald-400 font-medium">◎ {contract.total_amount}</span>
+                                                        <span className="text-indigo-400 font-medium">◎ {contract.total_amount}</span>
                                                     </div>
 
                                                     {/* Progress Bar */}

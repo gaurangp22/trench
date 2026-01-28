@@ -5,12 +5,12 @@ export function Footer() {
     return (
         <footer className="relative bg-[#020204] overflow-hidden">
             {/* Subtle top gradient line */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
 
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute bottom-0 left-1/4 w-[600px] h-[400px] bg-emerald-600/5 rounded-full blur-[150px]" />
-                <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-teal-600/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-0 left-1/4 w-[600px] h-[400px] bg-indigo-600/5 rounded-full blur-[150px]" />
+                <div className="absolute bottom-0 right-1/4 w-[400px] h-[300px] bg-violet-600/5 rounded-full blur-[120px]" />
             </div>
 
             <div className="container max-w-7xl mx-auto px-6 relative z-10">
@@ -42,10 +42,10 @@ export function Footer() {
                                         <input
                                             type="email"
                                             placeholder="Enter your email"
-                                            className="w-full h-11 pl-11 pr-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                            className="w-full h-11 pl-11 pr-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                         />
                                     </div>
-                                    <button className="h-11 px-5 bg-emerald-500 hover:bg-emerald-400 text-black font-medium text-sm rounded-xl transition-colors">
+                                    <button className="h-11 px-5 bg-indigo-500 hover:bg-indigo-400 text-white font-medium text-sm rounded-xl transition-colors">
                                         Subscribe
                                     </button>
                                 </div>
@@ -125,12 +125,12 @@ export function Footer() {
 
                         {/* Right - Network Status */}
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
                                 <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                                 </span>
-                                <span className="text-sm font-medium text-emerald-400">
+                                <span className="text-sm font-medium text-indigo-400">
                                     Solana Mainnet
                                 </span>
                             </div>
@@ -160,7 +160,7 @@ function FooterLink({
                 <ArrowUpRight size={12} weight="bold" className="opacity-0 -translate-y-0.5 translate-x-0.5 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
             )}
             {badge && (
-                <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 rounded">
+                <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-indigo-500/20 text-indigo-400 rounded">
                     {badge}
                 </span>
             )}

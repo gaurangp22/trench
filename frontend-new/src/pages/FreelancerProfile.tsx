@@ -179,7 +179,7 @@ export function FreelancerProfile() {
         return (
             <div className="min-h-screen bg-[#020204] pt-24 pb-12 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
+                    <div className="w-12 h-12 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin" />
                     <span className="text-zinc-500 text-sm">Loading profile...</span>
                 </div>
             </div>
@@ -198,8 +198,8 @@ export function FreelancerProfile() {
                     <Link to="/talent">
                         <GradientSlideButton
                             className="h-12 px-8 rounded-xl"
-                            colorFrom="#10B981"
-                            colorTo="#14F195"
+                            colorFrom="#6366f1"
+                            colorTo="#8b5cf6"
                         >
                             <ChevronLeft className="w-4 h-4 mr-2" />
                             Back to Talent
@@ -218,8 +218,8 @@ export function FreelancerProfile() {
             <section className="relative pt-24 pb-12 overflow-hidden border-b border-white/[0.06]">
                 {/* Background Effects */}
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[150px]" />
-                    <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-teal-600/10 rounded-full blur-[120px]" />
+                    <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[150px]" />
+                    <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
                 </div>
 
                 <div className="container max-w-5xl mx-auto px-6 relative z-10">
@@ -246,7 +246,7 @@ export function FreelancerProfile() {
                         className="rounded-2xl border border-white/[0.06] bg-[#0a0a0c] overflow-hidden"
                     >
                         {/* Gradient Top Line */}
-                        <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500" />
+                        <div className="h-1 bg-gradient-to-r from-indigo-500 via-violet-400 to-indigo-500" />
 
                         <div className="p-6 md:p-8">
                             <div className="flex flex-col md:flex-row gap-6 md:gap-8">
@@ -259,14 +259,14 @@ export function FreelancerProfile() {
                                             className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover ring-4 ring-white/10"
                                         />
                                     ) : (
-                                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white text-3xl font-bold ring-4 ring-white/10">
+                                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center text-white text-3xl font-bold ring-4 ring-white/10">
                                             {profileData.display_name?.charAt(0) || "?"}
                                         </div>
                                     )}
                                     {profileData.available_for_hire && (
-                                        <div className="absolute -bottom-2 -right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 backdrop-blur">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                            <span className="text-xs font-medium text-emerald-400">Available</span>
+                                        <div className="absolute -bottom-2 -right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 backdrop-blur">
+                                            <div className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                                            <span className="text-xs font-medium text-indigo-400">Available</span>
                                         </div>
                                     )}
                                 </div>
@@ -317,7 +317,7 @@ export function FreelancerProfile() {
                                                     initial={{ opacity: 0, scale: 0.8 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
-                                                    className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm rounded-lg font-medium"
+                                                    className="px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm rounded-lg font-medium"
                                                 >
                                                     {skill.name}
                                                 </motion.span>
@@ -351,7 +351,7 @@ export function FreelancerProfile() {
                                     {profileData.hourly_rate_sol && (
                                         <div className="text-center p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                                             <div className="flex items-center justify-center gap-1 mb-1">
-                                                <Sparkles className="w-4 h-4 text-emerald-400" />
+                                                <Sparkles className="w-4 h-4 text-indigo-400" />
                                                 <span className="text-xs text-zinc-500 uppercase tracking-wider">Rate</span>
                                             </div>
                                             <div className="text-2xl font-bold text-white">
@@ -397,7 +397,7 @@ export function FreelancerProfile() {
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
-                                <Icon className={cn("w-4 h-4 relative z-10", isActive && "text-emerald-400")} />
+                                <Icon className={cn("w-4 h-4 relative z-10", isActive && "text-indigo-400")} />
                                 <span className="relative z-10">{tab.label}</span>
                             </button>
                         );

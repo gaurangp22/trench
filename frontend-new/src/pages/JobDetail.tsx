@@ -99,13 +99,13 @@ export function JobDetail() {
                 {/* Hero Header Skeleton */}
                 <div className="relative overflow-hidden border-b border-white/[0.06]">
                     <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[150px]" />
+                        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[150px]" />
                     </div>
                     <div className="container max-w-6xl mx-auto px-6 py-12 relative z-10">
                         <div className="h-4 w-24 bg-white/[0.06] rounded mb-8 animate-pulse" />
                         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
                             <div className="flex-1">
-                                <div className="h-6 w-32 bg-emerald-500/10 rounded-full mb-4 animate-pulse" />
+                                <div className="h-6 w-32 bg-indigo-500/10 rounded-full mb-4 animate-pulse" />
                                 <div className="h-12 w-3/4 bg-white/[0.06] rounded-lg mb-4 animate-pulse" />
                                 <div className="flex gap-4">
                                     <div className="h-8 w-32 bg-white/[0.06] rounded-full animate-pulse" />
@@ -150,7 +150,7 @@ export function JobDetail() {
                                     <div className="h-20 bg-white/[0.06] rounded-xl animate-pulse" />
                                     <div className="h-20 bg-white/[0.06] rounded-xl animate-pulse" />
                                 </div>
-                                <div className="h-12 w-full bg-emerald-500/20 rounded-xl animate-pulse" />
+                                <div className="h-12 w-full bg-indigo-500/20 rounded-xl animate-pulse" />
                             </div>
                         </div>
                     </div>
@@ -180,8 +180,8 @@ export function JobDetail() {
                             <Link to="/jobs">
                                 <GradientSlideButton
                                     className="h-12 px-8 rounded-xl w-full sm:w-auto"
-                                    colorFrom="#10B981"
-                                    colorTo="#14F195"
+                                    colorFrom="#6366f1"
+                                    colorTo="#8b5cf6"
                                 >
                                     Browse All Jobs
                                 </GradientSlideButton>
@@ -204,8 +204,8 @@ export function JobDetail() {
             {/* Hero Header */}
             <div className="relative overflow-hidden border-b border-white/[0.06]">
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[150px]" />
-                    <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-teal-600/10 rounded-full blur-[120px]" />
+                    <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[150px]" />
+                    <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[120px]" />
                 </div>
 
                 <div className="container max-w-6xl mx-auto px-6 py-12 relative z-10">
@@ -232,7 +232,7 @@ export function JobDetail() {
                             className="flex-1"
                         >
                             {/* Category Badge */}
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-4">
                                 <Briefcase className="w-3.5 h-3.5" />
                                 Web3 Development
                             </div>
@@ -244,7 +244,7 @@ export function JobDetail() {
                             {/* Meta Info */}
                             <div className="flex flex-wrap items-center gap-4 text-sm">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white text-xs font-bold">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center text-white text-xs font-bold">
                                         {job.client?.display_name?.[0] || 'C'}
                                     </div>
                                     <span className="font-medium text-white">{job.client?.display_name || 'Client'}</span>
@@ -311,7 +311,7 @@ export function JobDetail() {
                                                 </strong>
                                             ) : line.startsWith('- ') ? (
                                                 <span className="flex items-start gap-2">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-2 flex-shrink-0" />
                                                     <span>{line.slice(2)}</span>
                                                 </span>
                                             ) : (
@@ -342,7 +342,7 @@ export function JobDetail() {
                                                 initial={{ opacity: 0, scale: 0.8 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
-                                                className="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-300 font-medium hover:bg-emerald-500/20 transition-colors"
+                                                className="px-4 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-sm text-indigo-300 font-medium hover:bg-indigo-500/20 transition-colors"
                                             >
                                                 {skill}
                                             </motion.span>
@@ -364,7 +364,7 @@ export function JobDetail() {
                             </div>
                             <div className="p-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-emerald-500/20">
+                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-indigo-500/20">
                                         {job.client?.display_name?.[0] || 'C'}
                                     </div>
                                     <div className="flex-1">
@@ -404,23 +404,23 @@ export function JobDetail() {
                     >
                         <div className="sticky top-24 rounded-2xl border border-white/[0.06] bg-[#0a0a0c] overflow-hidden">
                             {/* Gradient Top Line */}
-                            <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500" />
+                            <div className="h-1 bg-gradient-to-r from-indigo-500 via-violet-400 to-indigo-500" />
 
                             <div className="p-6">
                                 {/* Escrow Status */}
                                 <div className={cn(
                                     "flex items-center justify-center gap-2 py-3 px-4 rounded-xl mb-6",
                                     job.escrow_funded
-                                        ? "bg-emerald-500/10 border border-emerald-500/20"
+                                        ? "bg-indigo-500/10 border border-indigo-500/20"
                                         : "bg-white/[0.02] border border-white/[0.06]"
                                 )}>
                                     <Shield className={cn(
                                         "w-5 h-5",
-                                        job.escrow_funded ? "text-emerald-400" : "text-zinc-500"
+                                        job.escrow_funded ? "text-indigo-400" : "text-zinc-500"
                                     )} />
                                     <span className={cn(
                                         "text-sm font-medium",
-                                        job.escrow_funded ? "text-emerald-400" : "text-zinc-500"
+                                        job.escrow_funded ? "text-indigo-400" : "text-zinc-500"
                                     )}>
                                         {job.escrow_funded ? "Escrow Funded" : "Escrow Not Yet Funded"}
                                     </span>
@@ -452,13 +452,13 @@ export function JobDetail() {
 
                                 {/* CTA */}
                                 {ctaConfig.variant === "wallet" ? (
-                                    <WalletMultiButton className="!w-full !h-12 !justify-center !bg-gradient-to-r from-emerald-500 to-teal-400 !rounded-xl !font-medium" />
+                                    <WalletMultiButton className="!w-full !h-12 !justify-center !bg-gradient-to-r from-indigo-500 to-violet-400 !rounded-xl !font-medium" />
                                 ) : (
                                     <GradientSlideButton
                                         onClick={ctaConfig.action}
                                         className="w-full h-12 text-base font-semibold rounded-xl"
-                                        colorFrom="#10B981"
-                                        colorTo="#14F195"
+                                        colorFrom="#6366f1"
+                                        colorTo="#8b5cf6"
                                     >
                                         {ctaConfig.label}
                                     </GradientSlideButton>
@@ -467,7 +467,7 @@ export function JobDetail() {
                                 {!isLoggedIn && (
                                     <p className="text-xs text-zinc-500 text-center mt-4">
                                         Already have an account?{" "}
-                                        <Link to="/auth" className="text-emerald-400 hover:text-emerald-300 transition-colors">
+                                        <Link to="/auth" className="text-indigo-400 hover:text-indigo-300 transition-colors">
                                             Log in
                                         </Link>
                                     </p>
@@ -562,9 +562,9 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", damping: 15, stiffness: 300 }}
-                            className="w-20 h-20 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-6"
+                            className="w-20 h-20 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center mx-auto mb-6"
                         >
-                            <CheckCircle className="w-10 h-10 text-emerald-400" />
+                            <CheckCircle className="w-10 h-10 text-indigo-400" />
                         </motion.div>
                         <h3 className="text-2xl font-bold text-white mb-2">Proposal Submitted!</h3>
                         <p className="text-zinc-400">Your proposal has been sent to the client. You'll be notified when they respond.</p>
@@ -616,7 +616,7 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
                                         onChange={(e) => setCoverLetter(e.target.value.slice(0, 1000))}
                                         placeholder="Introduce yourself and explain why you're the best fit for this job..."
                                         rows={5}
-                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 resize-none transition-all"
+                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 resize-none transition-all"
                                         required
                                         disabled={submitting}
                                     />
@@ -630,12 +630,12 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
                                             Your Bid (SOL)
                                         </label>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400 font-medium">◎</span>
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 font-medium">◎</span>
                                             <input
                                                 type="number"
                                                 value={proposedAmount}
                                                 onChange={(e) => setProposedAmount(e.target.value)}
-                                                className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                                className="w-full pl-10 pr-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                                 required
                                                 disabled={submitting}
                                                 min="0"
@@ -654,7 +654,7 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
                                             type="number"
                                             value={deliveryDays}
                                             onChange={(e) => setDeliveryDays(e.target.value)}
-                                            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                             required
                                             disabled={submitting}
                                             min="1"
@@ -685,8 +685,8 @@ function ProposalModal({ job, onClose, onSuccess }: { job: Job; onClose: () => v
                                     <GradientSlideButton
                                         type="submit"
                                         className="flex-1 h-12 rounded-xl font-semibold"
-                                        colorFrom="#10B981"
-                                        colorTo="#14F195"
+                                        colorFrom="#6366f1"
+                                        colorTo="#8b5cf6"
                                         disabled={submitting || !coverLetter.trim()}
                                     >
                                         {submitting ? (

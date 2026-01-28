@@ -37,8 +37,8 @@ const categories = [
         Icon: Brain,
         description: "Model training, data pipelines, AI integration",
         jobs: "650+ jobs",
-        gradient: "from-emerald-500 via-teal-500 to-cyan-500",
-        accentColor: "emerald",
+        gradient: "from-indigo-500 via-violet-500 to-cyan-500",
+        accentColor: "indigo",
     },
     {
         name: "Marketing & Growth",
@@ -74,13 +74,13 @@ export function Categories() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
+                        <span className="text-sm font-mono text-indigo-400 tracking-wider uppercase mb-4 block">
                             Explore Talent
                         </span>
                         <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
                             Every skill you need,
                             <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
                                 one platform.
                             </span>
                         </h2>
@@ -99,7 +99,7 @@ export function Categories() {
                     className="mb-6"
                 >
                     <Link
-                        to={`/jobs?filter=${categories[0].filter}`}
+                        to={`/offers?filter=${categories[0].filter}`}
                         className="group relative block overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#0c0c10] to-[#0a0a0c]"
                     >
                         {/* Large gradient background on hover */}
@@ -153,7 +153,7 @@ export function Categories() {
                             transition={{ duration: 0.5, delay: i * 0.1 }}
                         >
                             <Link
-                                to={`/jobs?filter=${category.filter}`}
+                                to={`/offers?filter=${category.filter}`}
                                 className="group relative block h-full overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0c] hover:border-white/15 transition-all duration-500"
                             >
                                 {/* Subtle hover gradient */}
@@ -211,10 +211,10 @@ export function Categories() {
                     className="mt-12 text-center"
                 >
                     <Link
-                        to="/jobs"
+                        to="/offers"
                         className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group cursor-pointer"
                     >
-                        <span className="text-sm font-medium">View all categories</span>
+                        <span className="text-sm font-medium">View all offers</span>
                         <ArrowUpRight size={16} weight="bold" className=" group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </Link>
                 </motion.div>
@@ -228,7 +228,7 @@ function getAccentColor(color: string): string {
         violet: "#8B5CF6",
         cyan: "#06B6D4",
         amber: "#F59E0B",
-        emerald: "#10B981",
+        indigo: "#6366f1",
         rose: "#F43F5E",
         slate: "#64748B",
     };

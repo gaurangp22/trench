@@ -79,7 +79,7 @@ function TestimonialCard({ item }: { item: typeof testimonials[0] }) {
                         className="w-10 h-10 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-semibold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-semibold text-sm">
                         {item.avatar}
                     </div>
                 )}
@@ -147,7 +147,7 @@ export function Testimonials() {
 
                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                     Real people. Real payments.{" "}
-                    <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
                         Real fast.
                     </span>
                 </h2>

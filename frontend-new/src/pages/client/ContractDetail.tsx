@@ -101,7 +101,7 @@ export function ContractDetail() {
             case 'pending': return 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
             case 'in_progress': return 'bg-blue-500/10 text-blue-400 border-blue-500/20'
             case 'submitted': return 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-            case 'approved': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+            case 'approved': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
             case 'revision_requested': return 'bg-red-500/10 text-red-400 border-red-500/20'
             default: return 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
         }
@@ -158,7 +158,7 @@ export function ContractDetail() {
                         <div className="flex items-center gap-4 text-sm text-zinc-400">
                             <span className={cn(
                                 "px-2 py-0.5 rounded text-xs font-medium border",
-                                contract.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                                contract.status === 'active' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
                                 contract.status === 'completed' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
                                 "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
                             )}>
@@ -181,7 +181,7 @@ export function ContractDetail() {
                                 onClick={handleCompleteContract}
                                 disabled={actionLoading === 'complete'}
                                 className="rounded-xl"
-                                colorFrom="#10B981"
+                                colorFrom="#6366f1"
                                 colorTo="#059669"
                             >
                                 {actionLoading === 'complete' ? (
@@ -232,7 +232,7 @@ export function ContractDetail() {
                                             <div className={cn(
                                                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
                                                 milestone.status === 'approved'
-                                                    ? "bg-emerald-500 text-white"
+                                                    ? "bg-indigo-500 text-white"
                                                     : milestone.status === 'submitted'
                                                     ? "bg-amber-500 text-black"
                                                     : "bg-white/10 text-zinc-400"
@@ -268,7 +268,7 @@ export function ContractDetail() {
                                                 onClick={() => handleApproveMilestone(milestone.id)}
                                                 disabled={actionLoading === milestone.id}
                                                 className="flex-1 rounded-lg py-2 text-sm"
-                                                colorFrom="#10B981"
+                                                colorFrom="#6366f1"
                                                 colorTo="#059669"
                                             >
                                                 {actionLoading === milestone.id ? (
@@ -318,8 +318,8 @@ export function ContractDetail() {
                                 <span className="font-bold text-white">{contract.milestones?.length || 0}</span>
                             </div>
                             {contract.escrow_address && (
-                                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                                    <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium">
+                                <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                                    <div className="flex items-center gap-2 text-indigo-400 text-sm font-medium">
                                         <Shield className="w-4 h-4" />
                                         Escrow Protected
                                     </div>
@@ -332,7 +332,7 @@ export function ContractDetail() {
                     <div className="bg-[#0a0a0c] border border-white/5 rounded-2xl p-6">
                         <h2 className="text-lg font-bold text-white mb-4">Freelancer</h2>
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white font-bold">
                                 {contract.freelancer?.display_name?.[0] || 'F'}
                             </div>
                             <div>
@@ -423,8 +423,8 @@ export function ContractDetail() {
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-[#0a0a0c] border border-white/10 rounded-2xl p-6 max-w-md w-full">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <Star className="w-6 h-6 text-emerald-400" />
+                            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                                <Star className="w-6 h-6 text-indigo-400" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-white">Leave a Review</h3>
@@ -463,7 +463,7 @@ export function ContractDetail() {
                                 onChange={(e) => setReview(prev => ({ ...prev, comment: e.target.value }))}
                                 placeholder="Share your experience..."
                                 rows={4}
-                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 resize-none"
+                                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
                             />
                         </div>
 
@@ -494,7 +494,7 @@ export function ContractDetail() {
                                     }
                                 }}
                                 className="flex-1 rounded-xl"
-                                colorFrom="#10B981"
+                                colorFrom="#6366f1"
                                 colorTo="#059669"
                             >
                                 Submit Review

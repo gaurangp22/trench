@@ -2,7 +2,7 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import type { LucideIcon } from "lucide-react"
 
-export type StatCardColor = 'emerald' | 'blue' | 'amber' | 'purple' | 'cyan' | 'rose'
+export type StatCardColor = 'indigo' | 'blue' | 'amber' | 'purple' | 'cyan' | 'rose'
 
 export interface StatCardProps {
     icon: LucideIcon
@@ -21,7 +21,7 @@ const colorMap: Record<StatCardColor, {
     border: string
     glow: string
 }> = {
-    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', glow: 'shadow-emerald-500/20' },
+    indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', border: 'border-indigo-500/20', glow: 'shadow-indigo-500/20' },
     blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', glow: 'shadow-blue-500/20' },
     amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', glow: 'shadow-amber-500/20' },
     purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20', glow: 'shadow-purple-500/20' },

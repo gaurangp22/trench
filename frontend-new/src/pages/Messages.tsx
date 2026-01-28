@@ -152,8 +152,8 @@ export function Messages() {
             <DashboardLayout role={currentRole}>
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center max-w-md">
-                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                            <MessageSquare className="w-10 h-10 text-emerald-400" />
+                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                            <MessageSquare className="w-10 h-10 text-indigo-400" />
                         </div>
                         <h2 className="text-2xl font-bold text-white mb-3">No messages yet</h2>
                         <p className="text-zinc-400 leading-relaxed mb-8">
@@ -192,12 +192,12 @@ export function Messages() {
                         <div className="px-6 py-4 border-b border-white/[0.06]">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                                    <MessageSquare className="w-5 h-5 text-emerald-400" />
+                                    <MessageSquare className="w-5 h-5 text-indigo-400" />
                                     Messages
                                 </h2>
                                 <div className={cn(
                                     "w-2 h-2 rounded-full",
-                                    isConnected ? "bg-emerald-500" : "bg-yellow-500 animate-pulse"
+                                    isConnected ? "bg-indigo-500" : "bg-yellow-500 animate-pulse"
                                 )} title={isConnected ? "Connected" : "Connecting..."} />
                             </div>
                         </div>
@@ -211,7 +211,7 @@ export function Messages() {
                                     placeholder="Search messages..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                 />
                             </div>
                         </div>
@@ -247,7 +247,7 @@ export function Messages() {
                                             className={cn(
                                                 "w-full p-4 flex items-start gap-3 text-left transition-all border-b border-white/[0.03]",
                                                 selectedConversation?.id === conv.id
-                                                    ? "bg-emerald-500/10"
+                                                    ? "bg-indigo-500/10"
                                                     : "hover:bg-white/[0.03]"
                                             )}
                                         >
@@ -259,12 +259,12 @@ export function Messages() {
                                                         className="w-12 h-12 rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
+                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
                                                         {participant?.username?.[0]?.toUpperCase() || '?'}
                                                     </div>
                                                 )}
                                                 {participant?.is_online && (
-                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0a0a0c]" />
+                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-indigo-500 rounded-full border-2 border-[#0a0a0c]" />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -280,7 +280,7 @@ export function Messages() {
                                                     {conv.last_message?.message_text || 'No messages yet'}
                                                 </p>
                                                 {conv.context && (
-                                                    <div className="flex items-center gap-1 mt-1.5 text-xs text-emerald-400">
+                                                    <div className="flex items-center gap-1 mt-1.5 text-xs text-indigo-400">
                                                         <Shield className="w-3 h-3" />
                                                         <span className="truncate">{conv.context.title}</span>
                                                         {conv.context.amount_sol && (
@@ -290,7 +290,7 @@ export function Messages() {
                                                 )}
                                             </div>
                                             {conv.unread_count > 0 && (
-                                                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-xs text-white font-bold">
+                                                <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-xs text-white font-bold">
                                                     {conv.unread_count}
                                                 </div>
                                             )}
@@ -320,7 +320,7 @@ export function Messages() {
                                                                 className="w-10 h-10 rounded-full object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
+                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
                                                                 {participant?.username?.[0]?.toUpperCase() || '?'}
                                                             </div>
                                                         )}
@@ -329,7 +329,7 @@ export function Messages() {
                                                                 {participant?.username || 'Unknown'}
                                                             </h3>
                                                             {participant?.is_online ? (
-                                                                <span className="text-xs text-emerald-400">Online</span>
+                                                                <span className="text-xs text-indigo-400">Online</span>
                                                             ) : (
                                                                 <span className="text-xs text-zinc-500">Offline</span>
                                                             )}
@@ -348,7 +348,7 @@ export function Messages() {
                                         <div className="mt-3 p-3 bg-white/[0.02] border border-white/[0.06] rounded-xl">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <Shield className="w-4 h-4 text-emerald-400" />
+                                                    <Shield className="w-4 h-4 text-indigo-400" />
                                                     <span className="text-sm text-white">{selectedConversation.context.title}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -361,7 +361,7 @@ export function Messages() {
                                                         <span className={cn(
                                                             "px-2.5 py-0.5 rounded-lg text-xs font-medium capitalize border",
                                                             selectedConversation.context.status === "funded" || selectedConversation.context.status === "active"
-                                                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                                                ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
                                                                 : "bg-blue-500/10 text-blue-400 border-blue-500/20"
                                                         )}>
                                                             {selectedConversation.context.status.replace('_', ' ')}
@@ -383,7 +383,7 @@ export function Messages() {
                                                     className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} animate-pulse`}
                                                     style={{ animationDelay: `${i * 0.1}s` }}
                                                 >
-                                                    <div className={`max-w-[70%] p-3 rounded-2xl ${i % 2 === 0 ? 'bg-white/[0.05]' : 'bg-emerald-500/20'}`}>
+                                                    <div className={`max-w-[70%] p-3 rounded-2xl ${i % 2 === 0 ? 'bg-white/[0.05]' : 'bg-indigo-500/20'}`}>
                                                         <div className="h-4 w-48 bg-white/10 rounded mb-2" />
                                                         <div className="h-4 w-32 bg-white/10 rounded" />
                                                     </div>
@@ -392,8 +392,8 @@ export function Messages() {
                                         </div>
                                     ) : messages.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
-                                                <MessageSquare className="w-8 h-8 text-emerald-400" />
+                                            <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4">
+                                                <MessageSquare className="w-8 h-8 text-indigo-400" />
                                             </div>
                                             <h3 className="text-lg font-medium text-white mb-1">Start the conversation</h3>
                                             <p className="text-sm text-zinc-500 max-w-xs">
@@ -419,7 +419,7 @@ export function Messages() {
                                                         <div className={cn(
                                                             "max-w-[70%] p-3 rounded-2xl",
                                                             isMe
-                                                                ? "bg-emerald-500 text-white"
+                                                                ? "bg-indigo-500 text-white"
                                                                 : "bg-white/[0.06] text-zinc-100"
                                                         )}>
                                                             {msg.message_text && (

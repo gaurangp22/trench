@@ -87,7 +87,7 @@ export function WalletOnboardingModal({
                         </button>
 
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center">
                                 <Wallet className="w-6 h-6 text-white" />
                             </div>
                             <div>
@@ -101,12 +101,12 @@ export function WalletOnboardingModal({
                         </div>
 
                         {/* Connected Wallet */}
-                        <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-sm text-emerald-400 font-mono">
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                            <span className="text-sm text-indigo-400 font-mono">
                                 {shortenAddress(walletAddress)}
                             </span>
-                            <Check className="w-4 h-4 text-emerald-400 ml-auto" />
+                            <Check className="w-4 h-4 text-indigo-400 ml-auto" />
                         </div>
                     </div>
 
@@ -126,12 +126,12 @@ export function WalletOnboardingModal({
                                         onClick={() => handleRoleSelect('client')}
                                         className={cn(
                                             "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all cursor-pointer",
-                                            "hover:border-emerald-500/50 hover:bg-emerald-500/5",
+                                            "hover:border-indigo-500/50 hover:bg-indigo-500/5",
                                             "border-white/10 bg-white/[0.02]"
                                         )}
                                     >
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center mb-3">
-                                            <User className="w-7 h-7 text-blue-400" />
+                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center mb-3">
+                                            <User className="w-7 h-7 text-indigo-400" />
                                         </div>
                                         <span className="text-base font-medium text-white">I'm Hiring</span>
                                         <span className="text-xs text-zinc-500 mt-1">Find top talent</span>
@@ -141,12 +141,12 @@ export function WalletOnboardingModal({
                                         onClick={() => handleRoleSelect('freelancer')}
                                         className={cn(
                                             "flex flex-col items-center justify-center p-6 rounded-xl border-2 transition-all cursor-pointer",
-                                            "hover:border-emerald-500/50 hover:bg-emerald-500/5",
+                                            "hover:border-indigo-500/50 hover:bg-indigo-500/5",
                                             "border-white/10 bg-white/[0.02]"
                                         )}
                                     >
-                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center mb-3">
-                                            <Briefcase className="w-7 h-7 text-purple-400" />
+                                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 flex items-center justify-center mb-3">
+                                            <Briefcase className="w-7 h-7 text-violet-400" />
                                         </div>
                                         <span className="text-base font-medium text-white">I'm a Freelancer</span>
                                         <span className="text-xs text-zinc-500 mt-1">Find work</span>
@@ -183,7 +183,7 @@ export function WalletOnboardingModal({
                                                 required
                                                 value={username}
                                                 onChange={(e) => setUsername(e.target.value)}
-                                                className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                                className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                                 placeholder="satoshi"
                                             />
                                         </div>
@@ -201,7 +201,7 @@ export function WalletOnboardingModal({
                                                 required
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                                className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                                 placeholder="you@example.com"
                                             />
                                         </div>
@@ -221,8 +221,8 @@ export function WalletOnboardingModal({
                                     <GradientSlideButton
                                         type="submit"
                                         className="w-full h-12 rounded-xl font-semibold"
-                                        colorFrom="#10B981"
-                                        colorTo="#14F195"
+                                        colorFrom="#6366f1"
+                                        colorTo="#8b5cf6"
                                         disabled={isLoading}
                                     >
                                         {isLoading ? (

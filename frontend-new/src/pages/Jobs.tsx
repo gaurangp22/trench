@@ -6,10 +6,12 @@ import { GradientSlideButton } from "@/components/ui/GradientSlideButton"
 import { fetchJobs } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
-const JOBS = [
+// Offers follow the format: "I need a [Role] for [Mission]"
+const OFFERS = [
     {
         id: 1,
-        title: "Senior Smart Contract Engineer",
+        role: "Smart Contract Engineer",
+        mission: "Build and audit smart contracts for our new AMM protocol",
         company: "DeFi Protocol X",
         clientRating: 4.9,
         clientJobs: 12,
@@ -24,11 +26,11 @@ const JOBS = [
         clientVerified: true,
         experienceLevel: "Expert",
         featured: true,
-        description: "Build and audit smart contracts for our new AMM protocol"
     },
     {
         id: 2,
-        title: "Product Designer (Web3)",
+        role: "Product Designer",
+        mission: "Design the next generation NFT trading experience",
         company: "NFT Marketplace Y",
         clientRating: 4.7,
         clientJobs: 8,
@@ -43,11 +45,11 @@ const JOBS = [
         clientVerified: true,
         experienceLevel: "Intermediate",
         featured: false,
-        description: "Design the next generation NFT trading experience"
     },
     {
         id: 3,
-        title: "Rust Developer",
+        role: "Rust Developer",
+        mission: "Optimize our RPC infrastructure for high throughput",
         company: "Infrastructure DAO",
         clientRating: 5.0,
         clientJobs: 24,
@@ -62,11 +64,11 @@ const JOBS = [
         clientVerified: true,
         experienceLevel: "Expert",
         featured: false,
-        description: "Optimize our RPC infrastructure for high throughput"
     },
     {
         id: 4,
-        title: "Community Manager",
+        role: "Community Manager",
+        mission: "Build and engage our gaming community across platforms",
         company: "GameFi Project Z",
         clientRating: 4.2,
         clientJobs: 3,
@@ -81,11 +83,11 @@ const JOBS = [
         clientVerified: false,
         experienceLevel: "Entry",
         featured: false,
-        description: "Build and engage our gaming community across platforms"
     },
     {
         id: 5,
-        title: "Frontend React Developer",
+        role: "Frontend Developer",
+        mission: "Build responsive interfaces for our lending protocol",
         company: "DeFi Lending Platform",
         clientRating: 4.8,
         clientJobs: 15,
@@ -100,7 +102,25 @@ const JOBS = [
         clientVerified: true,
         experienceLevel: "Intermediate",
         featured: true,
-        description: "Build responsive interfaces for our lending protocol"
+    },
+    {
+        id: 6,
+        role: "Technical Writer",
+        mission: "Create comprehensive documentation for our DeFi protocol",
+        company: "Solana DeFi Labs",
+        clientRating: 4.6,
+        clientJobs: 7,
+        type: "Fixed",
+        location: "Remote",
+        budgetSol: 35,
+        budgetMin: 30,
+        budgetMax: 40,
+        posted: "6h ago",
+        skills: ["Documentation", "Technical Writing", "DeFi"],
+        escrowStatus: "funded",
+        clientVerified: true,
+        experienceLevel: "Intermediate",
+        featured: false,
     }
 ]
 
@@ -152,13 +172,14 @@ export function Jobs() {
     }, [])
 
     useEffect(() => {
-        const loadJobs = async () => {
+        const loadOffers = async () => {
             setLoading(true)
             try {
                 const data = await fetchJobs(searchQuery, category)
-                let mappedJobs = (data.jobs || []).map((job: any) => ({
+                let mappedOffers = (data.jobs || []).map((job: any) => ({
                     id: job.id,
-                    title: job.title,
+                    role: job.title,
+                    mission: job.description?.slice(0, 150) || "Complete this project",
                     company: job.company_name || "Unknown Company",
                     clientRating: 4.5,
                     clientJobs: 5,
@@ -173,28 +194,28 @@ export function Jobs() {
                     clientVerified: true,
                     experienceLevel: "Intermediate",
                     featured: false,
-                    description: job.description?.slice(0, 100) || ""
                 }))
 
-                if (mappedJobs.length === 0) {
-                    mappedJobs = JOBS
+                if (mappedOffers.length === 0) {
+                    mappedOffers = OFFERS
                 }
 
-                let filtered = mappedJobs.filter((job: any) => {
-                    if (searchQuery && !job.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                        !job.company.toLowerCase().includes(searchQuery.toLowerCase())) {
+                let filtered = mappedOffers.filter((offer: any) => {
+                    if (searchQuery && !offer.role.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                        !offer.mission.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                        !offer.company.toLowerCase().includes(searchQuery.toLowerCase())) {
                         return false
                     }
-                    if (job.budgetSol < budgetRange[0] || job.budgetSol > budgetRange[1]) {
+                    if (offer.budgetSol < budgetRange[0] || offer.budgetSol > budgetRange[1]) {
                         return false
                     }
-                    if (experienceLevel !== "all" && job.experienceLevel.toLowerCase() !== experienceLevel) {
+                    if (experienceLevel !== "all" && offer.experienceLevel.toLowerCase() !== experienceLevel) {
                         return false
                     }
-                    if (showVerifiedOnly && !job.clientVerified) {
+                    if (showVerifiedOnly && !offer.clientVerified) {
                         return false
                     }
-                    if (showFundedOnly && job.escrowStatus !== "funded") {
+                    if (showFundedOnly && offer.escrowStatus !== "funded") {
                         return false
                     }
                     return true
@@ -203,15 +224,15 @@ export function Jobs() {
                 setJobs(filtered)
                 setError(null)
             } catch (err) {
-                console.error("Failed to fetch jobs:", err)
-                setError("Unable to connect to backend. Showing demo data.")
-                setJobs(JOBS)
+                console.error("Failed to fetch offers:", err)
+                setError("Unable to connect to backend. Showing demo offers.")
+                setJobs(OFFERS)
             } finally {
                 setLoading(false)
             }
         }
 
-        const debounceTimer = setTimeout(loadJobs, 300)
+        const debounceTimer = setTimeout(loadOffers, 300)
         return () => clearTimeout(debounceTimer)
     }, [searchQuery, category, experienceLevel, budgetRange, showVerifiedOnly, showFundedOnly])
 
@@ -232,7 +253,7 @@ export function Jobs() {
             {/* Hero Header */}
             <section ref={headerRef} className="relative overflow-hidden border-b border-white/[0.04]">
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[150px]" />
+                    <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[150px]" />
                     <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px]" />
                 </div>
 
@@ -243,18 +264,18 @@ export function Jobs() {
                         transition={{ duration: 0.6 }}
                         className="max-w-2xl"
                     >
-                        <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
-                            {jobs.length} Opportunities
+                        <span className="text-sm font-mono text-indigo-400 tracking-wider uppercase mb-4 block">
+                            {jobs.length} Active Offers
                         </span>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
-                            Find your next
+                            Client
                             <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
-                                crypto gig.
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
+                                Offers
                             </span>
                         </h1>
                         <p className="text-lg text-zinc-400 leading-relaxed">
-                            Curated opportunities from top Web3 teams. Paid in crypto, secured by smart contracts.
+                            Browse job offers from verified clients. Each offer describes the role they need and the mission to accomplish.
                         </p>
                     </motion.div>
 
@@ -269,10 +290,10 @@ export function Jobs() {
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
                             <input
                                 type="text"
-                                placeholder="Search jobs, skills, companies..."
+                                placeholder="Search offers, roles, skills..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-white/[0.08] rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all text-lg"
+                                className="w-full h-14 pl-14 pr-6 bg-white/[0.03] border border-white/[0.08] rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-lg"
                             />
                         </div>
                     </motion.div>
@@ -288,7 +309,7 @@ export function Jobs() {
                         <select
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                            className="h-10 pl-4 pr-10 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-emerald-500/50 transition-all"
+                            className="h-10 pl-4 pr-10 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-indigo-500/50 transition-all"
                         >
                             {CATEGORIES.map(cat => (
                                 <option key={cat.value} value={cat.value} className="bg-zinc-900">{cat.label}</option>
@@ -302,7 +323,7 @@ export function Jobs() {
                         <select
                             value={experienceLevel}
                             onChange={(e) => setExperienceLevel(e.target.value)}
-                            className="h-10 pl-4 pr-10 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-emerald-500/50 transition-all"
+                            className="h-10 pl-4 pr-10 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white appearance-none cursor-pointer hover:border-white/20 focus:outline-none focus:border-indigo-500/50 transition-all"
                         >
                             {EXPERIENCE_LEVELS.map(level => (
                                 <option key={level.value} value={level.value} className="bg-zinc-900">{level.label}</option>
@@ -330,7 +351,7 @@ export function Jobs() {
                         className={cn(
                             "h-10 px-4 rounded-xl text-sm font-medium flex items-center gap-2 transition-all",
                             showFundedOnly
-                                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
                                 : "bg-white/[0.03] text-zinc-400 border border-white/[0.08] hover:border-white/20"
                         )}
                     >
@@ -351,7 +372,7 @@ export function Jobs() {
 
                     {/* Results Count */}
                     <div className="ml-auto text-sm text-zinc-500">
-                        {loading ? "Loading..." : `${jobs.length} jobs`}
+                        {loading ? "Loading..." : `${jobs.length} offers`}
                     </div>
                 </div>
 
@@ -375,25 +396,25 @@ export function Jobs() {
                             <div className="w-16 h-16 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-6">
                                 <Briefcase className="w-8 h-8 text-zinc-600" />
                             </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">No jobs match your filters</h3>
+                            <h3 className="text-xl font-semibold text-white mb-2">No offers match your filters</h3>
                             <p className="text-zinc-500 mb-6 max-w-md mx-auto">
-                                Try adjusting your search criteria or removing some filters to see more opportunities.
+                                Try adjusting your search criteria or removing some filters to see more offers.
                             </p>
                             <button
                                 onClick={clearFilters}
-                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all font-medium"
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all font-medium"
                             >
                                 <X className="w-4 h-4" />
                                 Clear all filters
                             </button>
                         </div>
                     ) : (
-                        jobs.map((job, index) => (
-                            <JobCard
-                                key={job.id}
-                                job={job}
+                        jobs.map((offer, index) => (
+                            <OfferCard
+                                key={offer.id}
+                                offer={offer}
                                 index={index}
-                                onClick={() => navigate(`/jobs/${job.id}`)}
+                                onClick={() => navigate(`/offers/${offer.id}`)}
                             />
                         ))
                     )}
@@ -451,7 +472,7 @@ function JobCardSkeleton({ index }: { index: number }) {
     )
 }
 
-function JobCard({ job, index, onClick }: { job: any; index: number; onClick: () => void }) {
+function OfferCard({ offer, index, onClick }: { offer: any; index: number; onClick: () => void }) {
     const ref = useRef<HTMLDivElement>(null)
     const isInView = useInView(ref, { once: true, margin: "-50px" })
 
@@ -465,67 +486,81 @@ function JobCard({ job, index, onClick }: { job: any; index: number; onClick: ()
             className="group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0c] hover:border-white/15 transition-all duration-300 cursor-pointer"
         >
             {/* Featured highlight */}
-            {job.featured && (
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
+            {offer.featured && (
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
             )}
 
             <div className="p-6 md:p-8">
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                     {/* Main Content */}
                     <div className="flex-1 min-w-0">
-                        {/* Header Row */}
-                        <div className="flex items-start gap-3 mb-4">
-                            <h3 className="text-xl font-semibold text-white group-hover:text-emerald-400 transition-colors">
-                                {job.title}
-                            </h3>
-                            {job.featured && (
-                                <span className="shrink-0 px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-500/10 text-emerald-400 uppercase tracking-wider border border-emerald-500/20">
+                        {/* "I need a [Role]" Header */}
+                        <div className="flex items-start gap-3 mb-3">
+                            <div className="flex-1">
+                                <span className="text-sm text-zinc-500 mb-1 block">I need a</span>
+                                <h3 className="text-xl font-semibold text-white group-hover:text-indigo-400 transition-colors">
+                                    {offer.role}
+                                </h3>
+                            </div>
+                            {offer.featured && (
+                                <span className="shrink-0 px-2 py-1 rounded-md text-[10px] font-bold bg-indigo-500/10 text-indigo-400 uppercase tracking-wider border border-indigo-500/20">
                                     Featured
                                 </span>
                             )}
                         </div>
 
+                        {/* "for [Mission]" */}
+                        <div className="mb-4">
+                            <span className="text-sm text-zinc-500">for </span>
+                            <span className="text-base text-zinc-300 leading-relaxed">
+                                {offer.mission}
+                            </span>
+                        </div>
+
                         {/* Company & Meta */}
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-4">
                             <span className="flex items-center gap-1.5">
-                                <span className="font-medium text-zinc-300">{job.company}</span>
-                                {job.clientVerified && (
+                                <span className="font-medium text-zinc-300">{offer.company}</span>
+                                {offer.clientVerified && (
                                     <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
                                 )}
                             </span>
                             <span className="flex items-center gap-1 text-amber-400">
                                 <Star className="w-3.5 h-3.5 fill-current" />
-                                <span>{job.clientRating}</span>
-                                <span className="text-zinc-600">({job.clientJobs})</span>
+                                <span>{offer.clientRating}</span>
+                                <span className="text-zinc-600">({offer.clientJobs})</span>
                             </span>
-                            <span className="text-zinc-600">{job.posted}</span>
+                            <span className="text-zinc-600">{offer.posted}</span>
                         </div>
 
                         {/* Budget & Status */}
                         <div className="flex flex-wrap items-center gap-3 mb-4">
-                            <span className="text-2xl font-bold text-white">
-                                ◎ {job.budgetMin === job.budgetMax ? job.budgetSol : `${job.budgetMin}-${job.budgetMax}`}
-                            </span>
-                            <span className="text-sm text-zinc-500">SOL</span>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-sm text-zinc-500">Budget:</span>
+                                <span className="text-2xl font-bold text-white">
+                                    ◎ {offer.budgetMin === offer.budgetMax ? offer.budgetSol : `${offer.budgetMin}-${offer.budgetMax}`}
+                                </span>
+                                <span className="text-sm text-zinc-500">SOL</span>
+                            </div>
 
                             <span className={cn(
                                 "px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5",
-                                job.escrowStatus === "funded"
-                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                offer.escrowStatus === "funded"
+                                    ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
                                     : "bg-zinc-800/50 text-zinc-500 border border-zinc-700/50"
                             )}>
                                 <Shield className="w-3 h-3" />
-                                {job.escrowStatus === "funded" ? "Escrow Funded" : "Not Funded"}
+                                {offer.escrowStatus === "funded" ? "Escrow Funded" : "Not Funded"}
                             </span>
 
                             <span className="px-3 py-1 rounded-full text-xs font-medium bg-zinc-800/50 text-zinc-400 border border-zinc-700/50">
-                                {job.type}
+                                {offer.type}
                             </span>
                         </div>
 
                         {/* Skills */}
                         <div className="flex flex-wrap gap-2">
-                            {job.skills.map((skill: string) => (
+                            {offer.skills.map((skill: string) => (
                                 <span
                                     key={skill}
                                     className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-zinc-400 group-hover:border-white/10 transition-colors"
@@ -540,15 +575,15 @@ function JobCard({ job, index, onClick }: { job: any; index: number; onClick: ()
                     <div className="flex lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-4 pt-4 lg:pt-0 lg:pl-8 border-t lg:border-t-0 lg:border-l border-white/[0.04]">
                         <GradientSlideButton
                             className="rounded-xl px-6 py-2.5"
-                            colorFrom="#10B981"
-                            colorTo="#14F195"
+                            colorFrom="#6366f1"
+                            colorTo="#8b5cf6"
                             onClick={(e) => {
                                 e.stopPropagation()
                                 onClick()
                             }}
                         >
                             <span className="flex items-center gap-2">
-                                View Details
+                                View Offer
                                 <ArrowUpRight className="w-4 h-4" />
                             </span>
                         </GradientSlideButton>

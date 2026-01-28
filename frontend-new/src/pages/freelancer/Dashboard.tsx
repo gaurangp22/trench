@@ -101,7 +101,7 @@ export function FreelancerDashboard() {
                         icon={DollarSign}
                         label="Total Earnings"
                         value={`${stats.total_earnings?.toFixed(1) || 0} SOL`}
-                        color="emerald"
+                        color="indigo"
                     />
                     <StatCard
                         delay={0.1}
@@ -175,9 +175,9 @@ export function FreelancerDashboard() {
                                                     </h3>
                                                     <p className="text-sm text-zinc-500">{contract.client?.display_name}</p>
                                                 </div>
-                                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                                                    <Shield className="w-3.5 h-3.5 text-emerald-400" />
-                                                    <span className="text-sm font-semibold text-emerald-400">◎ {contract.total_amount}</span>
+                                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+                                                    <Shield className="w-3.5 h-3.5 text-indigo-400" />
+                                                    <span className="text-sm font-semibold text-indigo-400">◎ {contract.total_amount}</span>
                                                 </div>
                                             </div>
 
@@ -238,7 +238,7 @@ export function FreelancerDashboard() {
                                             <div className="flex items-center gap-3">
                                                 <div className={cn(
                                                     "w-2 h-2 rounded-full shrink-0",
-                                                    proposal.status === 'shortlisted' ? "bg-emerald-400" : "bg-zinc-600"
+                                                    proposal.status === 'shortlisted' ? "bg-indigo-400" : "bg-zinc-600"
                                                 )} />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium text-white truncate">
@@ -247,7 +247,7 @@ export function FreelancerDashboard() {
                                                     <div className="flex items-center gap-2 mt-0.5">
                                                         <span className="text-xs text-zinc-500">◎ {proposal.proposed_rate}</span>
                                                         {proposal.status === 'shortlisted' && (
-                                                            <span className="flex items-center gap-1 text-xs text-emerald-400">
+                                                            <span className="flex items-center gap-1 text-xs text-indigo-400">
                                                                 <Eye className="w-3 h-3" />
                                                                 Shortlisted
                                                             </span>
@@ -274,8 +274,8 @@ export function FreelancerDashboard() {
                                     to="/jobs"
                                     className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
                                 >
-                                    <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                                        <Briefcase className="w-4 h-4 text-emerald-400" />
+                                    <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
+                                        <Briefcase className="w-4 h-4 text-indigo-400" />
                                     </div>
                                     <span className="text-sm font-medium text-zinc-300 group-hover:text-white transition-colors">Find Jobs</span>
                                     <ArrowRight className="w-4 h-4 text-zinc-600 ml-auto group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
@@ -319,7 +319,7 @@ export function FreelancerDashboard() {
                                 </p>
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                                        <div className="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center">
                                             <CheckCircle2 className="w-4 h-4 text-white" />
                                         </div>
                                         <span className="text-sm text-zinc-300">Create your account</span>

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
     draft: { label: "Draft", color: "text-zinc-400", bg: "bg-zinc-500/10" },
-    active: { label: "Active", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    active: { label: "Active", color: "text-indigo-400", bg: "bg-indigo-500/10" },
     paused: { label: "Paused", color: "text-amber-400", bg: "bg-amber-500/10" },
     archived: { label: "Archived", color: "text-red-400", bg: "bg-red-500/10" },
 }
@@ -264,7 +264,7 @@ export function MyServices() {
                                         </div>
 
                                         {/* Price */}
-                                        <div className="text-emerald-400 font-semibold mb-4">
+                                        <div className="text-indigo-400 font-semibold mb-4">
                                             Starting at {lowestPrice} SOL
                                         </div>
 
@@ -282,7 +282,7 @@ export function MyServices() {
                                             {service.status === 'draft' && (
                                                 <Button
                                                     onClick={() => handlePublish(service.id)}
-                                                    className="h-9 px-3 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-sm"
+                                                    className="h-9 px-3 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 text-sm"
                                                 >
                                                     <Play className="w-4 h-4" />
                                                 </Button>
@@ -298,7 +298,7 @@ export function MyServices() {
                                             {service.status === 'paused' && (
                                                 <Button
                                                     onClick={() => handlePublish(service.id)}
-                                                    className="h-9 px-3 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-sm"
+                                                    className="h-9 px-3 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 text-sm"
                                                 >
                                                     <Play className="w-4 h-4" />
                                                 </Button>

@@ -35,7 +35,7 @@ const clientSteps = [
         icon: CheckCircle2,
         title: "Approve & Release",
         description: "Review completed milestones and release payment with one click. Funds arrive in the freelancer's wallet instantly.",
-        accent: "#10B981"
+        accent: "#6366f1"
     }
 ]
 
@@ -101,7 +101,7 @@ export function HowItWorks() {
             {/* Hero Section */}
             <section ref={heroRef} className="relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[150px]" />
+                    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[150px]" />
                 </div>
 
                 <div className="container max-w-5xl mx-auto px-6 py-16 relative z-10">
@@ -112,13 +112,13 @@ export function HowItWorks() {
                         className="text-center"
                     >
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8">
-                            <Sparkles className="w-4 h-4 text-emerald-400" />
+                            <Sparkles className="w-4 h-4 text-indigo-400" />
                             <span className="text-sm font-medium text-zinc-300">The Process</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold text-white mb-6 leading-[1.1]">
                             How{" "}
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
                                 TrenchJobs
                             </span>
                             {" "}Works
@@ -209,7 +209,7 @@ export function HowItWorks() {
             <section className="container max-w-5xl mx-auto px-6 py-16">
                 <div className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-gradient-to-br from-[#0c0c10] to-[#080809]">
                     {/* Background glow */}
-                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-600/20 rounded-full blur-[120px]" />
+                    <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/20 rounded-full blur-[120px]" />
                     <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-600/10 rounded-full blur-[100px]" />
 
                     <div className="relative p-10 md:p-16 text-center">
@@ -223,8 +223,8 @@ export function HowItWorks() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <GradientSlideButton
                                 className="h-14 px-8 text-base font-semibold rounded-xl"
-                                colorFrom="#10B981"
-                                colorTo="#14F195"
+                                colorFrom="#6366f1"
+                                colorTo="#8b5cf6"
                                 onClick={() => navigate('/auth')}
                             >
                                 Create Account
@@ -303,8 +303,8 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className="group p-6 rounded-xl border border-white/[0.04] bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.03] transition-all text-center"
         >
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <feature.icon className="w-6 h-6 text-emerald-400" />
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                <feature.icon className="w-6 h-6 text-indigo-400" />
             </div>
 
             <h3 className="text-lg font-semibold text-white mb-2">

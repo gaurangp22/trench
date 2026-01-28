@@ -121,8 +121,8 @@ export function Auth() {
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
                 {/* Background effects */}
                 <div className="absolute inset-0">
-                    <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[150px]" />
-                    <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-teal-600/15 rounded-full blur-[120px]" />
+                    <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[150px]" />
+                    <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-600/15 rounded-full blur-[120px]" />
                 </div>
 
                 {/* Grid pattern */}
@@ -140,7 +140,7 @@ export function Auth() {
                         <h1 className="text-5xl font-heading font-bold text-white mb-6 leading-tight">
                             The future of
                             <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
                                 freelance work
                             </span>
                             <br />
@@ -161,8 +161,8 @@ export function Auth() {
                                     transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
                                     className="flex items-center gap-4"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                        <feature.icon className="w-5 h-5 text-emerald-400" />
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                                        <feature.icon className="w-5 h-5 text-indigo-400" />
                                     </div>
                                     <span className="text-zinc-300 font-medium">{feature.text}</span>
                                 </motion.div>
@@ -222,22 +222,22 @@ export function Auth() {
                     {/* Wallet Connection Option */}
                     <div className="mb-6">
                         {connected && publicKey ? (
-                            <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                                    <Wallet className="w-5 h-5 text-emerald-400" />
+                            <div className="flex items-center gap-3 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                                <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                    <Wallet className="w-5 h-5 text-indigo-400" />
                                 </div>
                                 <div className="flex-1">
                                     <div className="text-sm font-medium text-white">Wallet Connected</div>
-                                    <div className="text-xs text-emerald-400 font-mono">{shortenAddress(publicKey.toString())}</div>
+                                    <div className="text-xs text-indigo-400 font-mono">{shortenAddress(publicKey.toString())}</div>
                                 </div>
-                                <Check className="w-5 h-5 text-emerald-400" />
+                                <Check className="w-5 h-5 text-indigo-400" />
                             </div>
                         ) : (
                             <div>
                                 <button
                                     onClick={handleConnectWallet}
                                     disabled={isWalletConnecting}
-                                    className="w-full flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 hover:border-emerald-500/50 hover:bg-emerald-500/20 transition-all cursor-pointer"
+                                    className="w-full flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-indigo-500/30 hover:border-indigo-500/50 hover:bg-indigo-500/20 transition-all cursor-pointer"
                                 >
                                     {isWalletConnecting ? (
                                         <>
@@ -246,7 +246,7 @@ export function Auth() {
                                         </>
                                     ) : (
                                         <>
-                                            <Wallet className="w-5 h-5 text-emerald-400" />
+                                            <Wallet className="w-5 h-5 text-indigo-400" />
                                             <span className="text-white font-medium">Connect Wallet</span>
                                         </>
                                     )}
@@ -276,13 +276,13 @@ export function Auth() {
                                     className={cn(
                                         "flex flex-col items-center justify-center p-4 rounded-xl border transition-all cursor-pointer",
                                         role === 'client'
-                                            ? "bg-emerald-500/10 border-emerald-500/30 text-white"
+                                            ? "bg-indigo-500/10 border-indigo-500/30 text-white"
                                             : "bg-white/[0.02] border-white/[0.06] text-zinc-500 hover:border-white/15"
                                     )}
                                 >
                                     <User className={cn(
                                         "w-6 h-6 mb-2 transition-colors",
-                                        role === 'client' ? "text-emerald-400" : "text-zinc-500"
+                                        role === 'client' ? "text-indigo-400" : "text-zinc-500"
                                     )} />
                                     <span className="text-sm font-medium">I'm Hiring</span>
                                 </button>
@@ -292,13 +292,13 @@ export function Auth() {
                                     className={cn(
                                         "flex flex-col items-center justify-center p-4 rounded-xl border transition-all cursor-pointer",
                                         role === 'freelancer'
-                                            ? "bg-emerald-500/10 border-emerald-500/30 text-white"
+                                            ? "bg-indigo-500/10 border-indigo-500/30 text-white"
                                             : "bg-white/[0.02] border-white/[0.06] text-zinc-500 hover:border-white/15"
                                     )}
                                 >
                                     <Briefcase className={cn(
                                         "w-6 h-6 mb-2 transition-colors",
-                                        role === 'freelancer' ? "text-emerald-400" : "text-zinc-500"
+                                        role === 'freelancer' ? "text-indigo-400" : "text-zinc-500"
                                     )} />
                                     <span className="text-sm font-medium">I'm a Freelancer</span>
                                 </button>
@@ -319,7 +319,7 @@ export function Auth() {
                                             required
                                             value={username}
                                             onChange={(e) => setUsername(e.target.value)}
-                                            className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                            className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                             placeholder="satoshi"
                                         />
                                     </div>
@@ -338,7 +338,7 @@ export function Auth() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                        className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                         placeholder="you@example.com"
                                     />
                                 </div>
@@ -357,7 +357,7 @@ export function Auth() {
                                             required={!connected || isLogin}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                                            className="w-full h-12 pl-12 pr-4 bg-white/[0.02] border border-white/[0.08] rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -367,7 +367,7 @@ export function Auth() {
                             {/* Wallet signup notice */}
                             {connected && !isLogin && (
                                 <div className="text-xs text-zinc-500 bg-white/[0.02] p-3 rounded-lg border border-white/[0.06]">
-                                    <span className="text-emerald-400">Signing up with wallet.</span> No password needed - your wallet is your authentication.
+                                    <span className="text-indigo-400">Signing up with wallet.</span> No password needed - your wallet is your authentication.
                                 </div>
                             )}
 
@@ -382,8 +382,8 @@ export function Auth() {
                             <GradientSlideButton
                                 type="submit"
                                 className="w-full h-12 rounded-xl font-semibold"
-                                colorFrom="#10B981"
-                                colorTo="#14F195"
+                                colorFrom="#6366f1"
+                                colorTo="#8b5cf6"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (

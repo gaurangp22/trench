@@ -50,16 +50,27 @@ function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<><Navbar /><main><Home /></main><Footer /></>} />
+
+              {/* Offers (formerly Jobs) - Client job postings */}
+              <Route path="/offers" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
+              <Route path="/offers/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
+              {/* Legacy redirects for /jobs */}
               <Route path="/jobs" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
               <Route path="/jobs/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
+
+              {/* Gigs (formerly Services) - Freelancer offerings */}
+              <Route path="/gigs" element={<><Navbar /><main><Services /></main><Footer /></>} />
+              <Route path="/gigs/:serviceId" element={<><Navbar /><main><ServiceDetail /></main><Footer /></>} />
+              {/* Legacy redirects for /services */}
+              <Route path="/services" element={<><Navbar /><main><Services /></main><Footer /></>} />
+              <Route path="/services/:serviceId" element={<><Navbar /><main><ServiceDetail /></main><Footer /></>} />
+
               <Route path="/talent" element={<><Navbar /><main><Talent /></main><Footer /></>} />
               <Route path="/talent/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/freelancer/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/profile/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/how-it-works" element={<><Navbar /><main><HowItWorks /></main><Footer /></>} />
               <Route path="/escrow" element={<><Navbar /><main><Escrow /></main><Footer /></>} />
-              <Route path="/services" element={<><Navbar /><main><Services /></main><Footer /></>} />
-              <Route path="/services/:serviceId" element={<><Navbar /><main><ServiceDetail /></main><Footer /></>} />
               <Route path="/auth/*" element={<Auth />} />
               <Route path="/onboarding" element={
                 <ProtectedRoute>

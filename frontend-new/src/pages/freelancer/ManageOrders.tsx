@@ -15,7 +15,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
     active: { label: "In Progress", color: "text-blue-400", bg: "bg-blue-500/10" },
     delivered: { label: "Delivered", color: "text-purple-400", bg: "bg-purple-500/10" },
     revision_requested: { label: "Revision", color: "text-orange-400", bg: "bg-orange-500/10" },
-    completed: { label: "Completed", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    completed: { label: "Completed", color: "text-indigo-400", bg: "bg-indigo-500/10" },
     cancelled: { label: "Cancelled", color: "text-red-400", bg: "bg-red-500/10" },
     disputed: { label: "Disputed", color: "text-red-400", bg: "bg-red-500/10" },
 }
@@ -239,7 +239,7 @@ export function ManageOrders() {
                                                         <User className="w-3.5 h-3.5" />
                                                         {order.client?.display_name || order.client?.username || 'Client'}
                                                     </span>
-                                                    <span className="text-emerald-400 font-medium">{order.price_sol} SOL</span>
+                                                    <span className="text-indigo-400 font-medium">{order.price_sol} SOL</span>
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="w-3 h-3" />
                                                         {formatDate(order.created_at)}
@@ -258,7 +258,7 @@ export function ManageOrders() {
                                                     <>
                                                         <Button
                                                             onClick={() => handleAccept(order.id)}
-                                                            className="h-9 px-4 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-sm"
+                                                            className="h-9 px-4 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 text-sm"
                                                         >
                                                             <CheckCircle className="w-4 h-4 mr-2" />
                                                             Accept

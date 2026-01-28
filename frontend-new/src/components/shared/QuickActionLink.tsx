@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { LucideIcon } from "lucide-react"
 
-export type QuickActionColor = 'emerald' | 'blue' | 'amber' | 'purple' | 'cyan' | 'rose'
+export type QuickActionColor = 'indigo' | 'blue' | 'amber' | 'purple' | 'cyan' | 'rose'
 
 export interface QuickActionLinkProps {
     href: string
@@ -19,7 +19,7 @@ const colorMap: Record<QuickActionColor, {
     text: string
     hoverBg: string
 }> = {
-    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', hoverBg: 'group-hover:bg-emerald-500/20' },
+    indigo: { bg: 'bg-indigo-500/10', text: 'text-indigo-400', hoverBg: 'group-hover:bg-indigo-500/20' },
     blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', hoverBg: 'group-hover:bg-blue-500/20' },
     amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', hoverBg: 'group-hover:bg-amber-500/20' },
     purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', hoverBg: 'group-hover:bg-purple-500/20' },

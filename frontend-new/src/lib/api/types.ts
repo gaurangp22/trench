@@ -323,6 +323,7 @@ export interface Service {
     title: string
     description: string
     category_id?: number
+    subcategory?: string
 
     // Package tiers
     basic_price_sol?: number

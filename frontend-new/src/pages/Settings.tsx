@@ -38,7 +38,7 @@ export function Settings() {
                 {/* Header */}
                 <div>
                     <h1 className="text-3xl md:text-4xl font-heading font-bold text-white tracking-tight flex items-center gap-3">
-                        <SettingsIcon className="w-8 h-8 text-emerald-400" />
+                        <SettingsIcon className="w-8 h-8 text-indigo-400" />
                         Settings
                     </h1>
                     <p className="text-zinc-400 mt-2">
@@ -101,7 +101,7 @@ function ProfileSettings() {
                     <input
                         type="text"
                         defaultValue={user?.username || ''}
-                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                         placeholder="Your username"
                     />
                 </div>
@@ -111,7 +111,7 @@ function ProfileSettings() {
                     <input
                         type="email"
                         defaultValue={user?.email || ''}
-                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                         placeholder="your@email.com"
                     />
                 </div>
@@ -176,7 +176,7 @@ function NotificationSettings() {
                             onClick={() => toggleNotification(key)}
                             className={cn(
                                 "w-12 h-7 rounded-full relative transition-colors",
-                                notifications[key] ? "bg-emerald-500" : "bg-white/[0.1]"
+                                notifications[key] ? "bg-indigo-500" : "bg-white/[0.1]"
                             )}
                         >
                             <span
@@ -220,7 +220,7 @@ function PrivacySettings() {
                         <select
                             value={visibility}
                             onChange={(e) => setVisibility(e.target.value)}
-                            className="bg-white/[0.05] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                            className="bg-white/[0.05] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500/50"
                         >
                             <option value="public">Public</option>
                             <option value="private">Private</option>
@@ -286,8 +286,8 @@ function WalletSettings() {
                     <div className="p-4 bg-white/[0.02] rounded-xl border border-white/[0.06]">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                    <Wallet className="w-5 h-5 text-emerald-400" />
+                                <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                                    <Wallet className="w-5 h-5 text-indigo-400" />
                                 </div>
                                 <div>
                                     <span className="text-sm font-medium text-white block">Connected Wallet</span>
@@ -297,7 +297,7 @@ function WalletSettings() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="px-2 py-1 text-xs font-medium bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+                                <span className="px-2 py-1 text-xs font-medium bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">
                                     Connected
                                 </span>
                             </div>
@@ -360,7 +360,7 @@ function PreferenceSettings() {
                         onClick={() => setDarkMode(!darkMode)}
                         className={cn(
                             "w-12 h-7 rounded-full relative transition-colors",
-                            darkMode ? "bg-emerald-500" : "bg-white/[0.1]"
+                            darkMode ? "bg-indigo-500" : "bg-white/[0.1]"
                         )}
                     >
                         <span
@@ -385,7 +385,7 @@ function PreferenceSettings() {
                     <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
-                        className="bg-white/[0.05] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                        className="bg-white/[0.05] border border-white/[0.1] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500/50"
                     >
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
