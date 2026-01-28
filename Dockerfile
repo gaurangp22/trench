@@ -1,5 +1,5 @@
 # =============================================================================
-# Multi-stage Dockerfile for TrenchJobs (Backend + Frontend)
+# Multi-stage Dockerfile for TrenchJobs (Backend + Frontend + PostgreSQL)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -38,7 +38,7 @@ COPY frontend-new/ ./
 RUN npm run build
 
 # -----------------------------------------------------------------------------
-# Stage 3: Runtime - Combined Services
+# Stage 3: Runtime - All Services (PostgreSQL + Backend + Frontend)
 # -----------------------------------------------------------------------------
 FROM alpine:3.20
 
@@ -46,17 +46,24 @@ FROM alpine:3.20
 RUN apk add --no-cache \
     nginx \
     supervisor \
+    postgresql16 \
+    postgresql16-contrib \
     ca-certificates \
-    tzdata
+    tzdata \
+    bash
 
 # Create directories
-RUN mkdir -p /app /var/log/supervisor /run/nginx
+RUN mkdir -p /app /var/log/supervisor /run/nginx /run/postgresql /var/lib/postgresql/data && \
+    chown -R postgres:postgres /var/lib/postgresql /run/postgresql
 
 # Copy backend binary
 COPY --from=backend-builder /app/main /app/backend
 
 # Copy frontend build
 COPY --from=frontend-builder /app/dist /usr/share/nginx/html
+
+# Copy database migrations
+COPY backend/migrations/ /docker-entrypoint-initdb.d/
 
 # Copy nginx configuration
 COPY <<'EOF' /etc/nginx/http.d/default.conf
@@ -101,6 +108,49 @@ server {
 }
 EOF
 
+# Copy startup script
+COPY <<'EOF' /app/start.sh
+#!/bin/bash
+set -e
+
+# Initialize PostgreSQL if needed
+if [ ! -f /var/lib/postgresql/data/PG_VERSION ]; then
+    echo "Initializing PostgreSQL database..."
+    su postgres -c "initdb -D /var/lib/postgresql/data"
+
+    # Configure PostgreSQL
+    echo "host all all 0.0.0.0/0 md5" >> /var/lib/postgresql/data/pg_hba.conf
+    echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
+fi
+
+# Start PostgreSQL
+su postgres -c "pg_ctl -D /var/lib/postgresql/data -l /var/log/postgresql.log start"
+
+# Wait for PostgreSQL to be ready
+echo "Waiting for PostgreSQL to start..."
+until su postgres -c "pg_isready" > /dev/null 2>&1; do
+    sleep 1
+done
+
+# Create database and user if they don't exist
+su postgres -c "psql -tc \"SELECT 1 FROM pg_database WHERE datname = 'trenchjob'\" | grep -q 1 || psql -c \"CREATE DATABASE trenchjob;\""
+su postgres -c "psql -c \"ALTER USER postgres PASSWORD 'postgres';\""
+
+# Run migrations
+echo "Running database migrations..."
+for f in /docker-entrypoint-initdb.d/*.sql; do
+    if [ -f "$f" ]; then
+        echo "Running migration: $f"
+        su postgres -c "psql -d trenchjob -f $f" || true
+    fi
+done
+
+echo "Starting supervisord..."
+exec supervisord -c /etc/supervisord.conf
+EOF
+
+RUN chmod +x /app/start.sh
+
 # Copy supervisord configuration
 COPY <<'EOF' /etc/supervisord.conf
 [supervisord]
@@ -112,6 +162,7 @@ user=root
 [program:backend]
 command=/app/backend
 directory=/app
+environment=DB_HOST="127.0.0.1",DB_PORT="5432",DB_USER="postgres",DB_PASSWORD="postgres",DB_NAME="trenchjob",DB_SSLMODE="disable",SERVER_PORT="8080",SERVER_ENV="production",JWT_SECRET="%(ENV_JWT_SECRET)s",JWT_EXPIRE_HOURS="24",SOLANA_RPC_ENDPOINT="https://api.devnet.solana.com",SOLANA_NETWORK="devnet"
 autostart=true
 autorestart=true
 stdout_logfile=/dev/stdout
@@ -129,12 +180,15 @@ stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 EOF
 
-# Expose port 80 (nginx serves both frontend and proxies API)
+# Environment variables (can be overridden at runtime)
+ENV JWT_SECRET=change-me-in-production
+
+# Expose port 80
 EXPOSE 80
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost/api/v1/health || exit 1
 
-# Start supervisord
-CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+# Start all services
+CMD ["/app/start.sh"]
