@@ -3,15 +3,14 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import {
-    Briefcase, Users, CheckCircle2, Shield, MessageSquare,
-    Plus, AlertCircle, ArrowRight, Sparkles,
-    Clock, Zap
+    Briefcase, Users, CheckCircle2, Shield, Eye, MessageSquare,
+    Plus, AlertCircle, ArrowUpRight, ArrowRight, Sparkles,
+    Clock, TrendingUp, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
 import { JobAPI, ContractAPI, type Job, type Contract } from "@/lib/api"
-import { StatCard, DashboardSkeleton } from "@/components/shared"
 
 export function ClientDashboard() {
     const navigate = useNavigate()
@@ -30,7 +29,8 @@ export function ClientDashboard() {
                 JobAPI.getMyJobs(),
                 ContractAPI.list({ role: 'client' })
             ])
-            setJobs(jobsData)
+            const jobsArray = Array.isArray(jobsData) ? jobsData : (jobsData?.jobs || [])
+            setJobs(jobsArray)
             setContracts(contractsData?.contracts || [])
         } catch (error) {
             console.error("Failed to load dashboard data:", error)
@@ -39,7 +39,7 @@ export function ClientDashboard() {
         }
     }
 
-    const activeJobs = jobs.filter(j => j.status === 'open' || j.status === 'in_progress')
+    const activeJobs = jobs.filter(j => j.status === 'open' || j.status === 'active')
     const activeContracts = contracts.filter(c => c.status === 'active')
     const totalProposals = jobs.reduce((sum, job) => sum + (job.proposal_count || 0), 0)
     const escrowBalance = activeContracts.reduce((sum, c) => sum + (c.total_amount || 0), 0)
@@ -50,7 +50,33 @@ export function ClientDashboard() {
     if (isLoading) {
         return (
             <DashboardLayout role="client">
-                <DashboardSkeleton />
+                <div className="space-y-8">
+                    {/* Header Skeleton */}
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-3">
+                            <div className="h-4 w-24 bg-white/[0.03] rounded animate-pulse" />
+                            <div className="h-10 w-72 bg-white/[0.05] rounded-lg animate-pulse" />
+                        </div>
+                        <div className="h-12 w-36 bg-white/[0.05] rounded-xl animate-pulse" />
+                    </div>
+
+                    {/* Stats Skeleton */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[...Array(4)].map((_, i) => (
+                            <div key={i} className="h-32 bg-white/[0.02] rounded-2xl border border-white/[0.04] animate-pulse" />
+                        ))}
+                    </div>
+
+                    {/* Content Skeleton */}
+                    <div className="grid lg:grid-cols-5 gap-6">
+                        <div className="lg:col-span-3 space-y-4">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="h-28 bg-white/[0.02] rounded-2xl border border-white/[0.04] animate-pulse" />
+                            ))}
+                        </div>
+                        <div className="lg:col-span-2 h-80 bg-white/[0.02] rounded-2xl border border-white/[0.04] animate-pulse" />
+                    </div>
+                </div>
             </DashboardLayout>
         )
     }
@@ -87,7 +113,7 @@ export function ClientDashboard() {
                         label="In Escrow"
                         value={`${escrowBalance.toFixed(1)} SOL`}
                         trend="Secured funds"
-                        color="indigo"
+                        color="emerald"
                     />
                     <StatCard
                         delay={0.05}
@@ -145,7 +171,7 @@ export function ClientDashboard() {
                                             className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 text-sm text-white transition-all"
                                         >
                                             <span className="truncate max-w-[200px]">{milestone.title}</span>
-                                            <span className="text-indigo-400 font-medium">◎{milestone.amount}</span>
+                                            <span className="text-emerald-400 font-medium">◎{milestone.amount}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -228,7 +254,7 @@ export function ClientDashboard() {
                                 <QuickAction href="/client/post-job" icon={Plus} label="Post a New Job" color="indigo" />
                                 <QuickAction href="/client/jobs" icon={Briefcase} label="Manage Jobs" color="blue" />
                                 <QuickAction href="/client/contracts" icon={CheckCircle2} label="View Contracts" color="purple" />
-                                <QuickAction href="/messages" icon={MessageSquare} label="Messages" color="indigo" />
+                                <QuickAction href="/messages" icon={MessageSquare} label="Messages" color="emerald" />
                                 <QuickAction href="/talent" icon={Users} label="Browse Talent" color="amber" />
                             </div>
                         </motion.div>
@@ -272,7 +298,7 @@ export function ClientDashboard() {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm text-zinc-400">Total spent</span>
-                                    <span className="text-sm font-medium text-indigo-400">
+                                    <span className="text-sm font-medium text-emerald-400">
                                         ◎{contracts.filter(c => c.status === 'completed').reduce((sum, c) => sum + (c.total_amount || 0), 0).toFixed(1)}
                                     </span>
                                 </div>
@@ -282,6 +308,63 @@ export function ClientDashboard() {
                 </div>
             </div>
         </DashboardLayout>
+    )
+}
+
+// Stat Card Component
+function StatCard({
+    icon: Icon,
+    label,
+    value,
+    trend,
+    color,
+    delay = 0,
+    highlight = false
+}: {
+    icon: any
+    label: string
+    value: string
+    trend: string
+    color: 'emerald' | 'blue' | 'amber' | 'purple'
+    delay?: number
+    highlight?: boolean
+}) {
+    const colors = {
+        emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', glow: 'shadow-emerald-500/20' },
+        blue: { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', glow: 'shadow-blue-500/20' },
+        amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', glow: 'shadow-amber-500/20' },
+        purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20', glow: 'shadow-purple-500/20' },
+    }
+    const c = colors[color]
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay }}
+            className={cn(
+                "relative overflow-hidden rounded-2xl p-5 transition-all duration-300 group",
+                "bg-white/[0.02] border border-white/[0.06]",
+                "hover:bg-white/[0.04] hover:border-white/[0.1]",
+                highlight && `${c.border} ${c.bg}`
+            )}
+        >
+            <div className={cn(
+                "absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity -translate-y-1/2 translate-x-1/2",
+                c.bg
+            )} />
+
+            <div className="relative">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", c.bg)}>
+                        <Icon className={cn("w-4 h-4", c.text)} />
+                    </div>
+                    <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">{label}</span>
+                </div>
+                <div className="text-2xl font-bold text-white mb-1">{value}</div>
+                <div className="text-xs text-zinc-500">{trend}</div>
+            </div>
+        </motion.div>
     )
 }
 
@@ -302,11 +385,11 @@ function JobCard({ job, delay }: { job: Job; delay: number }) {
                     <div className="flex items-center gap-2 mb-2">
                         <span className={cn(
                             "px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider",
-                            job.status === 'open' ? "bg-indigo-500/20 text-indigo-400" :
-                            job.status === 'in_progress' ? "bg-blue-500/20 text-blue-400" :
+                            job.status === 'open' ? "bg-emerald-500/20 text-emerald-400" :
+                            job.status === 'active' ? "bg-blue-500/20 text-blue-400" :
                             "bg-zinc-500/20 text-zinc-400"
                         )}>
-                            {job.status === 'in_progress' ? 'In Progress' : job.status}
+                            {job.status}
                         </span>
                         <span className="text-xs text-zinc-500">
                             <Clock className="w-3 h-3 inline mr-1" />
@@ -318,7 +401,7 @@ function JobCard({ job, delay }: { job: Job; delay: number }) {
                     </h3>
                     <div className="flex items-center gap-3 text-sm">
                         <span className="text-zinc-400">{job.budget_type === 'fixed' ? 'Fixed' : 'Hourly'}</span>
-                        <span className="text-indigo-400 font-medium">◎{job.budget}</span>
+                        <span className="text-emerald-400 font-medium">◎{job.budget}</span>
                     </div>
                 </div>
                 <div className="text-right shrink-0">
@@ -356,7 +439,7 @@ function ContractCard({ contract, delay }: { contract: Contract; delay: number }
                     </h3>
                     <span className="text-sm text-zinc-400">{contract.freelancer?.display_name}</span>
                 </div>
-                <span className="text-sm font-semibold text-indigo-400">◎{contract.total_amount}</span>
+                <span className="text-sm font-semibold text-emerald-400">◎{contract.total_amount}</span>
             </div>
 
             <div className="space-y-2">
@@ -381,8 +464,8 @@ function QuickAction({ href, icon: Icon, label, color }: { href: string; icon: a
         indigo: 'group-hover:bg-indigo-500 group-hover:text-white group-hover:border-indigo-500',
         blue: 'group-hover:bg-blue-500 group-hover:text-white group-hover:border-blue-500',
         purple: 'group-hover:bg-purple-500 group-hover:text-white group-hover:border-purple-500',
+        emerald: 'group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500',
         amber: 'group-hover:bg-amber-500 group-hover:text-white group-hover:border-amber-500',
-        cyan: 'group-hover:bg-cyan-500 group-hover:text-white group-hover:border-cyan-500',
     }
 
     return (

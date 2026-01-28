@@ -73,7 +73,7 @@ export function FreelancerContractDetail() {
             case 'pending': return 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
             case 'in_progress': return 'bg-blue-500/10 text-blue-400 border-blue-500/20'
             case 'submitted': return 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-            case 'approved': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+            case 'approved': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
             case 'revision_requested': return 'bg-red-500/10 text-red-400 border-red-500/20'
             default: return 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'
         }
@@ -139,7 +139,7 @@ export function FreelancerContractDetail() {
                         <div className="flex items-center gap-4 text-sm text-zinc-400">
                             <span className={cn(
                                 "px-2 py-0.5 rounded text-xs font-medium border",
-                                contract.status === 'active' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20" :
+                                contract.status === 'active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                                 contract.status === 'completed' ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
                                 "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
                             )}>
@@ -197,7 +197,7 @@ export function FreelancerContractDetail() {
                                             <div className={cn(
                                                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
                                                 milestone.status === 'approved'
-                                                    ? "bg-indigo-500 text-white"
+                                                    ? "bg-emerald-500 text-white"
                                                     : milestone.status === 'submitted'
                                                     ? "bg-amber-500 text-black"
                                                     : milestone.status === 'in_progress'
@@ -288,15 +288,15 @@ export function FreelancerContractDetail() {
                             </div>
                             <div className="flex items-center justify-between py-3 border-b border-white/5">
                                 <span className="text-zinc-400">Earned</span>
-                                <span className="font-bold text-indigo-400">◎ {getEarned()}</span>
+                                <span className="font-bold text-emerald-400">◎ {getEarned()}</span>
                             </div>
                             <div className="flex items-center justify-between py-3">
                                 <span className="text-zinc-400">Pending</span>
                                 <span className="font-bold text-white">◎ {getPending()}</span>
                             </div>
                             {contract.escrow_address && (
-                                <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
-                                    <div className="flex items-center gap-2 text-indigo-400 text-sm font-medium">
+                                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                                    <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium">
                                         <Shield className="w-4 h-4" />
                                         Escrow Protected
                                     </div>

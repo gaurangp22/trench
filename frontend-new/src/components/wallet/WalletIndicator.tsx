@@ -50,7 +50,7 @@ export function WalletIndicator({ onClick, className }: WalletIndicatorProps) {
             onClick={onClick}
             className={cn(
                 "flex items-center gap-2 px-3 py-1.5 rounded-lg",
-                "bg-gradient-to-r from-green-500/10 to-indigo-500/10",
+                "bg-gradient-to-r from-green-500/10 to-emerald-500/10",
                 "border border-green-500/20 hover:border-green-500/40",
                 "transition-all duration-200 group",
                 className

@@ -19,9 +19,7 @@ import {
     Check,
     User,
     Shield,
-    Zap,
-    Package,
-    ShoppingBag
+    Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { useAuth } from "@/context/AuthContext"
@@ -38,8 +36,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
     const [copied, setCopied] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
-    const { user, logout, switchRole, enableRole } = useAuth()
-    const [isEnablingRole, setIsEnablingRole] = useState(false)
+    const { user, logout } = useAuth()
     const { publicKey, connected } = useWallet()
 
     // Close mobile menu on route change
@@ -51,28 +48,6 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
         logout()
         navigate('/')
     }
-
-    const handleSwitchRole = (newRole: 'client' | 'freelancer') => {
-        switchRole(newRole)
-        navigate(newRole === 'client' ? '/client/dashboard' : '/freelancer/dashboard')
-    }
-
-    const handleEnableRole = async () => {
-        const roleToEnable = user?.is_client ? 'freelancer' : 'client'
-        setIsEnablingRole(true)
-        try {
-            await enableRole(roleToEnable)
-            // Navigate to the newly enabled role's dashboard
-            navigate(roleToEnable === 'client' ? '/client/dashboard' : '/freelancer/dashboard')
-        } catch (error) {
-            console.error('Failed to enable role:', error)
-        } finally {
-            setIsEnablingRole(false)
-        }
-    }
-
-    // Check if user has both roles
-    const hasBothRoles = user?.is_client && user?.is_freelancer
 
     const copyWalletAddress = () => {
         if (publicKey) {
@@ -88,19 +63,16 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
 
     // Navigation with color coding
     const clientLinks = [
-        { name: "Overview", href: "/client/dashboard", icon: LayoutDashboard, color: "indigo" },
+        { name: "Overview", href: "/client/dashboard", icon: LayoutDashboard, color: "emerald" },
         { name: "Post a Job", href: "/client/post-job", icon: PlusCircle, color: "blue" },
         { name: "My Jobs", href: "/client/jobs", icon: Briefcase, color: "amber" },
-        { name: "My Orders", href: "/client/orders", icon: ShoppingBag, color: "pink" },
         { name: "Contracts", href: "/client/contracts", icon: FileText, color: "purple" },
         { name: "Messages", href: "/messages", icon: MessageSquare, color: "cyan" },
         { name: "Settings", href: "/settings", icon: Settings, color: "zinc" },
     ]
 
     const freelancerLinks = [
-        { name: "Overview", href: "/freelancer/dashboard", icon: LayoutDashboard, color: "indigo" },
-        { name: "My Services", href: "/freelancer/services", icon: Package, color: "pink" },
-        { name: "Manage Orders", href: "/freelancer/orders", icon: ShoppingBag, color: "amber" },
+        { name: "Overview", href: "/freelancer/dashboard", icon: LayoutDashboard, color: "emerald" },
         { name: "My Proposals", href: "/freelancer/proposals", icon: Briefcase, color: "blue" },
         { name: "Active Contracts", href: "/freelancer/contracts", icon: Wallet, color: "purple" },
         { name: "Messages", href: "/messages", icon: MessageSquare, color: "cyan" },
@@ -110,7 +82,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
     const links = role === 'client' ? clientLinks : freelancerLinks
 
     const colorClasses: Record<string, { active: string, icon: string, indicator: string }> = {
-        indigo: { active: "text-indigo-400", icon: "text-indigo-400", indicator: "bg-indigo-500" },
+        emerald: { active: "text-emerald-400", icon: "text-emerald-400", indicator: "bg-emerald-500" },
         blue: { active: "text-blue-400", icon: "text-blue-400", indicator: "bg-blue-500" },
         amber: { active: "text-amber-400", icon: "text-amber-400", indicator: "bg-amber-500" },
         purple: { active: "text-purple-400", icon: "text-purple-400", indicator: "bg-purple-500" },
@@ -124,8 +96,8 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
             {/* Logo */}
             <div className="flex items-center justify-between p-6 mb-2">
                 <Link to="/" className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 rounded-xl flex items-center justify-center border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors">
-                        <Zap className="w-5 h-5 text-indigo-400" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-xl flex items-center justify-center border border-emerald-500/20 group-hover:border-emerald-500/40 transition-colors">
+                        <Zap className="w-5 h-5 text-emerald-400" />
                     </div>
                     {isSidebarOpen && (
                         <span className="font-heading font-bold text-white text-xl tracking-tight">TrenchJobs</span>
@@ -149,11 +121,11 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                     <div className={cn("flex items-center gap-3", !isSidebarOpen && "justify-center")}>
                         {/* Avatar */}
                         <div className="relative shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500/30 to-cyan-500/30 flex items-center justify-center border border-white/10">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 flex items-center justify-center border border-white/10">
                                 <User className="w-5 h-5 text-white/70" />
                             </div>
                             {connected && (
-                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-indigo-500 rounded-full border-2 border-[#0a0a0c]" />
+                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0a0a0c]" />
                             )}
                         </div>
 
@@ -167,7 +139,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                                         "px-1.5 py-0.5 text-[10px] font-bold uppercase rounded",
                                         role === 'client'
                                             ? "bg-blue-500/20 text-blue-400"
-                                            : "bg-indigo-500/20 text-indigo-400"
+                                            : "bg-emerald-500/20 text-emerald-400"
                                     )}>
                                         {role}
                                     </span>
@@ -180,7 +152,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                                         <Wallet className="w-3 h-3" />
                                         <span>{truncateAddress(publicKey.toBase58())}</span>
                                         {copied ? (
-                                            <Check className="w-3 h-3 text-indigo-400" />
+                                            <Check className="w-3 h-3 text-emerald-400" />
                                         ) : (
                                             <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         )}
@@ -189,50 +161,6 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                             </div>
                         )}
                     </div>
-
-                    {/* Role Switcher - Show only if user has both roles */}
-                    {hasBothRoles && isSidebarOpen && (
-                        <div className="mt-3 pt-3 border-t border-white/[0.06]">
-                            <div className="flex items-center gap-2 p-1 bg-white/[0.02] rounded-lg">
-                                <button
-                                    onClick={() => handleSwitchRole('client')}
-                                    className={cn(
-                                        "flex-1 py-1.5 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
-                                        role === 'client'
-                                            ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                                            : "text-zinc-500 hover:text-zinc-300"
-                                    )}
-                                >
-                                    <Briefcase className="w-3 h-3" />
-                                    Client
-                                </button>
-                                <button
-                                    onClick={() => handleSwitchRole('freelancer')}
-                                    className={cn(
-                                        "flex-1 py-1.5 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
-                                        role === 'freelancer'
-                                            ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
-                                            : "text-zinc-500 hover:text-zinc-300"
-                                    )}
-                                >
-                                    <User className="w-3 h-3" />
-                                    Freelancer
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Enable Other Role - Show only if user has single role */}
-                    {!hasBothRoles && isSidebarOpen && (
-                        <button
-                            onClick={handleEnableRole}
-                            disabled={isEnablingRole}
-                            className="mt-3 w-full py-2 text-xs text-zinc-500 hover:text-zinc-300 border border-dashed border-white/10 rounded-lg hover:border-white/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
-                        >
-                            <PlusCircle className="w-3 h-3" />
-                            {isEnablingRole ? 'Enabling...' : `Enable ${user?.is_client ? 'Freelancer' : 'Client'} Mode`}
-                        </button>
-                    )}
                 </div>
             </div>
 
@@ -282,14 +210,14 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                     className={cn(
                         "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 group",
                         location.pathname === '/escrow'
-                            ? "text-white bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 border border-indigo-500/20"
+                            ? "text-white bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20"
                             : "text-zinc-500 hover:text-white bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.04]",
                         !isSidebarOpen && "justify-center"
                     )}
                 >
                     <Shield className={cn(
                         "w-5 h-5 shrink-0",
-                        location.pathname === '/escrow' ? "text-indigo-400" : "group-hover:text-indigo-400"
+                        location.pathname === '/escrow' ? "text-emerald-400" : "group-hover:text-emerald-400"
                     )} />
                     {isSidebarOpen && <span>Escrow</span>}
                 </Link>
@@ -316,8 +244,8 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
         <div className="min-h-screen bg-[#020204] flex font-sans text-zinc-300">
             {/* Atmospheric Background Effects */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                {/* Top-left indigo glow */}
-                <div className="absolute -top-[400px] -left-[400px] w-[800px] h-[800px] bg-indigo-500/[0.03] rounded-full blur-[120px]" />
+                {/* Top-left emerald glow */}
+                <div className="absolute -top-[400px] -left-[400px] w-[800px] h-[800px] bg-emerald-500/[0.03] rounded-full blur-[120px]" />
                 {/* Bottom-right purple glow */}
                 <div className="absolute -bottom-[400px] -right-[400px] w-[800px] h-[800px] bg-purple-500/[0.03] rounded-full blur-[120px]" />
                 {/* Center subtle glow */}
@@ -387,8 +315,8 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                             <Menu className="w-6 h-6" />
                         </button>
                         <Link to="/" className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 rounded-lg flex items-center justify-center border border-indigo-500/20">
-                                <Zap className="w-4 h-4 text-indigo-400" />
+                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 rounded-lg flex items-center justify-center border border-emerald-500/20">
+                                <Zap className="w-4 h-4 text-emerald-400" />
                             </div>
                             <span className="font-heading font-semibold text-white">TrenchJobs</span>
                         </Link>
@@ -398,7 +326,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                         <button className="w-9 h-9 rounded-full bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/10 transition-all">
                             <Bell className="w-4 h-4" />
                         </button>
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500/30 to-cyan-500/30 flex items-center justify-center border border-white/10">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 flex items-center justify-center border border-white/10">
                             <User className="w-4 h-4 text-white/70" />
                         </div>
                     </div>
@@ -416,7 +344,7 @@ export function DashboardLayout({ children, role = 'client' }: DashboardLayoutPr
                         {/* Notification Bell */}
                         <button className="relative w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/10 transition-all">
                             <Bell className="w-4 h-4" />
-                            <span className="absolute top-2 right-2 w-2 h-2 bg-indigo-500 rounded-full" />
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full" />
                         </button>
                     </div>
                 </header>

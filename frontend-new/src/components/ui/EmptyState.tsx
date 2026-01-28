@@ -110,14 +110,14 @@ export function EmptyState({
                 {'primaryAction' in config && config.primaryAction && (
                     config.primaryAction.href ? (
                         <Link to={config.primaryAction.href}>
-                            <Button className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white">
+                            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
                                 {config.primaryAction.label}
                             </Button>
                         </Link>
                     ) : (
                         <Button
                             onClick={onPrimaryAction}
-                            className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white"
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white"
                         >
                             {config.primaryAction.label}
                         </Button>

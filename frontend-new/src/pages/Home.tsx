@@ -1,5 +1,4 @@
 import { Hero } from "@/components/ui/Hero"
-import { FeaturedGigs } from "@/components/ui/FeaturedGigs"
 import { SmartEscrow } from "@/components/ui/SmartEscrow"
 import { Categories } from "@/components/ui/Categories"
 import { Features } from "@/components/ui/Features"
@@ -24,7 +23,7 @@ export function Home() {
             if (audienceType === 'client') {
                 navigate('/client/post-job')
             } else {
-                navigate('/offers')
+                navigate('/jobs')
             }
         }
     }
@@ -39,15 +38,15 @@ export function Home() {
             eyebrow: "Live on Solana Mainnet",
             main: "Build your dream",
             highlight: "launch team.",
-            subtitle: "The first professional marketplace powered by on-chain escrow. Post offers, fund securely, release payment when satisfied.",
-            cta: isAuthenticated ? "Post an Offer" : "Get Started"
+            subtitle: "The first professional marketplace powered by on-chain escrow. Post jobs, fund securely, release payment when satisfied.",
+            cta: isAuthenticated ? "Post a Job" : "Get Started"
         },
         freelancer: {
             eyebrow: "Live on Solana Mainnet",
             main: "Get hired.",
             highlight: "Get paid in SOL.",
             subtitle: "Find real work, get paid instantly in SOL. No banks, no delays—just connect your wallet and start earning.",
-            cta: isAuthenticated ? "Browse Offers" : "Get Started"
+            cta: isAuthenticated ? "Browse Jobs" : "Get Started"
         }
     }
 
@@ -78,10 +77,7 @@ export function Home() {
                 }}
             />
 
-            {/* 2. Featured Gigs by Category */}
-            <FeaturedGigs />
-
-            {/* 3. Bento Grid Categories */}
+            {/* 2. Bento Grid Categories */}
             <Categories />
 
             {/* 3. Smart Escrow Section */}

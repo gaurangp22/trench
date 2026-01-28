@@ -14,7 +14,7 @@ export function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isConnecting, setIsConnecting] = useState(false)
     const { connected, publicKey, disconnect } = useWallet()
-    useWalletModal()
+    const { setVisible } = useWalletModal()
     const location = useLocation()
     const navigate = useNavigate()
     const { isAuthenticated, user, logout, loginWithWallet, signupWithWallet, isLoading, needsOnboarding, setNeedsOnboarding } = useAuth()
@@ -54,6 +54,11 @@ export function Navbar() {
         disconnect() // Disconnect wallet if user closes the modal
     }
 
+    const handleConnectWallet = () => {
+        setVisible(true)
+        setIsMobileMenuOpen(false)
+    }
+
     const handleLogout = () => {
         logout()
         setIsMobileMenuOpen(false)
@@ -67,8 +72,8 @@ export function Navbar() {
     if (isDashboardPage) return null
 
     const navLinks = [
-        { to: "/offers", label: "Offers" },
-        { to: "/gigs", label: "Gigs" },
+        { to: "/jobs", label: "Find Work" },
+        { to: "/talent", label: "Find Talent" },
         { to: "/how-it-works", label: "How It Works" },
     ]
 
@@ -147,9 +152,9 @@ export function Navbar() {
                                     {/* Sign Up */}
                                     <Link to="/auth?mode=signup">
                                         <GradientSlideButton
-                                            className="h-9 px-5 text-[13px] font-semibold rounded-full shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 transition-shadow cursor-pointer"
-                                            colorFrom="#6366f1"
-                                            colorTo="#8b5cf6"
+                                            className="h-9 px-5 text-[13px] font-semibold rounded-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-shadow cursor-pointer"
+                                            colorFrom="#10B981"
+                                            colorTo="#14F195"
                                         >
                                             Sign Up
                                             <ChevronRight className="w-3.5 h-3.5 ml-1" />
@@ -216,7 +221,7 @@ export function Navbar() {
                                     <div className="space-y-3">
                                         {/* User Info Card */}
                                         <div className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center">
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
                                                 <User className="w-6 h-6 text-white" />
                                             </div>
                                             <div>
@@ -236,13 +241,13 @@ export function Navbar() {
                                                 <span className="text-xs font-mono text-zinc-400">
                                                     {shortenAddress(publicKey.toString())}
                                                 </span>
-                                                <span className="ml-auto w-2 h-2 rounded-full bg-indigo-400" />
+                                                <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400" />
                                             </div>
                                         )}
 
                                         <div className="grid grid-cols-2 gap-3">
                                             <Link to={dashboardPath} onClick={() => setIsMobileMenuOpen(false)}>
-                                                <button className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-gradient-to-r from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 rounded-xl hover:border-indigo-500/50 transition-colors cursor-pointer">
+                                                <button className="w-full h-12 flex items-center justify-center gap-2 text-[15px] font-medium text-white bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 rounded-xl hover:border-emerald-500/50 transition-colors cursor-pointer">
                                                     <LayoutDashboard className="w-4 h-4" />
                                                     Dashboard
                                                 </button>
@@ -260,9 +265,9 @@ export function Navbar() {
                                     <div className="space-y-3">
                                         <Link to="/auth?mode=signup" onClick={() => setIsMobileMenuOpen(false)} className="block">
                                             <GradientSlideButton
-                                                className="w-full h-14 text-[16px] font-semibold rounded-xl shadow-lg shadow-indigo-500/20 cursor-pointer"
-                                                colorFrom="#6366f1"
-                                                colorTo="#8b5cf6"
+                                                className="w-full h-14 text-[16px] font-semibold rounded-xl shadow-lg shadow-emerald-500/20 cursor-pointer"
+                                                colorFrom="#10B981"
+                                                colorTo="#14F195"
                                             >
                                                 Sign Up
                                                 <ChevronRight className="w-4 h-4 ml-2" />

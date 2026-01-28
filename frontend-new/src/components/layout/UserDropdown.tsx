@@ -29,8 +29,9 @@ export function UserDropdown({ onClose }: UserDropdownProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const { user, profile, logout } = useAuth();
-    const { publicKey } = useWallet();
+    const { publicKey, disconnect } = useWallet();
 
+    const dashboardPath = user?.role === 'client' ? '/client/dashboard' : '/freelancer/dashboard';
     const profilePath = user?.role === 'freelancer' ? '/freelancer/profile' : '/client/profile';
 
     // Close dropdown when clicking outside
@@ -99,12 +100,12 @@ export function UserDropdown({ onClose }: UserDropdownProps) {
                             className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10"
                         />
                     ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center ring-2 ring-white/10">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center ring-2 ring-white/10">
                             <User className="w-4 h-4 text-white" />
                         </div>
                     )}
                     {/* Online indicator */}
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-indigo-400 rounded-full border-2 border-[#0a0a0c]" />
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-[#0a0a0c]" />
                 </div>
 
                 {/* Name & Role */}
@@ -143,7 +144,7 @@ export function UserDropdown({ onClose }: UserDropdownProps) {
                                         className="w-12 h-12 rounded-full object-cover ring-2 ring-white/10"
                                     />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
                                         <User className="w-6 h-6 text-white" />
                                     </div>
                                 )}
@@ -154,9 +155,9 @@ export function UserDropdown({ onClose }: UserDropdownProps) {
                                     <div className="text-xs text-zinc-500 truncate">
                                         {user?.email || "No email"}
                                     </div>
-                                    <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                                        <span className="text-[10px] font-medium text-indigo-400 uppercase tracking-wider">
+                                    <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                        <span className="text-[10px] font-medium text-emerald-400 uppercase tracking-wider">
                                             {user?.role}
                                         </span>
                                     </div>
@@ -176,7 +177,7 @@ export function UserDropdown({ onClose }: UserDropdownProps) {
                                         title="Copy address"
                                     >
                                         {copied ? (
-                                            <Check className="w-3.5 h-3.5 text-indigo-400" />
+                                            <Check className="w-3.5 h-3.5 text-emerald-400" />
                                         ) : (
                                             <Copy className="w-3.5 h-3.5 text-zinc-500" />
                                         )}

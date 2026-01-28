@@ -29,7 +29,7 @@ const clientSteps = [
         title: "Approve & Pay",
         description: "Review deliverables at each milestone. Approve work and release payment instantly—funds arrive in seconds, not days.",
         Icon: CheckCircle,
-        accent: "#6366f1",
+        accent: "#10B981",
         visual: "release"
     }
 ];
@@ -82,13 +82,13 @@ export function Features() {
                     viewport={{ once: true }}
                     className="text-center mb-20"
                 >
-                    <span className="text-sm font-mono text-indigo-400 tracking-wider uppercase mb-4 block">
+                    <span className="text-sm font-mono text-emerald-400 tracking-wider uppercase mb-4 block">
                         The Process
                     </span>
                     <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6">
                         Four steps to
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-400">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400">
                             trustless work.
                         </span>
                     </h2>

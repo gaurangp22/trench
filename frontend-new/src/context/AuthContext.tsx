@@ -7,11 +7,7 @@ interface AuthUser extends User {
     username?: string;
     avatar_url?: string;
     display_name?: string;
-    is_client?: boolean;
-    is_freelancer?: boolean;
 }
-
-const ACTIVE_ROLE_KEY = 'trenchjob_active_role';
 
 interface AuthContextType {
     user: AuthUser | null;
@@ -26,10 +22,6 @@ interface AuthContextType {
     needsOnboarding: boolean;
     setNeedsOnboarding: (value: boolean) => void;
     refreshProfile: () => Promise<void>;
-    // Role switching
-    switchRole: (role: 'client' | 'freelancer') => void;
-    enableRole: (role: 'client' | 'freelancer') => Promise<void>;
-    canSwitchTo: (role: 'client' | 'freelancer') => boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -45,9 +37,6 @@ const AuthContext = createContext<AuthContextType>({
     needsOnboarding: false,
     setNeedsOnboarding: () => { },
     refreshProfile: async () => { },
-    switchRole: () => { },
-    enableRole: async () => { },
-    canSwitchTo: () => false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -64,15 +53,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkAuth();
     }, []);
 
-    // Helper to determine active role from stored preference and available roles
-    const determineActiveRole = (isClient: boolean, isFreelancer: boolean): 'client' | 'freelancer' => {
-        const stored = localStorage.getItem(ACTIVE_ROLE_KEY);
-        if (stored === 'client' && isClient) return 'client';
-        if (stored === 'freelancer' && isFreelancer) return 'freelancer';
-        // Default: prefer the role they have, or freelancer if both
-        return isFreelancer ? 'freelancer' : 'client';
-    };
-
     const checkAuth = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -87,31 +67,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Extract user and profile from response
             if (userData.profile) {
                 setProfile(userData.profile);
-                // Get role flags from backend
-                const isClient = userData.user?.is_client ?? false;
-                const isFreelancer = userData.user?.is_freelancer ?? (userData.profile.professional_title ? true : false);
-                const role = determineActiveRole(isClient, isFreelancer);
+                // Determine role from backend flags or profile data
+                const role: 'client' | 'freelancer' = userData.user?.is_freelancer ? 'freelancer' :
+                    (userData.user?.is_client ? 'client' :
+                        (userData.profile.professional_title ? 'freelancer' : 'client'));
                 setUser({
                     id: userData.user?.id || userData.profile.user_id,
                     email: userData.user?.email || '',
                     role: role,
-                    is_client: isClient,
-                    is_freelancer: isFreelancer,
                     username: userData.user?.username,
                     avatar_url: userData.profile.avatar_url,
                     display_name: userData.profile.display_name
                 });
             } else if (userData.user) {
                 // User exists but no profile yet - still authenticated
-                const isClient = userData.user.is_client ?? false;
-                const isFreelancer = userData.user.is_freelancer ?? false;
-                const role = determineActiveRole(isClient, isFreelancer);
+                const role: 'client' | 'freelancer' = userData.user.is_freelancer ? 'freelancer' : 'client';
                 setUser({
                     id: userData.user.id,
                     email: userData.user.email || '',
                     role: role,
-                    is_client: isClient,
-                    is_freelancer: isFreelancer,
                     username: userData.user.username
                 });
             }
@@ -131,15 +105,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     console.log("Profile not found - extracting user from token");
                     try {
                         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
-                        const isClient = tokenPayload.is_client ?? false;
-                        const isFreelancer = tokenPayload.is_freelancer ?? false;
-                        const role = determineActiveRole(isClient, isFreelancer);
+                        const role: 'client' | 'freelancer' = tokenPayload.is_freelancer ? 'freelancer' : 'client';
                         setUser({
                             id: tokenPayload.user_id || tokenPayload.sub,
                             email: tokenPayload.email || '',
                             role: role,
-                            is_client: isClient,
-                            is_freelancer: isFreelancer,
                             username: tokenPayload.username
                         });
                     } catch (decodeErr) {
@@ -161,16 +131,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Token is already stored by AuthAPI.login
 
             if (response.user) {
-                // Backend returns is_client/is_freelancer booleans
-                const isClient = response.user.is_client ?? false;
-                const isFreelancer = response.user.is_freelancer ?? false;
-                const role = determineActiveRole(isClient, isFreelancer);
+                // Backend returns is_client/is_freelancer booleans, convert to role string
+                const role: 'client' | 'freelancer' = response.user.is_freelancer ? 'freelancer' : 'client';
                 setUser({
                     id: response.user.id,
                     email: response.user.email,
                     role: role,
-                    is_client: isClient,
-                    is_freelancer: isFreelancer,
                     username: response.user.username
                 });
             }
@@ -189,18 +155,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             // Token is already stored by AuthAPI.signup
 
             if (response.user) {
-                // Backend returns is_client/is_freelancer booleans
-                const isClient = response.user.is_client ?? (role === 'client');
-                const isFreelancer = response.user.is_freelancer ?? (role === 'freelancer');
-                const userRole = isFreelancer ? 'freelancer' : 'client';
-                // Store the initial role preference
-                localStorage.setItem(ACTIVE_ROLE_KEY, userRole);
+                // Backend returns is_client/is_freelancer booleans, convert to role string
+                // Fall back to the role we sent if backend doesn't return it
+                const userRole: 'client' | 'freelancer' = response.user.is_freelancer ? 'freelancer' :
+                    (response.user.is_client ? 'client' : role);
                 setUser({
                     id: response.user.id,
                     email: response.user.email,
                     role: userRole,
-                    is_client: isClient,
-                    is_freelancer: isFreelancer,
                     username: response.user.username || username
                 });
             }
@@ -266,16 +228,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const response = await AuthAPI.signup(email, randomPassword, username, role, publicKey.toBase58());
 
             if (response.user) {
-                const isClient = response.user.is_client ?? (role === 'client');
-                const isFreelancer = response.user.is_freelancer ?? (role === 'freelancer');
-                const userRole = isFreelancer ? 'freelancer' : 'client';
-                localStorage.setItem(ACTIVE_ROLE_KEY, userRole);
+                const userRole: 'client' | 'freelancer' = response.user.is_freelancer ? 'freelancer' :
+                    (response.user.is_client ? 'client' : role);
                 setUser({
                     id: response.user.id,
                     email: response.user.email,
                     role: userRole,
-                    is_client: isClient,
-                    is_freelancer: isFreelancer,
                     username: response.user.username || username
                 });
             }
@@ -294,54 +252,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem(ACTIVE_ROLE_KEY);
         setUser(null);
         setProfile(null);
         if (connected) {
             disconnect();
         }
-    };
-
-    const switchRole = (role: 'client' | 'freelancer') => {
-        if (!user) return;
-
-        // Validate user has this role
-        if (role === 'client' && !user.is_client) {
-            console.error('User does not have client role');
-            return;
-        }
-        if (role === 'freelancer' && !user.is_freelancer) {
-            console.error('User does not have freelancer role');
-            return;
-        }
-
-        // Update localStorage
-        localStorage.setItem(ACTIVE_ROLE_KEY, role);
-
-        // Update user state
-        setUser(prev => prev ? { ...prev, role } : null);
-    };
-
-    const enableRole = async (role: 'client' | 'freelancer') => {
-        const response = await AuthAPI.enableRole(role);
-
-        // Update user with new role flags
-        if (response.user) {
-            const isClient = response.user.is_client ?? user?.is_client ?? false;
-            const isFreelancer = response.user.is_freelancer ?? user?.is_freelancer ?? false;
-            localStorage.setItem(ACTIVE_ROLE_KEY, role);
-            setUser(prev => prev ? {
-                ...prev,
-                is_client: isClient,
-                is_freelancer: isFreelancer,
-                role: role
-            } : null);
-        }
-    };
-
-    const canSwitchTo = (role: 'client' | 'freelancer'): boolean => {
-        if (!user) return false;
-        return role === 'client' ? !!user.is_client : !!user.is_freelancer;
     };
 
     const refreshProfile = async () => {
@@ -378,10 +293,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             logout,
             needsOnboarding,
             setNeedsOnboarding,
-            refreshProfile,
-            switchRole,
-            enableRole,
-            canSwitchTo
+            refreshProfile
         }}>
             {children}
         </AuthContext.Provider>

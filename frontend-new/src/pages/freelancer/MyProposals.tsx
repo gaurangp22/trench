@@ -4,8 +4,8 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import { motion } from "framer-motion"
 import {
-    Loader2, Search, MessageSquare, User, FileText,
-    Clock, Eye, X
+    Loader2, ArrowUpRight, Search, MessageSquare, User, FileText,
+    Clock, Briefcase, Eye, X
 } from "lucide-react"
 import { ProposalAPI, type Proposal } from "@/lib/api"
 import { cn } from "@/lib/utils"
@@ -15,8 +15,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }
     submitted: { label: "Submitted", color: "text-amber-400", bg: "bg-amber-500/10" },
     viewed: { label: "Viewed", color: "text-blue-400", bg: "bg-blue-500/10" },
     shortlisted: { label: "Shortlisted", color: "text-purple-400", bg: "bg-purple-500/10" },
-    accepted: { label: "Accepted", color: "text-indigo-400", bg: "bg-indigo-500/10" },
-    hired: { label: "Hired", color: "text-indigo-400", bg: "bg-indigo-500/10" },
+    accepted: { label: "Accepted", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    hired: { label: "Hired", color: "text-emerald-400", bg: "bg-emerald-500/10" },
     rejected: { label: "Rejected", color: "text-red-400", bg: "bg-red-500/10" },
     withdrawn: { label: "Withdrawn", color: "text-zinc-400", bg: "bg-zinc-500/10" },
 }
@@ -217,7 +217,7 @@ export function MyProposals() {
                                                         <User className="w-3.5 h-3.5" />
                                                         {proposal.client}
                                                     </span>
-                                                    <span className="text-indigo-400 font-medium">◎ {proposal.bid}</span>
+                                                    <span className="text-emerald-400 font-medium">◎ {proposal.bid}</span>
                                                     <span className="flex items-center gap-1">
                                                         <Clock className="w-3 h-3" />
                                                         {proposal.sent}
@@ -240,7 +240,7 @@ export function MyProposals() {
                                                 {isActive && (
                                                     <>
                                                         <Link to="/freelancer/contracts">
-                                                            <Button className="h-9 px-4 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 text-sm">
+                                                            <Button className="h-9 px-4 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-sm">
                                                                 <FileText className="w-4 h-4 mr-2" />
                                                                 Contract
                                                             </Button>

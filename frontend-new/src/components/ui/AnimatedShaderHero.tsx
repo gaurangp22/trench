@@ -424,7 +424,7 @@ const AnimatedShaderHero: React.FC<HeroProps> = ({
                     <div className="mb-10 animate-[fadeInDown_0.6s_ease-out]">
                         <div className="flex items-center gap-2.5 px-4 py-2 bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-full">
                             {trustBadge.icon && (
-                                <span className="text-indigo-400">{trustBadge.icon}</span>
+                                <span className="text-emerald-400">{trustBadge.icon}</span>
                             )}
                             <span className="text-[13px] text-zinc-400 font-medium tracking-wide">{trustBadge.text}</span>
                         </div>

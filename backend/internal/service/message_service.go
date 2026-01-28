@@ -80,30 +80,6 @@ type SendMessageRequest struct {
 	MessageType    string    `json:"message_type,omitempty"`
 }
 
-// MessageResponseWithAttachments includes attachment info
-type MessageResponseWithAttachments struct {
-	ID             uuid.UUID             `json:"id"`
-	ConversationID uuid.UUID             `json:"conversation_id"`
-	SenderID       uuid.UUID             `json:"sender_id"`
-	SenderUsername string                `json:"sender_username"`
-	SenderAvatar   *string               `json:"sender_avatar,omitempty"`
-	MessageText    string                `json:"message_text"`
-	MessageType    string                `json:"message_type"`
-	IsEdited       bool                  `json:"is_edited"`
-	Attachments    []AttachmentResponse  `json:"attachments,omitempty"`
-	CreatedAt      time.Time             `json:"created_at"`
-}
-
-// AttachmentResponse represents an attachment in the response
-type AttachmentResponse struct {
-	ID        uuid.UUID `json:"id"`
-	FileName  string    `json:"file_name"`
-	FileURL   string    `json:"file_url"`
-	FileType  *string   `json:"file_type,omitempty"`
-	FileSize  *int64    `json:"file_size,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
 // CreateConversationRequest represents a request to create a conversation
 type CreateConversationRequest struct {
 	ParticipantID uuid.UUID  `json:"participant_id"`
@@ -227,84 +203,6 @@ func (s *MessageService) SendMessage(ctx context.Context, userID uuid.UUID, req 
 	}
 
 	return &resp, nil
-}
-
-// SendMessageWithAttachments sends a message with optional file attachments
-func (s *MessageService) SendMessageWithAttachments(ctx context.Context, userID uuid.UUID, req *SendMessageRequest, attachments []domain.MessageAttachment) (*MessageResponseWithAttachments, error) {
-	if req.MessageText == "" && len(attachments) == 0 {
-		return nil, apperrors.NewBadRequest("message text or attachments required")
-	}
-
-	// Verify conversation exists
-	conv, err := s.conversationRepo.GetByID(ctx, req.ConversationID)
-	if err != nil {
-		return nil, apperrors.NewNotFound("conversation not found")
-	}
-
-	// Verify user is a participant
-	isParticipant, err := s.conversationRepo.IsParticipant(ctx, conv.ID, userID)
-	if err != nil || !isParticipant {
-		return nil, apperrors.NewForbidden("you are not a participant in this conversation")
-	}
-
-	// Create message
-	msgType := req.MessageType
-	if msgType == "" {
-		msgType = domain.MessageTypeText
-	}
-
-	message := &domain.Message{
-		ConversationID: conv.ID,
-		SenderID:       userID,
-		MessageText:    req.MessageText,
-		MessageType:    msgType,
-	}
-
-	if err := s.messageRepo.Create(ctx, message); err != nil {
-		return nil, apperrors.NewInternal(err)
-	}
-
-	// Create attachments
-	var attachmentResponses []AttachmentResponse
-	for _, att := range attachments {
-		att.MessageID = message.ID
-		if err := s.messageRepo.CreateAttachment(ctx, &att); err != nil {
-			// Log but don't fail the message
-			continue
-		}
-		attachmentResponses = append(attachmentResponses, AttachmentResponse{
-			ID:        att.ID,
-			FileName:  att.FileName,
-			FileURL:   att.FileURL,
-			FileType:  att.FileType,
-			FileSize:  att.FileSizeBytes,
-			CreatedAt: att.CreatedAt,
-		})
-	}
-
-	// Build response
-	resp := &MessageResponseWithAttachments{
-		ID:             message.ID,
-		ConversationID: message.ConversationID,
-		SenderID:       message.SenderID,
-		MessageText:    message.MessageText,
-		MessageType:    message.MessageType,
-		IsEdited:       message.IsEdited,
-		Attachments:    attachmentResponses,
-		CreatedAt:      message.CreatedAt,
-	}
-
-	// Enrich with sender info
-	user, err := s.userRepo.GetByID(ctx, userID)
-	if err == nil {
-		resp.SenderUsername = user.Username
-	}
-	profile, err := s.profileRepo.GetByUserID(ctx, userID)
-	if err == nil && profile != nil {
-		resp.SenderAvatar = profile.AvatarURL
-	}
-
-	return resp, nil
 }
 
 // CreateConversation creates a new conversation

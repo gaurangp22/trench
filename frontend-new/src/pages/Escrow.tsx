@@ -79,7 +79,7 @@ export function Escrow() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                         <h1 className="text-3xl md:text-4xl font-heading font-bold text-white tracking-tight flex items-center gap-3">
-                            <Shield className="w-8 h-8 text-indigo-400" />
+                            <Shield className="w-8 h-8 text-emerald-400" />
                             Escrow Dashboard
                         </h1>
                         <p className="text-zinc-400 mt-2">
@@ -89,7 +89,7 @@ export function Escrow() {
                     <div className="flex items-center gap-3">
                         <div className="px-4 py-2 bg-white/[0.02] border border-white/[0.06] rounded-xl">
                             <div className="text-xs text-zinc-500 mb-0.5">Total in Escrow</div>
-                            <div className="text-lg font-bold text-indigo-400">◎ 230 SOL</div>
+                            <div className="text-lg font-bold text-emerald-400">◎ 230 SOL</div>
                         </div>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ export function Escrow() {
                         <div className="bg-[#0a0a0c] border border-white/5 rounded-2xl">
                             <div className="px-6 py-4 border-b border-white/[0.06]">
                                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                                    <Wallet className="w-5 h-5 text-indigo-400" />
+                                    <Wallet className="w-5 h-5 text-emerald-400" />
                                     Your Contracts
                                 </h2>
                             </div>
@@ -112,7 +112,7 @@ export function Escrow() {
                                         className={cn(
                                             "w-full text-left p-4 rounded-xl border transition-all",
                                             selectedEscrow.id === escrow.id
-                                                ? "bg-indigo-500/10 border-indigo-500/30"
+                                                ? "bg-emerald-500/10 border-emerald-500/30"
                                                 : "bg-white/[0.02] border-white/[0.06] hover:border-white/15 hover:bg-white/[0.04]"
                                         )}
                                     >
@@ -138,7 +138,7 @@ export function Escrow() {
                                 <div className="flex items-start justify-between">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <Shield className="w-5 h-5 text-indigo-400" />
+                                            <Shield className="w-5 h-5 text-emerald-400" />
                                             <span className="text-sm text-zinc-400">Escrow Contract</span>
                                         </div>
                                         <h2 className="text-xl font-semibold text-white mb-1">
@@ -175,7 +175,7 @@ export function Escrow() {
                                     <div className="p-4 bg-white/[0.02] rounded-xl border border-white/[0.06]">
                                         <div className="text-xs text-zinc-500 mb-2">Freelancer</div>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
                                                 {selectedEscrow.freelancer.avatar}
                                             </div>
                                             <div>
@@ -200,7 +200,7 @@ export function Escrow() {
                                                 width: `${(getStatusIndex(selectedEscrow.status) / (STATUS_STEPS.length - 1)) * 100}%`
                                             }}
                                             transition={{ duration: 0.8, ease: "easeOut" }}
-                                            className="absolute top-5 left-0 h-1 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                                            className="absolute top-5 left-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
                                         />
 
                                         {/* Steps */}
@@ -227,9 +227,9 @@ export function Escrow() {
                                                             className={cn(
                                                                 "w-10 h-10 rounded-full flex items-center justify-center border-2 z-10",
                                                                 isCompleted
-                                                                    ? "bg-indigo-500 border-indigo-500 shadow-[0_0_15px_-3px_rgba(16,185,129,0.6)]"
+                                                                    ? "bg-emerald-500 border-emerald-500 shadow-[0_0_15px_-3px_rgba(16,185,129,0.6)]"
                                                                     : "bg-zinc-900 border-white/10",
-                                                                isCurrent && "ring-4 ring-indigo-500/20"
+                                                                isCurrent && "ring-4 ring-emerald-500/20"
                                                             )}
                                                         >
                                                             {isCompleted ? (
@@ -265,11 +265,11 @@ export function Escrow() {
                                 </div>
 
                                 {/* What Happens Next */}
-                                <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                                     <div className="flex items-start gap-3">
-                                        <HelpCircle className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+                                        <HelpCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                                         <div>
-                                            <h4 className="text-sm font-medium text-indigo-400 mb-1">What happens next?</h4>
+                                            <h4 className="text-sm font-medium text-emerald-400 mb-1">What happens next?</h4>
                                             <p className="text-sm text-zinc-400">
                                                 {selectedEscrow.status === "funded" && "The freelancer is now beginning work on your project. You'll receive updates as milestones are completed."}
                                                 {selectedEscrow.status === "in_progress" && "Work is underway. Once a milestone is submitted, you'll be able to review and approve it."}
@@ -294,7 +294,7 @@ export function Escrow() {
                                                     <div className="flex items-center gap-3">
                                                         <div className={cn(
                                                             "w-2 h-2 rounded-full",
-                                                            milestone.status === "released" && "bg-indigo-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]",
+                                                            milestone.status === "released" && "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]",
                                                             milestone.status === "in_escrow" && "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]",
                                                             milestone.status === "pending" && "bg-zinc-600"
                                                         )} />
@@ -306,7 +306,7 @@ export function Escrow() {
                                                         </span>
                                                         <span className={cn(
                                                             "text-xs px-2.5 py-1 rounded-lg font-medium",
-                                                            milestone.status === "released" && "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20",
+                                                            milestone.status === "released" && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
                                                             milestone.status === "in_escrow" && "bg-amber-500/10 text-amber-400 border border-amber-500/20",
                                                             milestone.status === "pending" && "bg-white/[0.05] text-zinc-500 border border-white/[0.06]"
                                                         )}>
@@ -352,8 +352,8 @@ function StatusBadge({ status }: { status: EscrowStatus }) {
         funded: { bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20", label: "Funded" },
         in_progress: { bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20", label: "In Progress" },
         submitted: { bg: "bg-purple-500/10", text: "text-purple-400", border: "border-purple-500/20", label: "Submitted" },
-        approved: { bg: "bg-indigo-500/10", text: "text-indigo-400", border: "border-indigo-500/20", label: "Approved" },
-        released: { bg: "bg-indigo-500/10", text: "text-indigo-400", border: "border-indigo-500/20", label: "Released" },
+        approved: { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/20", label: "Approved" },
+        released: { bg: "bg-emerald-500/10", text: "text-emerald-400", border: "border-emerald-500/20", label: "Released" },
         disputed: { bg: "bg-red-500/10", text: "text-red-400", border: "border-red-500/20", label: "Disputed" },
     }
 

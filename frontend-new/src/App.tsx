@@ -13,7 +13,6 @@ import { HowItWorks } from "@/pages/HowItWorks"
 import { Messages } from "@/pages/Messages"
 import { WalletContextProvider } from "@/context/WalletContextProvider"
 import { AuthProvider } from "@/context/AuthContext"
-import { ChatProvider } from "@/context/ChatContext"
 import { PostJob } from "@/pages/client/PostJob"
 import { ManageJobs } from "@/pages/client/ManageJobs"
 import { ClientDashboard } from "@/pages/client/Dashboard"
@@ -28,15 +27,6 @@ import { EditProfile } from "@/pages/freelancer/EditProfile"
 import { EditProfile as ClientEditProfile } from "@/pages/client/EditProfile"
 import { FreelancerProfile } from "@/pages/FreelancerProfile"
 import { Onboarding } from "@/pages/Onboarding"
-import { Services } from "@/pages/Services"
-import { ServiceDetail } from "@/pages/ServiceDetail"
-import { MyServices } from "@/pages/freelancer/MyServices"
-import { CreateService } from "@/pages/freelancer/CreateService"
-import { ManageOrders } from "@/pages/freelancer/ManageOrders"
-import { OrderDetail as FreelancerOrderDetail } from "@/pages/freelancer/OrderDetail"
-import { MyOrders } from "@/pages/client/MyOrders"
-import { OrderDetail as ClientOrderDetail } from "@/pages/client/OrderDetail"
-import { Settings } from "@/pages/Settings"
 
 function App() {
   console.log("App.tsx: Rendering...");
@@ -44,27 +34,13 @@ function App() {
     <Router>
       <WalletContextProvider>
         <AuthProvider>
-          <ChatProvider>
           <ErrorBoundary>
           <div className="min-h-screen bg-background text-foreground font-sans selection:bg-cyan-500/20 selection:text-cyan-200">
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<><Navbar /><main><Home /></main><Footer /></>} />
-
-              {/* Offers (formerly Jobs) - Client job postings */}
-              <Route path="/offers" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
-              <Route path="/offers/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
-              {/* Legacy redirects for /jobs */}
               <Route path="/jobs" element={<><Navbar /><main><Jobs /></main><Footer /></>} />
               <Route path="/jobs/:id" element={<><Navbar /><main><JobDetail /></main><Footer /></>} />
-
-              {/* Gigs (formerly Services) - Freelancer offerings */}
-              <Route path="/gigs" element={<><Navbar /><main><Services /></main><Footer /></>} />
-              <Route path="/gigs/:serviceId" element={<><Navbar /><main><ServiceDetail /></main><Footer /></>} />
-              {/* Legacy redirects for /services */}
-              <Route path="/services" element={<><Navbar /><main><Services /></main><Footer /></>} />
-              <Route path="/services/:serviceId" element={<><Navbar /><main><ServiceDetail /></main><Footer /></>} />
-
               <Route path="/talent" element={<><Navbar /><main><Talent /></main><Footer /></>} />
               <Route path="/talent/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
               <Route path="/freelancer/:id" element={<><Navbar /><main><FreelancerProfile /></main><Footer /></>} />
@@ -82,11 +58,6 @@ function App() {
               <Route path="/messages" element={
                 <ProtectedRoute>
                   <><Navbar /><main><Messages /></main><Footer /></>
-                </ProtectedRoute>
-              } />
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <><Navbar /><main><Settings /></main><Footer /></>
                 </ProtectedRoute>
               } />
 
@@ -126,16 +97,6 @@ function App() {
                   <ClientEditProfile />
                 </ProtectedRoute>
               } />
-              <Route path="/client/orders" element={
-                <ProtectedRoute allowedRoles={['client']}>
-                  <MyOrders />
-                </ProtectedRoute>
-              } />
-              <Route path="/client/orders/:orderId" element={
-                <ProtectedRoute allowedRoles={['client']}>
-                  <ClientOrderDetail />
-                </ProtectedRoute>
-              } />
 
               {/* Freelancer Dashboard Routes - Freelancer only */}
               <Route path="/freelancer/dashboard" element={
@@ -163,30 +124,9 @@ function App() {
                   <EditProfile />
                 </ProtectedRoute>
               } />
-              <Route path="/freelancer/services" element={
-                <ProtectedRoute allowedRoles={['freelancer']}>
-                  <MyServices />
-                </ProtectedRoute>
-              } />
-              <Route path="/freelancer/services/new" element={
-                <ProtectedRoute allowedRoles={['freelancer']}>
-                  <CreateService />
-                </ProtectedRoute>
-              } />
-              <Route path="/freelancer/orders" element={
-                <ProtectedRoute allowedRoles={['freelancer']}>
-                  <ManageOrders />
-                </ProtectedRoute>
-              } />
-              <Route path="/freelancer/orders/:orderId" element={
-                <ProtectedRoute allowedRoles={['freelancer']}>
-                  <FreelancerOrderDetail />
-                </ProtectedRoute>
-              } />
             </Routes>
           </div>
           </ErrorBoundary>
-          </ChatProvider>
         </AuthProvider>
       </WalletContextProvider>
     </Router>

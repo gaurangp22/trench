@@ -168,8 +168,8 @@ export function OnboardingChecklist({ userRole, onDismiss, className }: Onboardi
                             />
                             <defs>
                                 <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stopColor="#6366f1" />
-                                    <stop offset="100%" stopColor="#8b5cf6" />
+                                    <stop offset="0%" stopColor="#a855f7" />
+                                    <stop offset="100%" stopColor="#ec4899" />
                                 </linearGradient>
                             </defs>
                         </svg>
@@ -226,7 +226,7 @@ function StepItem({ step, index, onClick }: { step: ChecklistStep; index: number
             <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
                 step.isComplete
-                    ? "bg-gradient-to-r from-indigo-500 to-violet-500"
+                    ? "bg-gradient-to-r from-purple-500 to-pink-500"
                     : "bg-zinc-700"
             )}>
                 {step.isComplete ? (

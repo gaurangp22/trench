@@ -168,13 +168,10 @@ type MessageRepository interface {
 	Create(ctx context.Context, message *domain.Message) error
 	GetByID(ctx context.Context, id uuid.UUID) (*domain.Message, error)
 	GetByConversationID(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error)
-	GetByConversationIDWithAttachments(ctx context.Context, conversationID uuid.UUID, limit, offset int) ([]domain.Message, int, error)
 	Update(ctx context.Context, message *domain.Message) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	GetLastMessage(ctx context.Context, conversationID uuid.UUID) (*domain.Message, error)
 	GetUnreadCount(ctx context.Context, userID uuid.UUID) (int, error)
-	CreateAttachment(ctx context.Context, attachment *domain.MessageAttachment) error
-	GetAttachmentsByMessageID(ctx context.Context, messageID uuid.UUID) ([]domain.MessageAttachment, error)
 }
 
 // ReviewRepository defines review data access methods
@@ -193,40 +190,4 @@ type NotificationRepository interface {
 	MarkAsRead(ctx context.Context, id uuid.UUID) error
 	MarkAllAsRead(ctx context.Context, userID uuid.UUID) error
 	GetUnreadCount(ctx context.Context, userID uuid.UUID) (int, error)
-}
-
-// ServiceRepository defines service (freelancer gig) data access methods
-type ServiceRepository interface {
-	Create(ctx context.Context, service *domain.Service) error
-	GetByID(ctx context.Context, id uuid.UUID) (*domain.Service, error)
-	GetByFreelancerID(ctx context.Context, freelancerID uuid.UUID, status string, limit, offset int) ([]domain.Service, int, error)
-	Update(ctx context.Context, service *domain.Service) error
-	Delete(ctx context.Context, id uuid.UUID) error
-	Search(ctx context.Context, query string, categoryID *int, skills []int, limit, offset int) ([]domain.Service, int, error)
-	IncrementViews(ctx context.Context, id uuid.UUID) error
-	AddSkills(ctx context.Context, serviceID uuid.UUID, skillIDs []int) error
-	RemoveSkills(ctx context.Context, serviceID uuid.UUID) error
-	GetSkills(ctx context.Context, serviceID uuid.UUID) ([]domain.Skill, error)
-	// FAQ methods
-	AddFAQ(ctx context.Context, faq *domain.ServiceFAQ) error
-	GetFAQs(ctx context.Context, serviceID uuid.UUID) ([]domain.ServiceFAQ, error)
-	UpdateFAQ(ctx context.Context, faq *domain.ServiceFAQ) error
-	DeleteFAQ(ctx context.Context, faqID uuid.UUID) error
-}
-
-// ServiceOrderRepository defines service order data access methods
-type ServiceOrderRepository interface {
-	Create(ctx context.Context, order *domain.ServiceOrder) error
-	GetByID(ctx context.Context, id uuid.UUID) (*domain.ServiceOrder, error)
-	GetByClientID(ctx context.Context, clientID uuid.UUID, status string, limit, offset int) ([]domain.ServiceOrder, int, error)
-	GetByFreelancerID(ctx context.Context, freelancerID uuid.UUID, status string, limit, offset int) ([]domain.ServiceOrder, int, error)
-	GetByServiceID(ctx context.Context, serviceID uuid.UUID, limit, offset int) ([]domain.ServiceOrder, int, error)
-	Update(ctx context.Context, order *domain.ServiceOrder) error
-	// Message methods
-	CreateMessage(ctx context.Context, message *domain.ServiceOrderMessage) error
-	GetMessages(ctx context.Context, orderID uuid.UUID, limit, offset int) ([]domain.ServiceOrderMessage, int, error)
-	// Review methods
-	CreateReview(ctx context.Context, review *domain.ServiceReview) error
-	GetReviewByOrderID(ctx context.Context, orderID uuid.UUID) (*domain.ServiceReview, error)
-	GetReviewsByServiceID(ctx context.Context, serviceID uuid.UUID, limit, offset int) ([]domain.ServiceReview, int, error)
 }

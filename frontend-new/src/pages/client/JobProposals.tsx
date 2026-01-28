@@ -145,7 +145,7 @@ export function JobProposals() {
                     <span>•</span>
                     <span className={cn(
                         "px-2 py-0.5 rounded text-xs font-medium",
-                        job.status === 'open' ? "bg-indigo-500/10 text-indigo-400" : "bg-zinc-500/10 text-zinc-400"
+                        job.status === 'open' ? "bg-emerald-500/10 text-emerald-400" : "bg-zinc-500/10 text-zinc-400"
                     )}>
                         {job.status}
                     </span>
@@ -176,7 +176,7 @@ export function JobProposals() {
                                 )}
                             >
                                 <div className="flex items-start gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white font-bold">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
                                         {proposal.freelancer?.display_name?.[0] || 'F'}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -212,7 +212,7 @@ export function JobProposals() {
                             {/* Freelancer Info */}
                             <div className="flex items-start justify-between mb-6 pb-6 border-b border-white/5">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white text-2xl font-bold">
+                                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold">
                                         {selectedProposal.freelancer?.display_name?.[0] || 'F'}
                                     </div>
                                     <div>
@@ -275,7 +275,7 @@ export function JobProposals() {
                             </div>
 
                             {/* Actions */}
-                            {selectedProposal.status === 'pending' && (
+                            {(selectedProposal.status === 'pending' || selectedProposal.status === 'submitted') && (
                                 <div className="flex items-center gap-3 pt-4 border-t border-white/5">
                                     <GradientSlideButton
                                         onClick={() => openHireModal(selectedProposal)}
@@ -350,8 +350,8 @@ export function JobProposals() {
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-[#0a0a0c] border border-white/10 rounded-2xl p-6 max-w-md w-full">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                                <CheckCircle className="w-6 h-6 text-indigo-400" />
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                <CheckCircle className="w-6 h-6 text-emerald-400" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-white">Hire Freelancer</h3>
@@ -361,7 +361,7 @@ export function JobProposals() {
 
                         <div className="p-4 bg-white/5 rounded-xl mb-6">
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center text-white font-bold">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
                                     {hireProposal.freelancer?.display_name?.[0] || 'F'}
                                 </div>
                                 <div>
@@ -400,7 +400,7 @@ export function JobProposals() {
                                 onClick={handleHire}
                                 disabled={actionLoading === hireProposal.id}
                                 className="flex-1 rounded-xl"
-                                colorFrom="#6366f1"
+                                colorFrom="#10B981"
                                 colorTo="#059669"
                             >
                                 {actionLoading === hireProposal.id ? (

@@ -15,12 +15,12 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    /* Indigo/Purple primary - matching Hero theme */
-    --primary: 239 84% 67%;
+    /* Neon/Vibrant Accents - Hot Pink/Magenta primary */
+    --primary: 322 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Violet/Purple */
-    --secondary: 258 90% 66%;
+    /* Secondary - Cool Blue/Purple */
+    --secondary: 260 100% 60%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 240 3.7% 15.9%;
@@ -34,7 +34,7 @@
 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 239 84% 67%;
+    --ring: 322 100% 50%;
 
     --radius: 1rem;
     /* More rounded premium look */
@@ -420,15 +420,5 @@
 :focus-visible {
   outline: 2px solid rgba(139, 92, 246, 0.5);
   outline-offset: 2px;
-}
-
-/* Hide scrollbar but keep functionality */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
 }
 

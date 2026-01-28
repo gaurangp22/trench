@@ -15,7 +15,7 @@ type FilterType = 'all' | 'pending' | 'active' | 'completed'
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
     pending: { label: "Pending", color: "text-amber-400", bg: "bg-amber-500/10" },
     active: { label: "Active", color: "text-blue-400", bg: "bg-blue-500/10" },
-    completed: { label: "Completed", color: "text-indigo-400", bg: "bg-indigo-500/10" },
+    completed: { label: "Completed", color: "text-emerald-400", bg: "bg-emerald-500/10" },
     disputed: { label: "Disputed", color: "text-red-400", bg: "bg-red-500/10" },
     cancelled: { label: "Cancelled", color: "text-zinc-400", bg: "bg-zinc-500/10" },
 }
@@ -248,7 +248,7 @@ export function ActiveContracts() {
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-white/[0.02] rounded-xl border border-white/[0.04]">
                                             <div>
                                                 <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Total Value</div>
-                                                <div className="text-lg font-semibold text-indigo-400">◎ {contract.total_amount}</div>
+                                                <div className="text-lg font-semibold text-emerald-400">◎ {contract.total_amount}</div>
                                             </div>
                                             <div>
                                                 <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Progress</div>
@@ -265,14 +265,14 @@ export function ActiveContracts() {
                                             <div>
                                                 <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Milestones</div>
                                                 <div className="flex items-center gap-1.5 text-white">
-                                                    <CheckCircle className="w-4 h-4 text-indigo-400" />
+                                                    <CheckCircle className="w-4 h-4 text-emerald-400" />
                                                     <span className="font-semibold">{completedMilestones}</span>
                                                     <span className="text-zinc-500">/ {totalMilestones}</span>
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Payment</div>
-                                                <div className="flex items-center gap-1.5 text-indigo-400">
+                                                <div className="flex items-center gap-1.5 text-emerald-400">
                                                     <Shield className="w-4 h-4" />
                                                     <span className="font-medium">Escrow Protected</span>
                                                 </div>

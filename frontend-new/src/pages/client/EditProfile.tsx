@@ -3,17 +3,27 @@ import { Link } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
 import { Button } from "@/components/ui/Button"
 import {
-    User, Camera, Loader2, Plus, X, ExternalLink, Globe,
-    MapPin, MessageCircle,
+    User, Camera, Save, Loader2, Plus, X, Globe, ExternalLink,
+    Twitter, MessageCircle, MapPin, CheckCircle,
     Coins, Building2, Star, ChevronDown, TrendingUp, Briefcase
 } from "lucide-react"
-import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
+import { ProfileAPI, UploadAPI, ReviewAPI, type ProfileResponse, type ProfileSocial, type TokenWorkItem, type Review } from "@/lib/api"
 import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
-import { SOCIAL_PLATFORMS, CHAIN_OPTIONS } from "@/lib/constants"
-import { formatMarketCap, getDexScreenerUrl, validateImageFile, extractApiError } from "@/lib/utils/index"
-import { SaveButton } from "@/components/shared"
+
+const SOCIAL_PLATFORMS = [
+    { id: 'website', label: 'Website', icon: Globe, placeholder: 'https://yourproject.com' },
+    { id: 'twitter', label: 'Twitter', icon: Twitter, placeholder: 'https://twitter.com/username' },
+    { id: 'telegram', label: 'Telegram', icon: MessageCircle, placeholder: 'https://t.me/username' },
+    { id: 'discord', label: 'Discord', icon: MessageCircle, placeholder: 'username#0000 or server invite' },
+]
+
+const CHAIN_OPTIONS = [
+    { value: 'solana', label: 'Solana' },
+    { value: 'ethereum', label: 'Ethereum' },
+    { value: 'base', label: 'Base' },
+]
 
 export function EditProfile() {
     const { user, profile: authProfile, refreshProfile } = useAuth()
@@ -158,9 +168,14 @@ export function EditProfile() {
         const file = e.target.files?.[0]
         if (!file) return
 
-        const validation = validateImageFile(file)
-        if (!validation.valid) {
-            setError(validation.error || 'Invalid image file')
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        if (!allowedTypes.includes(file.type)) {
+            setError('Please upload a JPG, PNG, GIF, or WebP image')
+            return
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Image must be less than 5MB')
             return
         }
 
@@ -169,8 +184,8 @@ export function EditProfile() {
         try {
             const result = await UploadAPI.uploadFile(file)
             setAvatarUrl(result.url)
-        } catch (err) {
-            setError(extractApiError(err, 'Failed to upload image'))
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to upload image')
         } finally {
             setUploadingAvatar(false)
         }
@@ -234,7 +249,7 @@ export function EditProfile() {
 
             const socialsToSave = Object.entries(socials)
                 .filter(([_, url]) => url.trim() !== '')
-                .map(([platform, url]) => ({ platform: platform as ProfileSocial['platform'], url }))
+                .map(([platform, url]) => ({ platform, url }))
 
             if (socialsToSave.length > 0) {
                 await ProfileAPI.setSocials(socialsToSave)
@@ -246,11 +261,33 @@ export function EditProfile() {
 
             setSaveSuccess(true)
             setTimeout(() => setSaveSuccess(false), 3000)
-        } catch (err) {
-            setError(extractApiError(err, 'Failed to save profile. Please try again.'))
+        } catch (err: any) {
+            console.error("Failed to save profile:", err)
+            console.error("Save error details:", err.response?.data, err.response?.status)
+            const errorMsg = err.response?.data?.message
+                || err.response?.data?.error
+                || err.response?.data?.detail
+                || (err.response?.status === 400 ? "Invalid data. Please check your inputs." : null)
+                || (err.response?.status === 401 ? "Please log in to save your profile." : null)
+                || (err.response?.status === 500 ? "Server error. Please try again later." : null)
+                || "Failed to save profile. Please try again."
+            setError(errorMsg)
         } finally {
             setSaving(false)
         }
+    }
+
+    const formatMarketCap = (value: number | string | undefined) => {
+        if (!value) return 'N/A'
+        const num = typeof value === 'string' ? parseFloat(value) : value
+        if (num >= 1e9) return `$${(num / 1e9).toFixed(1)}B`
+        if (num >= 1e6) return `$${(num / 1e6).toFixed(1)}M`
+        if (num >= 1e3) return `$${(num / 1e3).toFixed(1)}K`
+        return `$${num.toFixed(0)}`
+    }
+
+    const getDexScreenerUrl = (chain: string, contractAddress: string) => {
+        return `https://dexscreener.com/${chain}/${contractAddress}`
     }
 
     const formatDate = (dateStr: string) => {
@@ -266,7 +303,7 @@ export function EditProfile() {
             <DashboardLayout role="client">
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center">
-                        <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mx-auto mb-4" />
+                        <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mx-auto mb-4" />
                         <p className="text-zinc-400">Loading your profile...</p>
                     </div>
                 </div>
@@ -283,12 +320,33 @@ export function EditProfile() {
                     <p className="text-zinc-400 text-lg">Manage your client profile and showcase your projects.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <SaveButton
+                    <Button
                         onClick={handleSave}
-                        saving={saving}
-                        saveSuccess={saveSuccess}
-                        size="md"
-                    />
+                        disabled={saving}
+                        className={cn(
+                            "h-11 px-6 rounded-xl font-bold transition-all",
+                            saveSuccess
+                                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                                : "bg-white text-black hover:bg-zinc-200"
+                        )}
+                    >
+                        {saving ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Saving...
+                            </>
+                        ) : saveSuccess ? (
+                            <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Saved!
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-4 h-4 mr-2" />
+                                Save Changes
+                            </>
+                        )}
+                    </Button>
                 </div>
             </div>
 
@@ -314,14 +372,14 @@ export function EditProfile() {
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-300 text-sm flex items-center gap-3"
+                    className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-300 text-sm flex items-center gap-3"
                 >
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-indigo-400" />
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-emerald-400" />
                     </div>
                     <div>
                         <strong>Create Your Profile</strong>
-                        <p className="text-indigo-400/70 mt-0.5">Fill out the form below and click "Save Changes" to create your client profile.</p>
+                        <p className="text-emerald-400/70 mt-0.5">Fill out the form below and click "Save Changes" to create your client profile.</p>
                     </div>
                 </motion.div>
             )}
@@ -331,7 +389,7 @@ export function EditProfile() {
                 <div className="bg-[#0a0a0c] border border-white/5 rounded-2xl">
                     <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
                         <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                            <Building2 className="w-5 h-5 text-indigo-400" />
+                            <Building2 className="w-5 h-5 text-emerald-400" />
                             Basic Information
                         </h2>
                     </div>
@@ -349,7 +407,7 @@ export function EditProfile() {
                                                 className="w-32 h-32 rounded-2xl object-cover ring-4 ring-white/10"
                                             />
                                         ) : (
-                                            <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-400 flex items-center justify-center ring-4 ring-white/10">
+                                            <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center ring-4 ring-white/10">
                                                 <Building2 className="w-14 h-14 text-white" />
                                             </div>
                                         )}
@@ -379,7 +437,7 @@ export function EditProfile() {
                                         value={displayName}
                                         onChange={(e) => setDisplayName(e.target.value)}
                                         placeholder="Your name or alias"
-                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                                     />
                                 </div>
 
@@ -391,7 +449,7 @@ export function EditProfile() {
                                         value={companyName}
                                         onChange={(e) => setCompanyName(e.target.value)}
                                         placeholder="e.g., My Awesome Project"
-                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                                     />
                                 </div>
                             </div>
@@ -409,7 +467,7 @@ export function EditProfile() {
                                         onChange={(e) => setBio(e.target.value.slice(0, 1000))}
                                         placeholder="Tell freelancers about yourself, your company, or your project..."
                                         rows={6}
-                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 resize-none transition-all"
+                                        className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 resize-none transition-all"
                                     />
                                 </div>
 
@@ -424,7 +482,7 @@ export function EditProfile() {
                                         value={country}
                                         onChange={(e) => setCountry(e.target.value)}
                                         placeholder="e.g., United States, Remote"
-                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                        className="w-full h-12 px-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                                     />
                                 </div>
 
@@ -442,7 +500,7 @@ export function EditProfile() {
                                             <Coins className="w-3.5 h-3.5" />
                                             Total Spent
                                         </div>
-                                        <div className="text-xl font-bold text-indigo-400">◎{stats.totalSpent.toFixed(1)}</div>
+                                        <div className="text-xl font-bold text-emerald-400">◎{stats.totalSpent.toFixed(1)}</div>
                                     </div>
                                     <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                                         <div className="flex items-center gap-2 text-zinc-500 text-xs mb-1">
@@ -629,9 +687,9 @@ export function EditProfile() {
                                                     <div className="mt-3 pt-3 border-t border-white/[0.06]">
                                                         <div className="flex justify-between text-xs mb-1">
                                                             <span className="text-zinc-500">ATH Market Cap</span>
-                                                            <span className="text-indigo-400 font-medium">{formatMarketCap(token.ath_market_cap)}</span>
+                                                            <span className="text-emerald-400 font-medium">{formatMarketCap(token.ath_market_cap)}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1 text-indigo-400 text-xs">
+                                                        <div className="flex items-center gap-1 text-emerald-400 text-xs">
                                                             <TrendingUp className="w-3 h-3" />
                                                             <span>All Time High</span>
                                                         </div>
@@ -693,7 +751,7 @@ export function EditProfile() {
                     <div className="p-6">
                         {loadingReviews ? (
                             <div className="flex items-center justify-center py-8">
-                                <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+                                <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
                             </div>
                         ) : reviews.length === 0 ? (
                             <div className="text-center py-8">
@@ -710,7 +768,7 @@ export function EditProfile() {
                                     >
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-violet-500 flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                                                     <User className="w-5 h-5 text-white" />
                                                 </div>
                                                 <div>
@@ -758,7 +816,7 @@ export function EditProfile() {
                                                 {review.would_recommend !== undefined && (
                                                     <div className="text-xs">
                                                         <span className="text-zinc-500">Would recommend:</span>
-                                                        <span className={cn("ml-1", review.would_recommend ? "text-indigo-400" : "text-red-400")}>
+                                                        <span className={cn("ml-1", review.would_recommend ? "text-emerald-400" : "text-red-400")}>
                                                             {review.would_recommend ? 'Yes' : 'No'}
                                                         </span>
                                                     </div>
@@ -779,13 +837,33 @@ export function EditProfile() {
                             Cancel
                         </Button>
                     </Link>
-                    <SaveButton
+                    <Button
                         onClick={handleSave}
-                        saving={saving}
-                        saveSuccess={saveSuccess}
-                        size="lg"
-                        saveLabel="Save All Changes"
-                    />
+                        disabled={saving}
+                        className={cn(
+                            "h-12 px-8 rounded-xl font-bold transition-all",
+                            saveSuccess
+                                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                                : "bg-white text-black hover:bg-zinc-200"
+                        )}
+                    >
+                        {saving ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Saving...
+                            </>
+                        ) : saveSuccess ? (
+                            <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Saved!
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-4 h-4 mr-2" />
+                                Save All Changes
+                            </>
+                        )}
+                    </Button>
                 </div>
             </div>
         </DashboardLayout>

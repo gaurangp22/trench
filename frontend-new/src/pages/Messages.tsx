@@ -1,39 +1,23 @@
-import { useEffect, useRef, useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useSearchParams, Link } from "react-router-dom"
-import { Search, Shield, MoreVertical, MessageSquare, Briefcase, Users, WifiOff } from "lucide-react"
+import { Search, Shield, Send, Paperclip, MoreVertical, MessageSquare, ArrowRight, Briefcase, Users } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
+import { MessageAPI, type Conversation, type Message } from "@/lib/api"
 import { DashboardLayout } from "@/components/layout/DashboardLayout"
-import { useAuth } from "@/context/AuthContext"
-import { useChat } from "@/context/ChatContext"
-import { MessageInput } from "@/components/chat/MessageInput"
-import { MessageAttachments } from "@/components/chat/MessageAttachment"
 
 export function Messages() {
-    const { user } = useAuth()
-    const currentRole = user?.role || 'freelancer'
+    const [conversations, setConversations] = useState<Conversation[]>([])
+    const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null)
+    const [messages, setMessages] = useState<Message[]>([])
+    const [newMessage, setNewMessage] = useState("")
+    const [loading, setLoading] = useState(true)
+    const [messagesLoading, setMessagesLoading] = useState(false)
+    const [sending, setSending] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
-    const messagesContainerRef = useRef<HTMLDivElement>(null)
-    const [searchParams] = useSearchParams()
-    const conversationIdFromUrl = searchParams.get('conversation')
+    const messagesEndRef = useRef<HTMLDivElement>(null)
 
-    const {
-        isConnected,
-        connecting,
-        conversations,
-        loadingConversations,
-        refreshConversations,
-        selectedConversation,
-        selectConversation,
-        messages,
-        loadingMessages,
-        sendMessage,
-        sendTyping,
-        typingUsers,
-        markAsRead,
-    } = useChat()
-
-    // Get current user ID from token
+    // Get current user ID from token (simplified - in real app use auth context)
     const getCurrentUserId = () => {
         const token = localStorage.getItem('token')
         if (!token) return null
@@ -46,43 +30,91 @@ export function Messages() {
     }
 
     const currentUserId = getCurrentUserId()
+    const [searchParams] = useSearchParams()
+    const conversationIdFromUrl = searchParams.get('conversation')
 
-    // Load conversations on mount
+    // Fetch conversations
     useEffect(() => {
-        if (isConnected) {
-            refreshConversations()
-        }
-    }, [isConnected, refreshConversations])
+        const loadConversations = async () => {
+            try {
+                setLoading(true)
+                const data = await MessageAPI.getConversations()
+                const convs = data.conversations || []
+                setConversations(convs)
 
-    // Select conversation from URL or first one
-    useEffect(() => {
-        if (conversations.length > 0 && !selectedConversation) {
-            if (conversationIdFromUrl) {
-                const targetConv = conversations.find(c => c.id === conversationIdFromUrl)
-                if (targetConv) {
-                    selectConversation(targetConv)
-                    return
+                // If a conversation ID is provided in URL, select it
+                if (conversationIdFromUrl && convs.length > 0) {
+                    const targetConv = convs.find((c: Conversation) => c.id === conversationIdFromUrl)
+                    if (targetConv) {
+                        setSelectedConversation(targetConv)
+                    } else {
+                        setSelectedConversation(convs[0])
+                    }
+                } else if (convs.length > 0) {
+                    setSelectedConversation(convs[0])
                 }
+            } catch (error) {
+                console.error("Failed to load conversations:", error)
+            } finally {
+                setLoading(false)
             }
-            selectConversation(conversations[0])
         }
-    }, [conversations, conversationIdFromUrl, selectedConversation, selectConversation])
 
-    // Mark as read when selecting conversation
+        loadConversations()
+    }, [conversationIdFromUrl])
+
+    // Fetch messages when conversation changes
     useEffect(() => {
-        if (selectedConversation && selectedConversation.unread_count > 0) {
-            markAsRead(selectedConversation.id)
+        if (!selectedConversation) return
+
+        const loadMessages = async () => {
+            try {
+                setMessagesLoading(true)
+                const data = await MessageAPI.getMessages(selectedConversation.id)
+                // Reverse to show oldest first
+                setMessages((data.messages || []).reverse())
+                // Mark as read
+                MessageAPI.markAsRead(selectedConversation.id)
+            } catch (error) {
+                console.error("Failed to load messages:", error)
+            } finally {
+                setMessagesLoading(false)
+            }
         }
-    }, [selectedConversation?.id, selectedConversation?.unread_count, markAsRead])
+
+        loadMessages()
+    }, [selectedConversation?.id])
 
     // Scroll to bottom when messages change
     useEffect(() => {
-        if (messagesContainerRef.current) {
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
-        }
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
 
-    const getOtherParticipant = (conv: typeof conversations[0]) => {
+    const handleSend = async () => {
+        if (!newMessage.trim() || !selectedConversation || sending) return
+
+        try {
+            setSending(true)
+            const message = await MessageAPI.sendMessage(selectedConversation.id, {
+                message_text: newMessage.trim()
+            })
+            setMessages(prev => [...prev, message])
+            setNewMessage("")
+
+            // Update conversation's last message in list
+            setConversations(prev => prev.map(conv =>
+                conv.id === selectedConversation.id
+                    ? { ...conv, last_message: message, updated_at: message.created_at }
+                    : conv
+            ))
+        } catch (error) {
+            console.error("Failed to send message:", error)
+        } finally {
+            setSending(false)
+        }
+    }
+
+    const getOtherParticipant = (conv: Conversation) => {
         return conv.participants?.find(p => p.user_id !== currentUserId) || conv.participants?.[0]
     }
 
@@ -116,44 +148,14 @@ export function Messages() {
                conv.context?.title?.toLowerCase().includes(searchQuery.toLowerCase())
     })
 
-    // Get typing users for current conversation
-    const currentTypingUsers = typingUsers.filter(
-        u => u.conversation_id === selectedConversation?.id && u.user_id !== currentUserId
-    )
-
-    // Empty state when not connected
-    if (!isConnected && !connecting) {
+    // Empty state
+    if (!loading && conversations.length === 0) {
         return (
-            <DashboardLayout role={currentRole}>
+            <DashboardLayout role="freelancer">
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <div className="text-center max-w-md">
-                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                            <WifiOff className="w-10 h-10 text-red-400" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white mb-3">Connection Lost</h2>
-                        <p className="text-zinc-400 leading-relaxed mb-8">
-                            Unable to connect to the chat server. Please check your connection and try again.
-                        </p>
-                        <Button
-                            onClick={() => window.location.reload()}
-                            className="bg-white text-black hover:bg-zinc-200"
-                        >
-                            Retry Connection
-                        </Button>
-                    </div>
-                </div>
-            </DashboardLayout>
-        )
-    }
-
-    // Empty state when no conversations
-    if (!loadingConversations && conversations.length === 0) {
-        return (
-            <DashboardLayout role={currentRole}>
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <div className="text-center max-w-md">
-                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                            <MessageSquare className="w-10 h-10 text-indigo-400" />
+                        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                            <MessageSquare className="w-10 h-10 text-emerald-400" />
                         </div>
                         <h2 className="text-2xl font-bold text-white mb-3">No messages yet</h2>
                         <p className="text-zinc-400 leading-relaxed mb-8">
@@ -183,23 +185,17 @@ export function Messages() {
     }
 
     return (
-        <DashboardLayout role={currentRole}>
+        <DashboardLayout role="freelancer">
             <div className="h-[calc(100vh-140px)]">
                 <div className="flex h-full bg-[#0a0a0c] border border-white/5 rounded-2xl overflow-hidden">
                     {/* Conversation List */}
                     <div className="w-80 border-r border-white/[0.06] flex flex-col">
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-white/[0.06]">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                                    <MessageSquare className="w-5 h-5 text-indigo-400" />
-                                    Messages
-                                </h2>
-                                <div className={cn(
-                                    "w-2 h-2 rounded-full",
-                                    isConnected ? "bg-indigo-500" : "bg-yellow-500 animate-pulse"
-                                )} title={isConnected ? "Connected" : "Connecting..."} />
-                            </div>
+                            <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                                <MessageSquare className="w-5 h-5 text-emerald-400" />
+                                Messages
+                            </h2>
                         </div>
 
                         {/* Search */}
@@ -211,14 +207,14 @@ export function Messages() {
                                     placeholder="Search messages..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                    className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                                 />
                             </div>
                         </div>
 
                         {/* Conversations */}
                         <div className="flex-1 overflow-y-auto">
-                            {loadingConversations ? (
+                            {loading ? (
                                 <div className="p-2">
                                     {[...Array(5)].map((_, i) => (
                                         <div
@@ -243,11 +239,11 @@ export function Messages() {
                                     return (
                                         <button
                                             key={conv.id}
-                                            onClick={() => selectConversation(conv)}
+                                            onClick={() => setSelectedConversation(conv)}
                                             className={cn(
                                                 "w-full p-4 flex items-start gap-3 text-left transition-all border-b border-white/[0.03]",
                                                 selectedConversation?.id === conv.id
-                                                    ? "bg-indigo-500/10"
+                                                    ? "bg-emerald-500/10"
                                                     : "hover:bg-white/[0.03]"
                                             )}
                                         >
@@ -259,12 +255,12 @@ export function Messages() {
                                                         className="w-12 h-12 rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
+                                                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
                                                         {participant?.username?.[0]?.toUpperCase() || '?'}
                                                     </div>
                                                 )}
                                                 {participant?.is_online && (
-                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-indigo-500 rounded-full border-2 border-[#0a0a0c]" />
+                                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#0a0a0c]" />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -280,7 +276,7 @@ export function Messages() {
                                                     {conv.last_message?.message_text || 'No messages yet'}
                                                 </p>
                                                 {conv.context && (
-                                                    <div className="flex items-center gap-1 mt-1.5 text-xs text-indigo-400">
+                                                    <div className="flex items-center gap-1 mt-1.5 text-xs text-emerald-400">
                                                         <Shield className="w-3 h-3" />
                                                         <span className="truncate">{conv.context.title}</span>
                                                         {conv.context.amount_sol && (
@@ -290,7 +286,7 @@ export function Messages() {
                                                 )}
                                             </div>
                                             {conv.unread_count > 0 && (
-                                                <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-xs text-white font-bold">
+                                                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-xs text-white font-bold">
                                                     {conv.unread_count}
                                                 </div>
                                             )}
@@ -320,7 +316,7 @@ export function Messages() {
                                                                 className="w-10 h-10 rounded-full object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white font-bold">
+                                                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
                                                                 {participant?.username?.[0]?.toUpperCase() || '?'}
                                                             </div>
                                                         )}
@@ -328,10 +324,8 @@ export function Messages() {
                                                             <h3 className="font-medium text-white">
                                                                 {participant?.username || 'Unknown'}
                                                             </h3>
-                                                            {participant?.is_online ? (
-                                                                <span className="text-xs text-indigo-400">Online</span>
-                                                            ) : (
-                                                                <span className="text-xs text-zinc-500">Offline</span>
+                                                            {participant?.is_online && (
+                                                                <span className="text-xs text-emerald-400">Online</span>
                                                             )}
                                                         </div>
                                                     </>
@@ -348,7 +342,7 @@ export function Messages() {
                                         <div className="mt-3 p-3 bg-white/[0.02] border border-white/[0.06] rounded-xl">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <Shield className="w-4 h-4 text-indigo-400" />
+                                                    <Shield className="w-4 h-4 text-emerald-400" />
                                                     <span className="text-sm text-white">{selectedConversation.context.title}</span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -361,7 +355,7 @@ export function Messages() {
                                                         <span className={cn(
                                                             "px-2.5 py-0.5 rounded-lg text-xs font-medium capitalize border",
                                                             selectedConversation.context.status === "funded" || selectedConversation.context.status === "active"
-                                                                ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
+                                                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                                                 : "bg-blue-500/10 text-blue-400 border-blue-500/20"
                                                         )}>
                                                             {selectedConversation.context.status.replace('_', ' ')}
@@ -374,8 +368,8 @@ export function Messages() {
                                 </div>
 
                                 {/* Messages */}
-                                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
-                                    {loadingMessages ? (
+                                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                    {messagesLoading ? (
                                         <div className="space-y-4 py-4">
                                             {[...Array(4)].map((_, i) => (
                                                 <div
@@ -383,7 +377,7 @@ export function Messages() {
                                                     className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'} animate-pulse`}
                                                     style={{ animationDelay: `${i * 0.1}s` }}
                                                 >
-                                                    <div className={`max-w-[70%] p-3 rounded-2xl ${i % 2 === 0 ? 'bg-white/[0.05]' : 'bg-indigo-500/20'}`}>
+                                                    <div className={`max-w-[70%] p-3 rounded-2xl ${i % 2 === 0 ? 'bg-white/[0.05]' : 'bg-emerald-500/20'}`}>
                                                         <div className="h-4 w-48 bg-white/10 rounded mb-2" />
                                                         <div className="h-4 w-32 bg-white/10 rounded" />
                                                     </div>
@@ -392,8 +386,8 @@ export function Messages() {
                                         </div>
                                     ) : messages.length === 0 ? (
                                         <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                                            <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4">
-                                                <MessageSquare className="w-8 h-8 text-indigo-400" />
+                                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
+                                                <MessageSquare className="w-8 h-8 text-emerald-400" />
                                             </div>
                                             <h3 className="text-lg font-medium text-white mb-1">Start the conversation</h3>
                                             <p className="text-sm text-zinc-500 max-w-xs">
@@ -419,18 +413,10 @@ export function Messages() {
                                                         <div className={cn(
                                                             "max-w-[70%] p-3 rounded-2xl",
                                                             isMe
-                                                                ? "bg-indigo-500 text-white"
+                                                                ? "bg-emerald-500 text-white"
                                                                 : "bg-white/[0.06] text-zinc-100"
                                                         )}>
-                                                            {msg.message_text && (
-                                                                <p className="text-sm whitespace-pre-wrap">{msg.message_text}</p>
-                                                            )}
-                                                            {msg.attachments && msg.attachments.length > 0 && (
-                                                                <MessageAttachments
-                                                                    attachments={msg.attachments}
-                                                                    isOwnMessage={isMe}
-                                                                />
-                                                            )}
+                                                            <p className="text-sm whitespace-pre-wrap">{msg.message_text}</p>
                                                             <span className={cn(
                                                                 "text-xs mt-1 block",
                                                                 isMe ? "text-white/70" : "text-zinc-500"
@@ -444,30 +430,33 @@ export function Messages() {
                                             )
                                         })
                                     )}
-
-                                    {/* Typing indicator */}
-                                    {currentTypingUsers.length > 0 && (
-                                        <div className="flex items-center gap-2 text-sm text-zinc-400">
-                                            <div className="flex gap-1">
-                                                <span className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                <span className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                <span className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                                            </div>
-                                            <span>
-                                                {currentTypingUsers.map(u => u.username).join(', ')} {currentTypingUsers.length === 1 ? 'is' : 'are'} typing...
-                                            </span>
-                                        </div>
-                                    )}
-
+                                    <div ref={messagesEndRef} />
                                 </div>
 
                                 {/* Message Input */}
-                                <MessageInput
-                                    onSend={sendMessage}
-                                    onTyping={sendTyping}
-                                    disabled={!isConnected}
-                                    placeholder={isConnected ? "Type a message..." : "Connecting..."}
-                                />
+                                <div className="p-4 border-t border-white/[0.06] bg-[#0a0a0c]">
+                                    <div className="flex items-center gap-3">
+                                        <Button variant="ghost" size="icon" className="text-zinc-400 hover:text-white hover:bg-white/[0.05]">
+                                            <Paperclip className="w-5 h-5" />
+                                        </Button>
+                                        <input
+                                            type="text"
+                                            value={newMessage}
+                                            onChange={(e) => setNewMessage(e.target.value)}
+                                            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                                            placeholder="Type a message..."
+                                            disabled={sending}
+                                            className="flex-1 px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 transition-all disabled:opacity-50"
+                                        />
+                                        <Button
+                                            onClick={handleSend}
+                                            disabled={!newMessage.trim() || sending}
+                                            className="h-10 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium disabled:opacity-50"
+                                        >
+                                            <Send className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
                             </>
                         ) : (
                             <div className="flex-1 flex items-center justify-center">
